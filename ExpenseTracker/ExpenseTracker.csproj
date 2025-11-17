@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-TestApplication-5665B016-88E1-4711-BA6B-2926DC9CD326</UserSecretsId>
+        <RootNamespace>TestApplication</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Dapper" Version="2.1.35" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7"/>
+        <PackageReference Include="Npgsql" Version="9.0.2" />
+    </ItemGroup>
+
+</Project>

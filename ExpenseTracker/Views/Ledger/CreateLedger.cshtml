@@ -1,0 +1,36 @@
+﻿@model TestApplication.ViewModels.LedgerVm
+
+@{
+    ViewData["Title"] = "Create Ledger";
+}
+
+
+<form asp-action="CreateLedger" method="post" class="container mt-4" style="max-width:500px;margin:auto;">
+    <div class="card">
+        <div class="card-header">
+            <h6>Add Ledger</h6>
+        </div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label class="form-label">Select Parent Ledger</label>
+                <select asp-for="ParentId" class="form-select" required>
+                    <option value="">-- Select Parent Ledger --</option>
+                    <option value="1">Asset</option>
+                    <option value="2">Liability</option>
+                    <option value="3">Income</option>
+                    <option value="4">Expenses</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ledger Name</label>
+                <input asp-for="LedgerName" class="form-control" required placeholder="Enter Ledger Name"/>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Save Ledger</button>
+
+        </div>
+    </div>
+</form>

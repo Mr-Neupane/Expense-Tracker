@@ -1,0 +1,31 @@
+@model TestApplication.ViewModels.UserVm
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<form asp-action="AddUser" asp-controller="User" method="post" class="container mt-4"
+      style="max-width:500px;margin:auto;">
+
+    <div class="card">
+        <div class="card-header">
+            <h6>Add User</h6>
+        </div>
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label">Username <span class="text-danger">*</span></label>
+                <input asp-for="Username" class="form-control" autocomplete="off" required="required"/>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password <span class="text-danger">*</span></label>
+                <input asp-for="Password" type="password" class="form-control" autocomplete="off" required="required"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Add User</button>
+        </div>
+
+    </div>
+
+</form>
