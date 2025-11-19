@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace TestApplication.Data.Migrations
+namespace ExpenseTracker.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

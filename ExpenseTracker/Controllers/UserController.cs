@@ -1,6 +1,6 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using TestApplication.ViewModels;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
@@ -41,5 +41,10 @@ ON CONFLICT (username) DO NOTHING;
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task<IActionResult> UserReport()
+    {
+        return RedirectToAction("AddUser");
     }
 }

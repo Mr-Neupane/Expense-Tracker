@@ -1,4 +1,4 @@
-namespace TestApplication.ViewModels;
+namespace ExpenseTracker.ViewModels;
 
 public class UserVm
 {

@@ -1,4 +1,4 @@
-namespace TestApplication.Models;
+namespace ExpenseTracker.Models;
 
 public class ErrorViewModel
 {

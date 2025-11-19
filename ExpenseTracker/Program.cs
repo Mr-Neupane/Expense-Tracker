@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TestApplication;
 using ExpenseTracker.Controllers;
-using TestApplication.Data;
+using ExpenseTracker.Data;
+using ExpenseTracker.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace TestApplication.Data;
+namespace ExpenseTracker.Data;
 
 public class ApplicationDbContext : IdentityDbContext
 {
