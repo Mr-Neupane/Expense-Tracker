@@ -40,7 +40,7 @@ public class LedgerController : Controller
         var conn = DapperConnectionProvider.GetConnection();
         var result =
             await conn.QueryAsync(
-                "select l.ledgername, c.name, l.status, username from accounting.ledger l join accounting.coa c on c.id = l.parentid join users u on u.id = l.recbyid;");
+                "select c.name, l.ledgername as parentname,ls.code ledgercode, ls.ledgername ledgername, ls.status,username from accounting.ledger l join accounting.ledger ls on l.id = ls.subparentid join accounting.coa c on l.parentid = c.id join users u on u.id = ls.recbyid order by ls.id;");
         return View(result);
     }
 }
