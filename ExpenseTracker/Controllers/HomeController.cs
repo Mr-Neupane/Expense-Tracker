@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using TestApplication.Models;
+using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Controllers;
 
@@ -28,19 +28,5 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-
-    public async void SeededQuery()
-    {
-        var conn = DapperConnectionProvider.GetConnection();
-        var userQuery = @"
-Create table if not exists users;
-";
-        await conn.ExecuteAsync(userQuery);
-        var coaQuery = @"
-Create table if not exists COA;
-       await conn.ExecuteAsync(coaQuery);
-
-";
     }
 }
