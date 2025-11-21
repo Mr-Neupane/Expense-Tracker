@@ -51,6 +51,21 @@ values ( 'admin', 'admin' )
                 bankaddress varchar(100),accountopendate date,recstatus char,recdate timestamp, status int, unique(bankname,accountnumber) ) ";
         await conn.ExecuteAsync(BankQuery);
 
+        var banktransaction = @"create table if not exists bank.banktransactions
+(
+    id       serial  primary key,
+    bankid    int not null ,
+    txndate   date,
+    amount    decimal not null,
+    remarks   varchar(100),
+    recdate   timestamp default now(),
+    recstatus char(1)      default 'A',
+    status    int       default 1,
+CONSTRAINT fk_bankid FOREIGN KEY (bankid) REFERENCES bank.bank(id)
+) ;";
+
+        await conn.ExecuteAsync(banktransaction);
+
         conn.Close();
     }
 }

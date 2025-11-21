@@ -1,36 +1,29 @@
-﻿# Ignore build output
+﻿
 /bin/
 /obj/
 
-# User-specific files
 *.user
 *.userosscache
 *.suo
 *.userprefs
 
-# Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
 
-# Windows Installer
 Thumbs.db
 
-# ASP.NET temporary files
 /.vs/
 /.vs2019/
 /.vs2017/
 
-# .NET Core
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# NUGET
 *.nupkg
 *.snupkg
 .nuget/
 
-# ASP.NET Core
 appsettings.json
