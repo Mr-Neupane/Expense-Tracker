@@ -14,7 +14,7 @@ namespace ExpenseTracker
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public static NpgsqlConnection GetConnection()
+        public static IDbConnection GetConnection()
         {
             if (string.IsNullOrEmpty(_connectionString))
                 throw new InvalidOperationException("DapperConnectionProvider is not initialized. Call Initialize() first.");

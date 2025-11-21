@@ -48,15 +48,7 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
 
                     var tablecreation = @"
                                     CREATE TABLE IF NOT EXISTS accounting.ledger (
-                                                                                    ID SERIAL PRIMARY KEY,
-                                                                                    ParentId INT,
-                                                                                    LedgerName VARCHAR(100) UNIQUE,
-                                                                                    RecStatus CHAR NOT NULL,
-                                                                                    Status INT,
-                                                                                    RecById INT,
-                                                                                    CONSTRAINT fk_ledger_parent
-                                                                                        FOREIGN KEY (ParentId) REFERENCES accounting.coa(id)
-                                                                                        )
+                            ID SERIAL PRIMARY KEY, ParentId int, LedgerName VARCHAR(100) Unique, RecStatus char ,Status int,RecById int ) 
                             ";
                     await conn.ExecuteAsync(tablecreation);
 

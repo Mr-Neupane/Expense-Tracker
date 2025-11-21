@@ -1,8 +1,6 @@
 ﻿using Dapper;
-using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 
 namespace ExpenseTracker.Controllers;
 
@@ -17,7 +15,7 @@ public class BankController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateBank(BankVm vm)
     {
-        using (NpgsqlConnection con = DapperConnectionProvider.GetConnection())
+        try
         {
             using (var txn = con.BeginTransaction())
             {
@@ -67,11 +65,24 @@ VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @co
                 }
                 catch (Exception e)
                 {
-                    await txn.RollbackAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
+                    bankname = vm.BankName,
+                    accountnumber = vm.AccountNumber,
+                    bankcontactnumber = vm.BankContact,
+                    remainingbalance = 0,
+                    bankaddress = vm.BankAddress,
+                    accountopendate = vm.AccountOpenDate,
+                    recstatus = vm.RecStatus,
+                    recdate = DateTime.Now,
+                    status = vm.Status,
+                });
+            con.Close();
+
+            return RedirectToAction("CreateBank");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
 
