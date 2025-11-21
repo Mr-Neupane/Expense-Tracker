@@ -24,7 +24,11 @@ public class LedgerController : Controller
                                  values (@parentId, @ledgerName, @recStatus, @status, @recById)
                               ON CONFLICT (LedgerName) DO NOTHING;  ";
             await conn.ExecuteAsync(newLedger,
-                new { ParentId = l.ParentId, Ledgername = l.LedgerName, RecStatus = 'A', Status = 1, RecById = 1 });
+                new
+                {
+                    ParentId = vm.ParentId, Ledgername = vm.LedgerName, RecStatus = vm.RecStatus, Status = vm.Status,
+                    RecById = -1, subparentid = vm.SubParentId, code = ledgercode
+                });
             conn.Close();
             return RedirectToAction("CreateLedger");
         }

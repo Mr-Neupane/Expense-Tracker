@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -42,11 +43,13 @@ public class BankTransactionController : Controller
                     string txntype = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw";
 
                     var accountingTransaction =
-                        @"INSERT INTO accounting.transactions ( txndate, amount, type, typeid, remarks, recstatus, recdate, status, recbyid)
-                                   values (@txndate,@amount,@type,@typeid,@remarks,@recstatus,@recdate,@status,@recbyid) returning id";
+                        @"INSERT INTO accounting.transactions ( txndate,voucherno, amount, type, typeid, remarks, recstatus, recdate, status, recbyid)
+                                   values (@txndate,@voucherno,@amount,@type,@typeid,@remarks,@recstatus,@recdate,@status,@recbyid) returning id";
+                    string vouchernumber = await VoucherNumberProvider.GetVoucherNumber();
                     var acctxnid = await con.QuerySingleAsync<int>(accountingTransaction, new
                     {
                         txndate = vm.TxnDate,
+                        voucherno = vouchernumber,
                         amount = vm.Amount,
                         Type = txntype,
                         typeid = banktxnid,
@@ -56,15 +59,16 @@ public class BankTransactionController : Controller
                         status = vm.Status,
                         recbyid = -1
                     });
-                    var bankledgerid = @"select ";
                     var transactionDetail = @"
 INSERT INTO accounting.transactiondetails ( transactionid,ledgerid, dramount, cramount, drcr, recstatus, status, recbyid)
 values (@transactionid,@ledgerid,@dramount,@cramount,@drcr,@recstatus,@status,@recbyid)
 ";
+
+                    var bankledgerid = await LedgerCode.GetBankLedgerId(vm);
                     await con.ExecuteAsync(transactionDetail, new
                     {
                         transactionid = acctxnid,
-                        // ledgerid =,
+                        ledgerid =bankledgerid,
                         dramount = vm.Type=="Deposit"?vm.Amount:0,
                         cramount = vm.Type=="Withdraw"?vm.Amount:0,
                         drcr = vm.Type=="Deposit"?"D":"C",
@@ -76,9 +80,10 @@ values (@transactionid,@ledgerid,@dramount,@cramount,@drcr,@recstatus,@status,@r
                     await con.ExecuteAsync(transactionDetail, new
                     {
                         transactionid = acctxnid,
-                        dramount = vm.Type == "Deposit" ? vm.Amount : 0,
-                        cramount = vm.Type == "Withdraw" ? vm.Amount : 0,
-                        drcr = vm.Type == "Deposit" ? vm.Amount : 0,
+                        ledgerid = -3,
+                        dramount = vm.Type == "Deposit" ? 0:vm.Amount ,
+                        cramount = vm.Type == "Withdraw" ?0: vm.Amount,
+                        drcr = vm.Type == "Deposit" ? "C" : "D",
                         recstatus = vm.RecStatus,
                         status = vm.Status,
                         recbyid = -1
