@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 
 namespace ExpenseTracker.Controllers;
 
@@ -6,42 +7,46 @@ public class SeededData
 {
     public static async Task SeededQuery()
     {
-        var conn = DapperConnectionProvider.GetConnection();
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        {
+            using (var txn = conn.BeginTransaction())
+            {
+                try
+                {
+                    var accschema = @"CREATE SCHEMA IF NOT EXISTS accounting;";
+                    await conn.ExecuteAsync(accschema);
+                    var bankschema = @"CREATE SCHEMA IF NOT EXISTS bank;";
+                    await conn.ExecuteAsync(bankschema);
 
-        var accschema = @"CREATE SCHEMA IF NOT EXISTS accounting;";
-        await conn.ExecuteAsync(accschema);
-        var bankschema = @"CREATE SCHEMA IF NOT EXISTS bank;";
-        await conn.ExecuteAsync(bankschema);
-
-        var createUserQuery = @"
+                    var createUserQuery = @"
 
                     CREATE TABLE IF NOT EXISTS users (
                         id SERIAL PRIMARY KEY,
                         username VARCHAR(100) NOT NULL UNIQUE,
                         password VARCHAR(255) NOT NULL
                     );";
-        await conn.ExecuteAsync(createUserQuery);
+                    await conn.ExecuteAsync(createUserQuery);
 
-        var defuser = @"INSERT INTO public.users ( username, password)
-values ( 'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
+                    var defuser = @"INSERT INTO public.users ( id,username, password)
+values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
 ";
-        await conn.ExecuteAsync(defuser);
+                    await conn.ExecuteAsync(defuser);
 
-        var parentTable =
-            @"Create Table if not exists accounting.COA(ID serial primary key, Name varchar(50) UNIQUE, RecStatus char,Status int,RecById int)";
+                    var parentTable =
+                        @"Create Table if not exists accounting.COA(ID serial primary key, Name varchar(50) UNIQUE, RecStatus char,Status int,RecById int)";
 
-        await conn.ExecuteAsync(parentTable);
+                    await conn.ExecuteAsync(parentTable);
 
-        var cOAIns = @"Insert into accounting.coa( Name, RecStatus, Status,RecById )
+                    var cOAIns = @"Insert into accounting.coa( Name, RecStatus, Status,RecById )
                                         values ('Assets', 'A', 1,1),
                                          ('Liabilities', 'A', 1,1),
                                          ('Income', 'A', 1,1),
                                          ('Expenses', 'A', 1,1) 
                                        ON CONFLICT (Name) DO NOTHING;
                     ";
-        await conn.ExecuteAsync(cOAIns);
+                    await conn.ExecuteAsync(cOAIns);
 
-        var tablecreation = @"
+                    var tablecreation = @"
                                     CREATE TABLE IF NOT EXISTS accounting.ledger (
                                                                                     ID SERIAL PRIMARY KEY,
                                                                                     ParentId INT,
@@ -53,18 +58,90 @@ values ( 'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
                                                                                         FOREIGN KEY (ParentId) REFERENCES accounting.coa(id)
                                                                                         )
                             ";
-        await conn.ExecuteAsync(tablecreation);
+                    await conn.ExecuteAsync(tablecreation);
 
-        var BankQuery =
-            @" create table if not exists bank.bank(id serial primary key, bankname varchar(100) , accountnumber varchar(50), bankcontactnumber int,ledgerid int,
-                bankaddress varchar(100),accountopendate date,recstatus char,recdate timestamp, status int, unique(bankname,accountnumber) ) ";
-        await conn.ExecuteAsync(BankQuery);
+                    var BankQuery =
+                        @" create table if not exists bank.bank
+(
+    id                serial primary key,
+    bankname          varchar(100) not null ,
+    accountnumber     varchar(50) not null ,
+    bankcontactnumber int,
+    ledgerid          int not null ,
+    remainingbalance  decimal   default 0,
+    bankaddress       varchar(100),
+    accountopendate   date,
+    recstatus         char,
+    recdate           timestamp default now(),
+    status            int default 1,
+    recbyid int not null ,
+    unique (bankname, accountnumber),
+    constraint fk_ledgerid foreign key (ledgerid) references accounting.ledger(id),
+    constraint fk_recbyid foreign key (recbyid) references users(id)
+) ";
+                    await conn.ExecuteAsync(BankQuery);
 
-        var ledgeralter = @" alter table accounting.ledger add column if not exists subparentid int;";
-        await conn.ExecuteAsync(ledgeralter);
-        var alter = @" ALTER TABLE accounting.ledger ADD COLUMN if not exists code VARCHAR(50) NOT NULL UNIQUE;";
-        await conn.ExecuteAsync(alter);
-        var defaultledger = @"
+                    var ledgeralter = @" alter table accounting.ledger add column if not exists subparentid int;";
+                    await conn.ExecuteAsync(ledgeralter);
+                    var alter =
+                        @" ALTER TABLE accounting.ledger ADD COLUMN if not exists code VARCHAR(50) NOT NULL UNIQUE;";
+                    await conn.ExecuteAsync(alter);
+
+                    var banktransaction = @"create table if not exists bank.banktransactions
+(
+    id       serial  primary key,
+    bankid    int not null ,
+    txndate   date,
+    amount    decimal not null,
+    type varchar(20) not null,
+    remarks   varchar(100),
+    recdate   timestamp default now(),
+recbyid int not null ,
+    recstatus char(1)      default 'A',
+    status    int       default 1,
+CONSTRAINT fk_bankid FOREIGN KEY (bankid) REFERENCES bank.bank(id),
+CONSTRAINT fk_recbyid FOREIGN KEY (recbyid) REFERENCES users(id)
+) ;";
+
+                    await conn.ExecuteAsync(banktransaction);
+
+                    var acctransactions = @"
+create table if not exists accounting.transactions
+(
+    id        serial primary key,
+    txndate   date        not null,
+    voucherno varchar(15) not null,
+    amount    decimal     not null,
+    type      varchar(50) not null,
+    typeid    int         not null,
+    remarks   varchar(100),
+    recstatus char(1)              default 'A',
+    recdate   timestamp   not null default now(),
+    status    int                  default 1,
+    recbyid   int,
+    constraint fk_recbyid foreign key (recbyid) references users (id)
+);
+";
+                    await conn.ExecuteAsync(acctransactions);
+
+                    var acctxndtl = @"create table if not exists accounting.transactiondetails
+(
+    id            serial primary key,
+    transactionid int     not null,
+    ledgerid int    not null,
+    dramount      decimal not null,
+    cramount      decimal not null,
+    drcr          char    not null,
+    recstatus     char(1) default 'A',
+    status        int     default 1,
+    recbyid       int,
+    constraint fk_transactionid foreign key (transactionid) references accounting.transactions (id),
+    constraint fk_ledgerid foreign key (ledgerid) references accounting.ledger (id),
+    constraint fk_recbyid foreign key (recbyid) references users (id)
+    
+) ;";
+                    await conn.ExecuteAsync(acctxndtl);
+                    var defaultledger = @"
 DO $$
     DECLARE
         v_exists BOOLEAN;
@@ -84,14 +161,13 @@ DO $$
             INSERT INTO accounting.ledger
                 (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
                 VALUES
-                    (-1, 1, 'Cash Account', 'A', 1, 1, '80', NULL)
+                    (-1, 1, 'Cash Account', 'A', 1, -1, '80', NULL)
                 RETURNING id AS cid
         ), OtherParent AS (
             INSERT INTO accounting.ledger
                 (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
                 VALUES
-                    (-2, 1, 'Bank Account', 'A', 1, 1, '90', NULL)
-                RETURNING id
+                    (-2, 1, 'Bank Account', 'A', 1, -1, '90', NULL)
         )
         INSERT INTO accounting.ledger
         (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
@@ -101,7 +177,7 @@ DO $$
             'Cash',
             'A',
             1,
-            1,
+            -1,
             '80.1',
             cid
         FROM parentIns;
@@ -109,7 +185,16 @@ DO $$
         RAISE NOTICE 'Inserts completed successfully.';
     END $$;
 ";
-        await conn.ExecuteAsync(defaultledger);
-        conn.Close();
+                    await conn.ExecuteAsync(defaultledger);
+                    await txn.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await txn.RollbackAsync();
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+        }
     }
 }

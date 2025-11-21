@@ -30,7 +30,7 @@ public class LedgerController : Controller
                 new
                 {
                     ParentId = vm.ParentId, Ledgername = vm.LedgerName, RecStatus = vm.RecStatus, Status = vm.Status,
-                    RecById = 1, subparentid = vm.SubParentId, code = ledgercode
+                    RecById = -1, subparentid = vm.SubParentId, code = ledgercode
                 });
             conn.Close();
             return RedirectToAction("CreateLedger");
