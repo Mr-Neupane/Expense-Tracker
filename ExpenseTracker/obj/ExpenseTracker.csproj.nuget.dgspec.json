@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Expense-Tracker\\ExpenseTracker\\ExpenseTracker.csproj": {}
+    "F:\\Dotnet Practice\\TestApplication\\ExpenseTracker\\ExpenseTracker.csproj": {}
   },
   "projects": {
-    "D:\\Expense-Tracker\\ExpenseTracker\\ExpenseTracker.csproj": {
+    "F:\\Dotnet Practice\\TestApplication\\ExpenseTracker\\ExpenseTracker.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Expense-Tracker\\ExpenseTracker\\ExpenseTracker.csproj",
+        "projectUniqueName": "F:\\Dotnet Practice\\TestApplication\\ExpenseTracker\\ExpenseTracker.csproj",
         "projectName": "ExpenseTracker",
-        "projectPath": "D:\\Expense-Tracker\\ExpenseTracker\\ExpenseTracker.csproj",
-        "packagesPath": "C:\\Users\\nisch\\.nuget\\packages\\",
-        "outputPath": "D:\\Expense-Tracker\\ExpenseTracker\\obj\\",
+        "projectPath": "F:\\Dotnet Practice\\TestApplication\\ExpenseTracker\\ExpenseTracker.csproj",
+        "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
+        "outputPath": "F:\\Dotnet Practice\\TestApplication\\ExpenseTracker\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nisch\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -99,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
