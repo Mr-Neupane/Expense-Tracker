@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
 
@@ -14,24 +13,18 @@ public class LedgerController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLedger(LedgerVm vm)
+    public async Task<IActionResult> CreateLedger(LedgerVm l)
     {
         try
         {
             var conn = DapperConnectionProvider.GetConnection();
-            var ledgercode = await LedgerCode.GetLedgerCode(vm);
 
-            var subparentid = vm.SubParentId;
             var newLedger = @"
-                                 INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, subparentid, code)
-                                 values (@parentId, @ledgerName, @recStatus, @status, @recById,@subparentid,@code)
+                                 Insert into accounting.Ledger (ParentId, LedgerName, RecStatus, Status,RecById) 
+                                 values (@parentId, @ledgerName, @recStatus, @status, @recById)
                               ON CONFLICT (LedgerName) DO NOTHING;  ";
             await conn.ExecuteAsync(newLedger,
-                new
-                {
-                    ParentId = vm.ParentId, Ledgername = vm.LedgerName, RecStatus = vm.RecStatus, Status = vm.Status,
-                    RecById = 1, subparentid = vm.SubParentId, code = ledgercode
-                });
+                new { ParentId = l.ParentId, Ledgername = l.LedgerName, RecStatus = 'A', Status = 1, RecById = 1 });
             conn.Close();
             return RedirectToAction("CreateLedger");
         }
@@ -47,19 +40,7 @@ public class LedgerController : Controller
         var conn = DapperConnectionProvider.GetConnection();
         var result =
             await conn.QueryAsync(
-                "select c.name, l.ledgername as parentname,ls.code ledgercode, ls.ledgername ledgername, ls.status,username from accounting.ledger l join accounting.ledger ls on l.id = ls.subparentid join accounting.coa c on l.parentid = c.id join users u on u.id = ls.recbyid order by ls.id;");
+                "select l.ledgername, c.name, l.status, username from accounting.ledger l join accounting.coa c on c.id = l.parentid join users u on u.id = l.recbyid;");
         return View(result);
-    }
-
-    public IActionResult GetSubParents(int parentId)
-    {
-        var con = DapperConnectionProvider.GetConnection();
-
-        string sql = @"SELECT Id, LedgerName, code
-                           FROM accounting.ledger  
-                           WHERE ParentId = @ParentId";
-        var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
-
-        return Json(subParents);
     }
 }
