@@ -19,8 +19,8 @@ public class BankController : Controller
         {
             var con = DapperConnectionProvider.GetConnection();
             var newbank =
-                @"INSERT INTO bank.bank (bankname, accountnumber,bankcontactnumber, bankaddress, accountopendate, recstatus,recdate, status)
-    VALUES (@bankname, @accountnumber,@bankcontactnumber, @bankaddress, @accountopendate, @recstatus,@recdate, @status)
+                @"INSERT INTO bank.bank (bankname, accountnumber,bankcontactnumber,remainingbalance, bankaddress, accountopendate, recstatus,recdate, status)
+    VALUES (@bankname, @accountnumber,@bankcontactnumber,@remainingbalance, @bankaddress, @accountopendate, @recstatus,@recdate, @status)
     ON CONFLICT (bankname,accountnumber) DO NOTHING;";
 
             await con.ExecuteAsync(newbank,
@@ -29,6 +29,7 @@ public class BankController : Controller
                     bankname = vm.BankName,
                     accountnumber = vm.AccountNumber,
                     bankcontactnumber = vm.BankContact,
+                    remainingbalance = 0,
                     bankaddress = vm.BankAddress,
                     accountopendate = vm.AccountOpenDate,
                     recstatus = vm.RecStatus,
@@ -50,7 +51,7 @@ public class BankController : Controller
     public async Task<IActionResult> BankReport()
     {
         var con = DapperConnectionProvider.GetConnection();
-        var bank =@"SELECT * FROM bank.bank";
+        var bank = @"SELECT * FROM bank.bank";
         var sql = await con.QueryAsync(bank);
         return View(sql);
     }

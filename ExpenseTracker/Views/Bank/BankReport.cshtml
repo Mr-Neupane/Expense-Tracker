@@ -8,7 +8,8 @@
         <th>SN</th>
         <th>Bank Name</th>
         <th>Account Number</th>
-        <th>Bank Contact Number</th>
+        <th>Account Number</th>
+        <th>Remaining Balance</th>
         <th>Account Open Date</th>
         <th>Bank Address</th>
         <th>Status</th>
@@ -26,6 +27,7 @@
             <td>@sn</td>
             <td>@item.bankname</td>
             <td>@item.accountnumber</td>
+            <td>@item.remainingbalance</td>
             <td>@item.bankcontactnumber</td>
             <td> @{
                     DateTime? openDate = item.accountopendate as DateTime?;
