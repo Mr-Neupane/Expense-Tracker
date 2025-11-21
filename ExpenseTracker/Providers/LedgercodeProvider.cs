@@ -24,7 +24,7 @@ public class LedgerCode : Controller
 
       var ledgercode=  await con.QueryFirstAsync<string>(code, new
       {
-          subparentid =vm.SubParentId
+          subparentid =vm.ParentId
       });
         return ledgercode;
     }

@@ -23,7 +23,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
+      <Folder Include="Pages\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update=".gitignore">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
