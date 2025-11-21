@@ -66,6 +66,35 @@ CONSTRAINT fk_bankid FOREIGN KEY (bankid) REFERENCES bank.bank(id)
 
         await conn.ExecuteAsync(banktransaction);
 
+        var acctransactions = @"create table if not exists accounting.transactions
+(
+    id        serial primary key,
+    txndate   date        not null,
+    amount    decimal     not null,
+    type      varchar(50) not null,
+    typeid    int         not null,
+    remarks   varchar(100),
+    recstatus char(1) default 'A',
+    status    int     default 1,
+    recbyid   int,
+    constraint fk_recbyid foreign key (recbyid) references users (id)
+);";
+        await conn.ExecuteAsync(acctransactions);
+
+        var acctxndtl = @"create table if not exists accounting.transactiondetails
+(
+    id            serial primary key,
+    transactionid int     not null,
+    dramount      decimal not null,
+    cramount      decimal not null,
+    drcr          char    not null,
+    recstatus     char(1) default 'A',
+    status        int     default 1,
+    recbyid       int,
+    constraint fk_transactionid foreign key (transactionid) references accounting.transactions (id)
+) ;";
+        await conn.ExecuteAsync(acctxndtl);
+
         conn.Close();
     }
 }
