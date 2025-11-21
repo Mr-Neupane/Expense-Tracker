@@ -22,10 +22,10 @@ public class LedgerCode : Controller
         var code =
             @"select concat(code, '.', cn) from (select count(1) + 1 cn from accounting.ledger l where subparentid = @subparentid) d cross join lateral ( select code from accounting.ledger a where a.id =@subparentid) c;";
 
-      var res=  await con.QueryFirstAsync<string>(code, new
+      var ledgercode=  await con.QueryFirstAsync<string>(code, new
       {
           subparentid =vm.SubParentId
       });
-        return res;
+        return ledgercode;
     }
 }
