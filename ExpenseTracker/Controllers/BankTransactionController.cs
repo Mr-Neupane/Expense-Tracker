@@ -41,10 +41,10 @@ public class BankTransactionController : Controller
 
                     string txntype = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw";
 
-                    var acctxn =
+                    var accountingTransaction =
                         @"INSERT INTO accounting.transactions ( txndate, amount, type, typeid, remarks, recstatus, recdate, status, recbyid)
-                                   values (@txndate,@amount,@type,@typeid,@remarks,@recstatus,@recdate,@status,@recbyid)";
-                    await con.ExecuteAsync(acctxn, new
+                                   values (@txndate,@amount,@type,@typeid,@remarks,@recstatus,@recdate,@status,@recbyid) returning id";
+                    var acctxnid = await con.QuerySingleAsync<int>(accountingTransaction, new
                     {
                         txndate = vm.TxnDate,
                         amount = vm.Amount,
@@ -55,6 +55,34 @@ public class BankTransactionController : Controller
                         recdate = DateTime.Now,
                         status = vm.Status,
                         recbyid = -1
+                    });
+                    var bankledgerid = @"select ";
+                    var transactionDetail = @"
+INSERT INTO accounting.transactiondetails ( transactionid,ledgerid, dramount, cramount, drcr, recstatus, status, recbyid)
+values (@transactionid,@ledgerid,@dramount,@cramount,@drcr,@recstatus,@status,@recbyid)
+";
+                    await con.ExecuteAsync(transactionDetail, new
+                    {
+                        transactionid = acctxnid,
+                        // ledgerid =,
+                        dramount = vm.Type=="Deposit"?vm.Amount:0,
+                        cramount = vm.Type=="Withdraw"?vm.Amount:0,
+                        drcr = vm.Type=="Deposit"?"D":"C",
+                        recstatus = vm.RecStatus,
+                        status = vm.Status,
+                        recbyid = -1
+                    });
+
+                    await con.ExecuteAsync(transactionDetail, new
+                    {
+                        transactionid = acctxnid,
+                        dramount = vm.Type == "Deposit" ? vm.Amount : 0,
+                        cramount = vm.Type == "Withdraw" ? vm.Amount : 0,
+                        drcr = vm.Type == "Deposit" ? vm.Amount : 0,
+                        recstatus = vm.RecStatus,
+                        status = vm.Status,
+                        recbyid = -1
+
                     });
 
                     await con.ExecuteAsync(@"

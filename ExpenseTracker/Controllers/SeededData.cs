@@ -104,13 +104,15 @@ create table if not exists accounting.transactions
 (
     id            serial primary key,
     transactionid int     not null,
+    ledgerid      int     not null,
     dramount      decimal not null,
     cramount      decimal not null,
     drcr          char    not null,
     recstatus     char(1) default 'A',
     status        int     default 1,
     recbyid       int,
-    constraint fk_transactionid foreign key (transactionid) references accounting.transactions (id)
+    constraint fk_transactionid foreign key (transactionid) references accounting.transactions (id),
+    constraint fk_ledgerid foreign key (ledgerid) references accounting.ledger(id)
 ) ;";
         await conn.ExecuteAsync(acctxndtl);
 
