@@ -1,8 +1,7 @@
 ﻿
 /bin/
 /obj/
-bin/
-obj/
+
 
 *.user
 *.userosscache
