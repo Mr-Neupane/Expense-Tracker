@@ -1,24 +1,6 @@
-﻿# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Dd]ist/
-[Dd]eploy/
-[Dd]eployment/
-bin/
-obj/
-
-# User-specific files
-.idea/
-.vscode/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows Installer Log files
-*.log
+﻿# Ignore build output
+/bin/
+/obj/
 
 # User-specific files
 *.user
@@ -26,38 +8,29 @@ obj/
 *.suo
 *.userprefs
 
-# .NET Core
-project.lock.json
-project.fragment.lock.json
-artifacts/
-
-# ASP.NET Scaffolding
-Scaffolding/
-
-# NPM packages
-node_modules/
-
-# JetBrains Rider
-.idea/
-
-# VS for Mac
-.vscode/
-
-# Visual Studio for Windows
-.vs/
-
-# Windows Installer
+# Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
 
-# Xamarin Studio for macOS
-.vscode/
+# Windows Installer
+Thumbs.db
 
-# .NET Core Global Tool packages
-.dotnet-tools/
+# ASP.NET temporary files
+/.vs/
+/.vs2019/
+/.vs2017/
 
-# Other
-*.dbmdl
-*.bak
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NUGET
+*.nupkg
+*.snupkg
+.nuget/
+
+# ASP.NET Core
+appsettings.json
