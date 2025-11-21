@@ -1,14 +1,16 @@
 ﻿@model System.Collections.Generic.IEnumerable<dynamic>
 
 @{
-    ViewData["Title"] = "Create Ledger";
+    ViewData["Title"] = "Ledger Report";
 }
 
 <table class="table table-striped table-bordered table-hover">
     <thead class="thead-dark">
     <tr>
         <th>SN</th>
+        <th>COA</th>
         <th>Parent Ledger Name</th>
+        <th>Ledger Code</th>
         <th>Ledger Name</th>
         <th>Status</th>
         <th>Created By</th>
@@ -23,6 +25,8 @@
         <tr>
             <td>@sn</td>
             <td>@item.name</td>
+            <td>@item.parentname</td>
+            <td>@item.ledgercode</td>
             <td>@item.ledgername</td>
             <td>@(item.status == 1 ? "Active" : "Inactive")</td>
             <td>@item.username</td>

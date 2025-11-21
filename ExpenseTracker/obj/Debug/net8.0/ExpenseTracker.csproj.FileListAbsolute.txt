@@ -287,3 +287,4 @@ D:\Expense-Tracker\ExpenseTracker\obj\Debug\net8.0\staticwebassets.build.endpoin
 D:\Expense-Tracker\ExpenseTracker\obj\Debug\net8.0\ExpenseT.567C5DF3.Up2Date
 D:\Expense-Tracker\ExpenseTracker\obj\Debug\net8.0\ExpenseTracker.genruntimeconfig.cache
 D:\Expense-Tracker\ExpenseTracker\obj\Debug\net8.0\ref\ExpenseTracker.dll
+F:\Dotnet Practice\TestApplication\ExpenseTracker\obj\Debug\net8.0\ExpenseTracker.sourcelink.json

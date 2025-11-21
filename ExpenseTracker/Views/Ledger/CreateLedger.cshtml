@@ -4,7 +4,6 @@
     ViewData["Title"] = "Create Ledger";
 }
 
-
 <form asp-action="CreateLedger" method="post" class="container mt-4" style="max-width:500px;margin:auto;">
     <div class="card">
         <div class="card-header">
@@ -12,9 +11,10 @@
         </div>
         <div class="card-body">
 
+            <!-- Parent Ledger -->
             <div class="mb-3">
                 <label class="form-label">Select Parent Ledger</label>
-                <select asp-for="ParentId" class="form-select" required>
+                <select id="ParentLedger" asp-for="ParentId" class="form-select" required>
                     <option value="">-- Select Parent Ledger --</option>
                     <option value="1">Asset</option>
                     <option value="2">Liability</option>
@@ -23,14 +23,40 @@
                 </select>
             </div>
 
+            <!-- Sub-Parent Ledger -->
+            <div class="mb-3">
+                <label class="form-label">Select Sub-Parent Ledger</label>
+                <select id="SubParentLedger" asp-for="SubParentId" class="form-select">
+                    <option value="">-- Select Sub-Parent Ledger --</option>
+                </select>
+            </div>
+            
             <div class="mb-3">
                 <label class="form-label">Ledger Name</label>
                 <input asp-for="LedgerName" class="form-control" required placeholder="Enter Ledger Name"/>
             </div>
-
 
             <button type="submit" class="btn btn-primary">Save Ledger</button>
 
         </div>
     </div>
 </form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $("#ParentLedger").change(function () {
+        let parentId = $(this).val();
+
+        $("#SubParentLedger").empty().append('<option value="">Loading...</option>');
+
+        $.get("/Ledger/GetSubParents", {parentId: parentId}, function (data) {
+            $("#SubParentLedger").empty().append('<option value="">-- Select Sub-Parent Ledger --</option>');
+
+            $.each(data, function (i, item) {
+                $("#SubParentLedger").append(`<option value="${item.id}">${item.ledgername}</option>`);
+            });
+        });
+    });
+
+</script>
