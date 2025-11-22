@@ -1,5 +1,6 @@
 ﻿@model ExpenseTracker.ViewModels.BankTransactionVm;
 
+
 @{
     ViewData["Title"] = "Bank Transaction";
 }
@@ -90,4 +91,18 @@
         });
     </script>
 }
+
+@if (TempData["AlertMessage"] != null)
+{
+    <script>
+        alert("@TempData["AlertMessage"]");
+    </script>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        alert("@TempData["SuccessMessage"]");
+    </script>
+}
+
 
