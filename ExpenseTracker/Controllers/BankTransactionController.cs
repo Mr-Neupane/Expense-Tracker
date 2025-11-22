@@ -57,7 +57,8 @@ public class BankTransactionController : Controller
                         vm.Remarks);
                     await txn.CommitAsync();
                     await BankRemainingBalanceManager(vm.BankId);
-                    TempData["SuccessMessage"]="Bank "+ vm.Type.ToLower() +" completed with amount Rs. " + vm.Amount;
+                    TempData["SuccessMessage"] =
+                        "Bank " + vm.Type.ToLower() + " completed with amount Rs. " + vm.Amount;
                     return RedirectToAction("BankDepositandWithdraw");
                 }
                 catch (Exception e)
@@ -86,7 +87,7 @@ public class BankTransactionController : Controller
     [HttpGet]
     public async Task<IActionResult> ReverseBankTransaction(int id, string type, int bankId)
     {
-        using (NpgsqlConnection conn = DapperConnectionProvider.GetConnection())
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
             using (var txn = conn.BeginTransaction())
             {
@@ -107,7 +108,7 @@ public class BankTransactionController : Controller
                     await txn.CommitAsync();
                     await BankRemainingBalanceManager(bankId);
                     await conn.CloseAsync();
-                    
+
 
                     return RedirectToAction("BankTransactionReport");
                 }

@@ -11,7 +11,7 @@ public class VoucherController : Controller
         string type, int typeid, int fromledgerid,
         string remarks)
     {
-        using (NpgsqlConnection conn = DapperConnectionProvider.GetConnection())
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
             using (var txn = conn.BeginTransaction())
             {
