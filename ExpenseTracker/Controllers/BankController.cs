@@ -29,7 +29,7 @@ public class BankController : Controller
 VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @code) on conflict (ledgername) DO NOTHING returning id;";
 
                     int? parentid = null;
-                    var lid = await con.QueryFirstAsync<int>(bankledger, new
+                    int lid = await con.QueryFirstAsync<int>(bankledger, new
                     {
                         parentid,
                         ledgername = vm.BankName,
@@ -67,6 +67,7 @@ VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @co
                 }
                 catch (Exception e)
                 {
+                    await txn.RollbackAsync();
                     Console.WriteLine(e);
                     throw;
                 }
