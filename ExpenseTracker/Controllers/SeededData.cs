@@ -47,8 +47,19 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
                     await conn.ExecuteAsync(cOAIns);
 
                     var tablecreation = @"
-                                    CREATE TABLE IF NOT EXISTS accounting.ledger (
-                            ID SERIAL PRIMARY KEY, ParentId int, LedgerName VARCHAR(100) Unique, RecStatus char ,Status int,RecById int ) 
+                                 CREATE TABLE IF NOT EXISTS accounting.ledger
+(
+    ID         SERIAL PRIMARY KEY,
+    ParentId   int,
+    ledgername VARCHAR(100),
+    RecStatus  char,
+    Status     int,
+    RecById    int,
+    code varchar(10) not null ,
+    subparentid int  ,
+    
+    unique (ledgername, code)
+) 
                             ";
                     await conn.ExecuteAsync(tablecreation);
 
@@ -73,11 +84,6 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
 ) ";
                     await conn.ExecuteAsync(BankQuery);
 
-                    var ledgeralter = @" alter table accounting.ledger add column if not exists subparentid int;";
-                    await conn.ExecuteAsync(ledgeralter);
-                    var alter =
-                        @" ALTER TABLE accounting.ledger ADD COLUMN if not exists code VARCHAR(50) NOT NULL UNIQUE;";
-                    await conn.ExecuteAsync(alter);
 
                     var banktransaction = @"create table if not exists bank.banktransactions
 (

@@ -1,6 +1,8 @@
-﻿namespace ExpenseTracker.ViewModels;
+﻿using TestApplication.ViewModels;
 
-public class BankTransactionVm
+namespace ExpenseTracker.ViewModels;
+
+public class BankTransactionVm: BaseVm
 {
   public int BankId { get; set; }
   public string BankName { get; set; }
@@ -9,6 +11,4 @@ public class BankTransactionVm
   public string Remarks { get; set; }
   public string Type { get; set; }
 
-  public char RecStatus { get; set; } = 'A';
-  public int Status { get; set; } = 1;
 }

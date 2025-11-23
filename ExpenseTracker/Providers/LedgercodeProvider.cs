@@ -17,7 +17,7 @@ public class LedgerCode : Controller
         return finalcode;
     }
 
-    public static async Task<string> GetLedgerCode(LedgerVm vm)
+    public static async Task<string> GetLedgerCode(int subparentid)
     {
         var con = DapperConnectionProvider.GetConnection();
         var code =
@@ -25,7 +25,7 @@ public class LedgerCode : Controller
 
         var ledgercode = await con.QueryFirstAsync<string>(code, new
         {
-            subparentid = vm.SubParentId
+            subparentid =subparentid
         });
         return ledgercode;
     }

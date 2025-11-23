@@ -3,6 +3,7 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Providers;
 using Npgsql;
+using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
@@ -23,23 +24,16 @@ public class BankController : Controller
             {
                 try
                 {
-                    var bankcode = await LedgerCode.GetBankLedgercode();
-                    var bankledger =
-                        @"INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, subparentid, code)
-VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @code) on conflict (ledgername) DO NOTHING returning id;";
+                    int subparentId = -1;
 
-                    int? parentid = null;
-                    int lid = await con.QueryFirstAsync<int>(bankledger, new
+
+                    int lid = await LedgerController.CreateLedger(new LedgerVm
                     {
-                        parentid,
-                        ledgername = vm.BankName,
-                        recstatus = vm.RecStatus,
-                        status = vm.Status,
-                        recbyid = 1,
-                        subparentid = -2,
-                        code = bankcode
+                        Id = vm.Id,
+                        SubParentId = subparentId,
+                        ParentId = 0,
+                        LedgerName = vm.BankName
                     });
-
                     var newbank =
                         @"INSERT INTO bank.bank ( bankname, accountnumber, bankcontactnumber, ledgerid,remainingbalance, bankaddress, accountopendate,
                        recstatus, recdate, status, recbyid)
