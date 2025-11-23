@@ -24,7 +24,7 @@ public class BankController : Controller
             {
                 try
                 {
-                    int subparentId = -1;
+                    int subparentId = -2;
 
 
                     int lid = await LedgerController.CreateLedger(new LedgerVm

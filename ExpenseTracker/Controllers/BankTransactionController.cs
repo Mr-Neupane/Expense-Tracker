@@ -173,6 +173,6 @@ update bank.bank b
 set remainingbalance = amount
 from bankd bd
 where bd.bankid = b.id;
-", new { bankid = bankid });
+", new {  bankid });
     }
 }
