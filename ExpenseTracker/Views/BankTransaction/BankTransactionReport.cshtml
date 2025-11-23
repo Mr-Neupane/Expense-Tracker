@@ -29,9 +29,24 @@
             <td>@item.amount</td>
             <td>@item.type</td>
             <td>@item.username</td>
-            <th><a asp-action="ReverseBankTransaction" asp-route-id="@item.id" asp-route-type="@item.type" asp-route-bankid="@item.bankid" class="btn btn-danger">Reverse</a></th>
+            <th><a asp-action="ReverseBankTransaction" asp-route-id="@item.id" asp-route-type="@item.type"
+                   asp-route-bankid="@item.bankid" asp-route-amount="@item.amount" class="btn btn-danger">Reverse</a></th>
         </tr>
         sn++;
     }
     </tbody>
 </table>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["AlertMessage"]
+    </div>
+}

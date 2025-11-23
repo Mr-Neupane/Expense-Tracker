@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using ExpenseTracker.Providers;
+using Npgsql;
 
 namespace ExpenseTracker.Controllers;
 
