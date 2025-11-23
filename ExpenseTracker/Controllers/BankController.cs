@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using ExpenseTracker.Providers;
+using Npgsql;
 
 namespace ExpenseTracker.Controllers;
 
@@ -15,7 +17,7 @@ public class BankController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateBank(BankVm vm)
     {
-        try
+        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
             using (var txn = con.BeginTransaction())
             {
@@ -27,7 +29,7 @@ public class BankController : Controller
 VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @code) on conflict (ledgername) DO NOTHING returning id;";
 
                     int? parentid = null;
-                var lid =    await con.QueryFirstAsync<int>(bankledger, new
+                    var lid = await con.QueryFirstAsync<int>(bankledger, new
                     {
                         parentid,
                         ledgername = vm.BankName,
@@ -37,7 +39,7 @@ VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @co
                         subparentid = -2,
                         code = bankcode
                     });
-                    
+
                     var newbank =
                         @"INSERT INTO bank.bank ( bankname, accountnumber, bankcontactnumber, ledgerid,remainingbalance, bankaddress, accountopendate,
                        recstatus, recdate, status, recbyid)
@@ -50,8 +52,8 @@ VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @co
                             bankname = vm.BankName,
                             accountnumber = vm.AccountNumber,
                             bankcontactnumber = vm.BankContact,
-                            ledgerid=lid,
-                            remainingbalance=0,
+                            ledgerid = lid,
+                            remainingbalance = 0,
                             bankaddress = vm.BankAddress,
                             accountopendate = vm.AccountOpenDate,
                             recstatus = vm.RecStatus,
@@ -65,24 +67,10 @@ VALUES (@parentid, @ledgername, @recstatus, @status, @recbyid, @subparentid, @co
                 }
                 catch (Exception e)
                 {
-                    bankname = vm.BankName,
-                    accountnumber = vm.AccountNumber,
-                    bankcontactnumber = vm.BankContact,
-                    remainingbalance = 0,
-                    bankaddress = vm.BankAddress,
-                    accountopendate = vm.AccountOpenDate,
-                    recstatus = vm.RecStatus,
-                    recdate = DateTime.Now,
-                    status = vm.Status,
-                });
-            con.Close();
-
-            return RedirectToAction("CreateBank");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
         }
     }
 

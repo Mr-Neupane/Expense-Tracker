@@ -3,7 +3,7 @@ using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using TestApplication.ViewModels;
+using ExpenseTracker.Providers;
 
 namespace ExpenseTracker.Controllers;
 
@@ -28,11 +28,12 @@ public class BankTransactionController : Controller
                     var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
                     if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
                     {
-                        
-                        TempData["AlertMessage"]="Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance+ ".";
+                        TempData["AlertMessage"] =
+                            "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
+                            ".";
                         return RedirectToAction("BankDepositandWithdraw");
-                        
                     }
+
                     var banktran =
                         @"INSERT INTO bank.banktransactions ( bankid, txndate, amount,type, remarks, recdate,recbyid, recstatus, status)
                                     values (@bankid,@txndate,@amount,@type,@remarks,@recdate,@recbyid,@recstatus,@status) returning id";
@@ -85,12 +86,20 @@ public class BankTransactionController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReverseBankTransaction(int id, string type, int bankId)
+    public async Task<IActionResult> ReverseBankTransaction(int id, string type, int bankId, decimal amount)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
             using (var txn = conn.BeginTransaction())
             {
+                var bankbalance = await BalanceProvider.GetLedgerBalance(bankId);
+                if (type == "Deposit" && amount > bankbalance)
+                {
+                    TempData["AlertMessage"] = "Can not perform reverse. Insufficient bank balance";
+                    // TempData.Keep("AlertMessage");
+                  return RedirectToAction("BankTransactionReport");
+                }
+
                 try
                 {
                     string revtype = type == "Deposit" ? "Bank Deposit" : "Bank Withdraw";
@@ -110,6 +119,8 @@ public class BankTransactionController : Controller
                     await conn.CloseAsync();
 
 
+                    TempData["SuccessMessage"] = "Bank " + type.ToLower() + " reverse transaction completed";
+                    // TempData.Keep("SuccessMessage");
                     return RedirectToAction("BankTransactionReport");
                 }
                 catch (Exception e)

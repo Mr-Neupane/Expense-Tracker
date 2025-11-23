@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
+using ExpenseTracker.Providers;
 
 namespace ExpenseTracker.Controllers;
 
@@ -13,11 +14,13 @@ public class LedgerController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLedger(LedgerVm l)
+    public async Task<IActionResult> CreateLedger(LedgerVm vm)
     {
         try
         {
             var conn = DapperConnectionProvider.GetConnection();
+
+            var ledgercode = await LedgerCode.GetBankLedgercode();
 
             var newLedger = @"
                                  Insert into accounting.Ledger (ParentId, LedgerName, RecStatus, Status,RecById) 
