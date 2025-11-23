@@ -97,7 +97,7 @@ public class BankTransactionController : Controller
                 {
                     TempData["AlertMessage"] = "Can not perform reverse. Insufficient bank balance";
                     // TempData.Keep("AlertMessage");
-                  return RedirectToAction("BankTransactionReport");
+                    return RedirectToAction("BankTransactionReport");
                 }
 
                 try
