@@ -15,7 +15,7 @@ public class LedgerController : Controller
     }
 
     [HttpPost]
-    public static async Task<int> CreateLedger(LedgerVm vm)
+    public async Task<IActionResult> CreateLedger(LedgerVm vm)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
@@ -23,23 +23,8 @@ public class LedgerController : Controller
             {
                 try
                 {
-                    var ledgercode = await LedgerCode.GetLedgerCode(vm.SubParentId);
-
-                    var newLedger = @"
-                                INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-                                 values (@parentId, @ledgerName, @recStatus, @status, @recById, @code, @subparentid)
-                              ON CONFLICT (ledgername, code) DO NOTHING returning id; ";
-                    int? parentid = null;
-                    var ledgerid = await conn.QueryFirstAsync<int>(newLedger,
-                        new
-                        {
-                            parentid = parentid, Ledgername = vm.LedgerName, recstatus = vm.RecStatus,
-                            status = vm.Status,
-                            RecById = -1, subparentid = vm.SubParentId, code = ledgercode
-                        });
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                    return ledgerid;
+                    await NewLedger(vm);
+                    return RedirectToAction("LedgerReport");
                 }
                 catch (Exception e)
                 {
@@ -124,8 +109,9 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
     public async Task<IActionResult> ParentLedgerReport()
     {
         var conn = DapperConnectionProvider.GetConnection();
-        var result = @"select l.*,c.name,username from accounting.ledger l join accounting.coa c on c.id = l.parentid join users u on u.id = l.recbyid order by l.parentid";
-        var res =await conn.QueryAsync(result);
+        var result =
+            @"select l.*,c.name,username from accounting.ledger l join accounting.coa c on c.id = l.parentid join users u on u.id = l.recbyid order by l.parentid";
+        var res = await conn.QueryAsync(result);
         return View(res);
     }
 
@@ -139,5 +125,42 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
         var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
 
         return Json(subParents);
+    }
+
+    public static async Task<int> NewLedger(LedgerVm vm)
+    {
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        {
+            using (var txn = conn.BeginTransaction())
+            {
+                try
+                {
+                    var ledgercode = await LedgerCode.GetLedgerCode(vm.SubParentId);
+
+                    var newLedger = @"
+                                INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, code, subparentid)
+                                 values (@parentId, @ledgerName, @recStatus, @status, @recById, @code, @subparentid)
+                              ON CONFLICT (ledgername, code) DO NOTHING returning id; ";
+                    int? parentid = null;
+                    var ledgerid = await conn.QueryFirstAsync<int>(newLedger,
+                        new
+                        {
+                            parentid = parentid, Ledgername = vm.LedgerName, recstatus = vm.RecStatus,
+                            status = vm.Status,
+                            RecById = -1, subparentid = vm.SubParentId, code = ledgercode
+                        });
+                    await txn.CommitAsync();
+                    await conn.CloseAsync();
+                    return ledgerid;
+                }
+                catch (Exception e)
+                {
+                    await txn.RollbackAsync();
+                    await conn.CloseAsync();
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+        }
     }
 }

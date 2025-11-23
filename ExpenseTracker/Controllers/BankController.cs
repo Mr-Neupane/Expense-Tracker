@@ -27,7 +27,7 @@ public class BankController : Controller
                     int subparentId = -2;
 
 
-                    int lid = await LedgerController.CreateLedger(new LedgerVm
+                    int lid = await LedgerController.NewLedger(new LedgerVm
                     {
                         Id = vm.Id,
                         SubParentId = subparentId,

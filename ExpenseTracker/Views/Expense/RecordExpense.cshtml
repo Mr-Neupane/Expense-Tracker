@@ -1,0 +1,68 @@
+﻿@model TestApplication.ViewModels.ExpenseVm;
+
+
+
+<form asp-action="RecordExpense" method="post" id="expenseForm" class="container mt-4" style="max-width:500px;margin:auto;">
+
+    <div class="card">
+        <div class="card-header">
+            <h6>Add Expense</h6>
+        </div>
+        <div class="card-body">
+
+
+            <div class="mb-3">
+                <label class="form-label">Expense Ledger</label>
+                <select id="ExpenseLedger" asp-for="ExpenseLedger" class="form-select">
+                    <option value="">-- Select Expense Ledger --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Amount" class="form-label">Amount</label>
+                <input type="number" name="Amount" class="form-control" required/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Expense Leder</label>
+                <select id="ExpenseFromLedger" asp-for="ExpenseFromLedger" class="form-select">
+                    <option value="">-- Select Cash/Bank Ledger --</option>
+                </select>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Record</button>
+            <button type="" formmethod="get" asp-action="RecordExpense" class="btn btn-danger">Discard</button>
+        </div>
+    </div>
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '/Expense/GetExpenseLedgers',
+                type: 'GET',
+                success: function (data) {
+                    fillDropdown('#ExpenseLedger', data);
+                }
+            });
+
+            $.ajax({
+                url: '/Expense/GetCashBankLedgers',
+                type: 'GET',
+                success: function (data) {
+                    fillDropdown('#ExpenseFromLedger', data);
+                }
+            });
+
+            function fillDropdown(selector, data) {
+                $.each(data, function (i, item) {
+                    $(selector).append(
+                        $('<option>', {value: item.Id, text: item.ledgername})
+                    );
+                });
+            }
+        });
+    </script>
+}
