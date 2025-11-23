@@ -57,8 +57,9 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
     RecById    int,
     code varchar(10) not null ,
     subparentid int  ,
-    
-    unique (ledgername, code)
+    unique (ledgername, code),
+    CONSTRAINT fk_parentid foreign key (ParentId) references accounting.coa (id),
+    CONSTRAINT fk_recbyid foreign key (RecById) references users (id)
 ) 
                             ";
                     await conn.ExecuteAsync(tablecreation);
@@ -140,15 +141,15 @@ create table if not exists accounting.transactions
 ) ;";
                     await conn.ExecuteAsync(acctxndtl);
                     var defaultledger = @"
-DO $$
+DO
+$$
     DECLARE
         v_exists BOOLEAN;
     BEGIN
-        SELECT EXISTS (
-            SELECT 1
-            FROM accounting.ledger
-            WHERE id  IN (-1, -2, -3)
-        ) INTO v_exists;
+        SELECT EXISTS (SELECT 1
+                       FROM accounting.ledger
+                       WHERE id IN (-1, -2, -3, -4, -5, -6, -7, -8, -9))
+        INTO v_exists;
 
         IF v_exists THEN
             RAISE NOTICE 'Data already exists. No insert performed.';
@@ -158,30 +159,43 @@ DO $$
         WITH parentIns AS (
             INSERT INTO accounting.ledger
                 (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-                VALUES
-                    (-1, 1, 'Cash Account', 'A', 1, -1, '80', NULL)
-                RETURNING id AS cid
-        ), OtherParent AS (
-            INSERT INTO accounting.ledger
-                (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-                VALUES
-                    (-2, 1, 'Bank Account', 'A', 1, -1, '90', NULL)
-        )
-        INSERT INTO accounting.ledger
+                VALUES (-1, 1, 'Cash Account', 'A', 1, -1, '80', NULL)
+                RETURNING id AS cid),
+             BankParent AS (
+                 INSERT INTO accounting.ledger
+                     (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
+                     VALUES (-2, 1, 'Bank Account', 'A', 1, -1, '90', NULL)),
+             LiabilityParent as (
+                 INSERT INTO accounting.ledger
+                     (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
+                     VALUES (-4, 2, 'Current Liabilities', 'A', 1, -1, '60', NULL),
+                            (-5, 2, 'Other Liabilities', 'A', 1, -1, '70', NULL)),
+             IncomeParent as (
+                 INSERT INTO accounting.ledger
+                     (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
+                     VALUES (-6, 3, 'Other Income', 'A', 1, -1, '160.1', NULL),
+                            (-7, 3, 'Investment Interest', 'A', 1, -1, '160.2', NULL)),
+             ExpenseParent as (
+                 INSERT INTO accounting.ledger
+                     (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
+                     VALUES (-8, 4, 'Other Expenses', 'A', 1, -1, '150.1', NULL),
+                            (-9, 4, 'Interest Expenses', 'A', 1, -1, '150.2', NULL))
+        INSERT
+        INTO accounting.ledger
         (id, parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-        SELECT
-            -3,
-            NULL,
-            'Cash',
-            'A',
-            1,
-            -1,
-            '80.1',
-            cid
+        SELECT -3,
+               NULL,
+               'Cash',
+               'A',
+               1,
+               -1,
+               '80.1',
+               cid
         FROM parentIns;
 
         RAISE NOTICE 'Inserts completed successfully.';
-    END $$;
+    END
+$$;
 ";
                     await conn.ExecuteAsync(defaultledger);
                     await txn.CommitAsync();
