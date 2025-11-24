@@ -8,7 +8,7 @@ namespace ExpenseTracker.Controllers;
 public class VoucherController : Controller
 {
     public static async Task<int> RecordAccountingTransaction(DateTime txndate, decimal dramount, decimal cramount,
-        string type, int typeid, int fromledgerid,int toledgerid,
+        string type, int typeid, int fromledgerid, int toledgerid,
         string remarks)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
@@ -77,5 +77,39 @@ public class VoucherController : Controller
                 }
             }
         }
+    }
+
+    public async Task<IActionResult> VoucherDetail(int transactionid)
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"
+select ledgername,
+       txndate,voucherno,
+       dramount,
+       cramount,
+       drcr,
+       username,t.id,
+       t.type,
+       t.typeid,
+       remarks,
+       code
+from accounting.transactions t
+         join accounting.transactiondetails td on t.id = td.transactionid
+         join accounting.ledger l on l.id = ledgerid
+         join users u on u.id = t.recbyid
+where t.status = 1
+  and td.status = 1
+  and t.id = @transactionid";
+        var report = await conn.QueryAsync(query, new { transactionid });
+        return View(report.ToList());
+    }
+
+    public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
+    {
+        if (type == "Expense")
+        {
+            await ExpenseController.ReverseExpense(typeid, transactionid);
+        }
+        return RedirectToAction("VoucherDetail");
     }
 }
