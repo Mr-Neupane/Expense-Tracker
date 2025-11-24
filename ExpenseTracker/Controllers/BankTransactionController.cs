@@ -138,19 +138,6 @@ public class BankTransactionController : Controller
         }
     }
 
-    [HttpGet]
-    public JsonResult GetBanks()
-    {
-        var dbConnection = DapperConnectionProvider.GetConnection();
-        string query = "SELECT id, bankname FROM bank.bank";
-        var banks = dbConnection.Query(query).Select(b => new
-        {
-            Id = b.id,
-            bankname = b.bankname
-        }).ToList();
-        return Json(banks);
-    }
-
     [HttpPost]
     public static async Task BankRemainingBalanceManager(int bankid)
     {

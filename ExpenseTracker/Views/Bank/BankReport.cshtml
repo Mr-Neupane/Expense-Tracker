@@ -44,7 +44,7 @@
                 @{
                     DateTime? openDate = item.accountopendate as DateTime?;
                 }
-                @(openDate.HasValue ? openDate.Value.ToString("yyyy/MM/dd") : "-")
+                @(openDate.HasValue ? openDate.Value.ToString("yyyy-MM-dd") : "-")
             </td>
 
             <td>@item.bankaddress</td>

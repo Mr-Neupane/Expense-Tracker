@@ -2,14 +2,19 @@
 
 
 
-<form asp-action="RecordExpense" method="post" id="expenseForm" class="container mt-4" style="max-width:500px;margin:auto;">
+<form asp-action="RecordExpense" method="post" id="expenseForm" class="container mt-4"
+      style="max-width:500px;margin:auto;">
 
     <div class="card">
         <div class="card-header">
             <h6>Add Expense</h6>
         </div>
         <div class="card-body">
-
+            <div class="mb-3">
+                <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
+                <input asp-for="TxnDate" class="form-control" data-date-mask type="text" value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                <span asp-validation-for="TxnDate" class="text-danger"></span>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label">Expense Ledger <span class="text-danger">*</span></label>
@@ -27,7 +32,7 @@
                     <option value="">-- Select Cash/Bank Ledger --</option>
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label asp-for="Remarks" class="form-label">Remarks <span class="text-danger">*</span> </label>
                 <input type="text" name="Remarks" class="form-control" required/>
@@ -46,7 +51,7 @@
         $(document).ready(function () {
 
             $.ajax({
-                url: '/Expense/GetExpenseLedgers',
+                url: '/DropdownProvider/GetExpenseLedgers',
                 type: 'GET',
                 success: function (data) {
                     fillDropdown('#ExpenseLedger', data);
@@ -54,7 +59,7 @@
             });
 
             $.ajax({
-                url: '/Expense/GetCashBankLedgers',
+                url: '/DropdownProvider/GetCashBankLedgers',
                 type: 'GET',
                 success: function (data) {
                     fillDropdown('#ExpenseFromLedger', data);

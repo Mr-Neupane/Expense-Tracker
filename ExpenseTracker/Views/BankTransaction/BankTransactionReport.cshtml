@@ -35,7 +35,7 @@
                 @{
                     DateTime? txnDate = item.txndate as DateTime?;
                 }
-                @(txnDate.HasValue ? txnDate.Value.ToString("yyyy/MM/dd") : "-")
+                @(txnDate.HasValue ? txnDate.Value.ToString("yyyy-MM-dd") : "-")
             </td>
 
             <td class="text-right">@String.Format("{0:N2}", item.amount)</td>

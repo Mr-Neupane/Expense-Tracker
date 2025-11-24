@@ -14,7 +14,7 @@
         <div class="card-body">
 
             <div class="mb-3">
-                <label asp-for="BankId"></label>
+                <label asp-for="BankId">Bank Name<span class="text-danger">*</span></label>
                 <select asp-for="BankId" id="BankName" class="form-control" required="required">
                     <option value="">Select a Bank</option>
                 </select>
@@ -22,13 +22,18 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="TxnDate"></label>
-                <input asp-for="TxnDate" class="form-control" type="date" id="TxnDate"/>
+                <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
+                <input asp-for="TxnDate"
+                       class="form-control"
+                       type="text"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                       data-date-mask
+                       maxlength="10"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Type"></label>
+                <label asp-for="Type">Transaction Type <span class="text-danger">*</span></label>
                 <select asp-for="Type" class="form-control" required="required">
                     <option value="">Select Transaction Type</option>
                     <option value="Deposit">Deposit</option>
@@ -38,7 +43,7 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="Amount"></label>
+                <label asp-for="Amount">Amount <span class="text-danger">*</span></label>
                 <input asp-for="Amount" class="form-control" type="number" step="0.01" placeholder=""
                        required="required"/>
                 <span asp-validation-for="Amount" class="text-danger"></span>
@@ -54,28 +59,16 @@
         </div>
     </div>
 </form>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 @section Scripts {
-    <script>
-       
-        document.addEventListener('DOMContentLoaded', function () {
-            var today = new Date();
-            var yyyy = today.getFullYear();
-            var mm = today.getMonth() + 1;
-            var dd = today.getDate();
 
-            if (mm < 10) mm = '0' + mm; 
-            if (dd < 10) dd = '0' + dd; 
-
-            var formattedDate = yyyy + '-' + mm + '-' + dd;
-            document.getElementById('TxnDate').value = formattedDate;
-        });
-    </script>
-    
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: '@Url.Action("GetBanks", "BankTransaction")', 
+                url: '@Url.Action("GetBanks", "DropdownProvider")',
                 type: 'GET',
                 success: function (data) {
                     $('#BankName').empty();
