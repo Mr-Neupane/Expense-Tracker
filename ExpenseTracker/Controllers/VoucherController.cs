@@ -8,7 +8,7 @@ namespace ExpenseTracker.Controllers;
 public class VoucherController : Controller
 {
     public static async Task<int> RecordAccountingTransaction(DateTime txndate, decimal dramount, decimal cramount,
-        string type, int typeid, int fromledgerid,
+        string type, int typeid, int fromledgerid,int toledgerid,
         string remarks)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
@@ -57,7 +57,7 @@ public class VoucherController : Controller
                     await conn.ExecuteAsync(detailquery2, new
                     {
                         transactionid = ins,
-                        ledgerid = -3,
+                        ledgerid = toledgerid,
                         dramount = cramount,
                         cramount = dramount,
                         drcr = dramount != 0 ? 'C' : 'D',

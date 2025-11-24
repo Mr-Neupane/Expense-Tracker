@@ -198,6 +198,23 @@ $$
 $$;
 ";
                     await conn.ExecuteAsync(defaultledger);
+
+                    var expennsetable = @"
+create table if not exists accounting.expenses
+(
+    id         serial primary key ,
+    ledger_id  int       not null,
+    dr_amount  decimal   not null,
+    cr_amount  decimal   not null,
+    txn_date   date      not null,
+    rec_status char(1)   not null default 'A',
+    status     int       not null default 1,
+    rec_date   timestamp not null default now(),
+    rec_by_id  int       not null,
+    constraint fk_ledger_id foreign key (ledger_id) references accounting.ledger (id),
+    constraint fk_rec_by_id foreign key (rec_by_id) references users (id)
+) ;";
+                    await conn.ExecuteAsync(expennsetable);
                     await txn.CommitAsync();
                 }
                 catch (Exception e)

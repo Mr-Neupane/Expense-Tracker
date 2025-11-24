@@ -12,20 +12,25 @@
 
 
             <div class="mb-3">
-                <label class="form-label">Expense Ledger</label>
-                <select id="ExpenseLedger" asp-for="ExpenseLedger" class="form-select">
+                <label class="form-label">Expense Ledger <span class="text-danger">*</span></label>
+                <select id="ExpenseLedger" asp-for="ExpenseLedger" class="form-select" required="required">
                     <option value="">-- Select Expense Ledger --</option>
                 </select>
             </div>
             <div class="mb-3">
-                <label asp-for="Amount" class="form-label">Amount</label>
+                <label asp-for="Amount" class="form-label">Amount <span class="text-danger">*</span></label>
                 <input type="number" name="Amount" class="form-control" required/>
             </div>
             <div class="mb-3">
-                <label class="form-label">Expense Leder</label>
-                <select id="ExpenseFromLedger" asp-for="ExpenseFromLedger" class="form-select">
+                <label class="form-label">Expense From Ledger <span class="text-danger">*</span></label>
+                <select id="ExpenseFromLedger" asp-for="ExpenseFromLedger" class="form-select" required="required">
                     <option value="">-- Select Cash/Bank Ledger --</option>
                 </select>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Remarks" class="form-label">Remarks <span class="text-danger">*</span> </label>
+                <input type="text" name="Remarks" class="form-control" required/>
             </div>
 
 
@@ -59,7 +64,7 @@
             function fillDropdown(selector, data) {
                 $.each(data, function (i, item) {
                     $(selector).append(
-                        $('<option>', {value: item.Id, text: item.ledgername})
+                        $('<option>', {value: item.id, text: item.ledgername})
                     );
                 });
             }

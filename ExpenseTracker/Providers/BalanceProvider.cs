@@ -5,13 +5,9 @@ namespace ExpenseTracker.Providers;
 
 public class BalanceProvider
 {
-    public static async Task<decimal> GetLedgerBalance(int bankid)
+    public static async Task<decimal> GetLedgerBalance(int ledgerid)
     {
         var conn = DapperConnectionProvider.GetConnection();
-        int? ledgerid = await conn.QueryFirstOrDefaultAsync<int?>("select ledgerid from bank.bank where id = @bankid", new
-        {
-            bankid
-        });
         var closingbalance = @"With LiabandIncome as (select sum(cramount) - sum(dramount) RemBalance, t.ledgerid
                        from accounting.coa c
                                 join accounting.ledger l on l.parentid = c.id

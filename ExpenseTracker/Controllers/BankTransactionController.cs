@@ -54,7 +54,7 @@ public class BankTransactionController : Controller
                     decimal dramount = vm.Type == "Deposit" ? vm.Amount : 0;
                     decimal cramount = vm.Type == "Withdraw" ? vm.Amount : 0;
                     await VoucherController.RecordAccountingTransaction(vm.TxnDate, dramount, cramount, txntype,
-                        banktxnid, frombankledgerid,
+                        banktxnid, frombankledgerid, -3,
                         vm.Remarks);
                     await txn.CommitAsync();
                     await BankRemainingBalanceManager(vm.BankId);
@@ -92,7 +92,12 @@ public class BankTransactionController : Controller
         {
             using (var txn = conn.BeginTransaction())
             {
-                var bankbalance = await BalanceProvider.GetLedgerBalance(bankId);
+                int ledgerid = await conn.QueryFirstOrDefaultAsync<int>(
+                    "select ledgerid from bank.bank where id = @bankid", new
+                    {
+                        bankId
+                    });
+                var bankbalance = await BalanceProvider.GetLedgerBalance(ledgerid);
                 if (type == "Deposit" && amount > bankbalance)
                 {
                     TempData["AlertMessage"] = "Can not perform reverse. Insufficient bank balance";
@@ -173,6 +178,6 @@ update bank.bank b
 set remainingbalance = amount
 from bankd bd
 where bd.bankid = b.id;
-", new {  bankid });
+", new { bankid });
     }
 }
