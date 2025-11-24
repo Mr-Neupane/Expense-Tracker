@@ -1,0 +1,58 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = "Expense Report";
+}
+
+<h2 class="mt-3 mb-4 text-center font-weight-bold">Transaction Report</h2>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="bg-dark text-white text-center">
+    <tr>
+        <th style="width: 50px;">SN</th>
+        <th class="text-right">Amount</th>
+        <th>Date</th>
+        <th>Voucher Number</th>
+        <th>Recorded By</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @{
+        int sn = 1;
+    }
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="text-center">@sn</td>
+
+            <td class="text-right">
+                @String.Format("{0:N2}", item.dr_amount)
+            </td>
+
+            <td>
+                @{
+                    DateTime? dt = item.txn_date as DateTime?;
+                }
+                @(dt.HasValue ? dt.Value.ToString("yyyy-MM-dd") : "-")
+            </td>
+
+            <td>
+                <a asp-controller="Voucher"
+                   asp-action="VoucherDetail"
+                   asp-route-transactionid="@item.transactionid" style="text-decoration: none">
+                    @item.voucherno
+                </a>
+            </td>
+            <td>@item.username</td>
+            <td>
+                @(item.status == 1 ? "Active" : "Inactive")
+            </td>
+        </tr>
+
+        sn++;
+    }
+    </tbody>
+</table>

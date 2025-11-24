@@ -62,4 +62,58 @@ public class ExpenseController : Controller
 
         return View();
     }
+
+    public async Task<IActionResult> ExpenseReport()
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"select e.*, voucherno, username,t.id as transactionid
+from accounting.expenses e
+         join accounting.transactions t on t.typeid = e.id
+         join users u on e.rec_by_id = u.id
+where t.type = 'Expense'
+  and e.status = 1
+  and t.status = 1";
+        var report = await conn.QueryAsync(query);
+        return View(report);
+    }
+
+    public static async Task ReverseExpense(int id, int transactionid)
+    {
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        {
+            using (var txn = conn.BeginTransaction())
+            {
+                try
+                {
+                    var mainupd = @"update accounting.expenses
+                    set status=2
+                    where id = @id;";
+
+                    await conn.ExecuteAsync(mainupd, new { id });
+
+                    var acctran = @"update accounting.transactions
+                    set status=2 where 
+                   id= @transactionid ;";
+
+                    await conn.ExecuteAsync(acctran, new { transactionid });
+
+                    var detail = @"update accounting.transactiondetails
+                    set status=2
+                    where transactionid= @transactionid ;";
+
+                    await conn.ExecuteAsync(detail, new { transactionid });
+
+                    await txn.CommitAsync();
+                    await conn.CloseAsync();
+                }
+                catch (Exception e)
+                {
+                    await txn.RollbackAsync();
+                    await conn.CloseAsync();
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+        }
+    }
 }
