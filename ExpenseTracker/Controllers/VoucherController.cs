@@ -104,12 +104,36 @@ where t.status = 1
         return View(report.ToList());
     }
 
+    public async Task<IActionResult> AccountingTransaction()
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"select t.id,voucherno, txndate, type, username, remarks, amount,status
+from accounting.transactions t
+         cross join lateral (select id
+                             from accounting.transactiondetails t2
+                             where t.id = t2.transactionid
+                               and t2.recstatus = 'A'
+                               and t2.status = 1
+                             limit 1)
+         join users u on u.id = t.recbyid
+where t.status = 1
+  and t.recstatus = 'A';";
+
+        var report = await conn.QueryAsync(query);
+        return View(report.ToList());
+    }
+
     public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
     {
         if (type == "Expense")
         {
             await ExpenseController.ReverseExpense(typeid, transactionid);
         }
-        return RedirectToAction("VoucherDetail");
+        else if (type == "Income")
+        {
+            await IncomeController.ReverseIncome(typeid, transactionid);
+        }
+
+        return RedirectToAction("AccountingTransaction");
     }
 }

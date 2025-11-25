@@ -67,11 +67,14 @@
                             Ledger
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateParentLedger">Add Parent Ledger</a>
+                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateParentLedger">Add
+                                    Parent Ledger</a>
                             </li>
-                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateLedger">Add Ledger</a>
+                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateLedger">Add
+                                    Ledger</a>
                             </li>
-                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="ParentLedgerReport">Parent Ledger List</a></li>
+                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="ParentLedgerReport">Parent
+                                    Ledger List</a></li>
                             <li><a class="dropdown-item" asp-controller="Ledger" asp-action="LedgerReport">Ledger
                                     List</a></li>
                             @* <li> *@
@@ -88,9 +91,13 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <li><a class="dropdown-item" asp-controller="Bank" asp-action="CreateBank">Create Bank</a>
                             </li>
-                            <li><a class="dropdown-item" asp-controller="Bank" asp-action="BankReport">Bank Report</a></li>
-                            <li><a class="dropdown-item" asp-controller="BankTransaction" asp-action="BankDepositandWithdraw">Record Bank Transaction</a>
-                            </li><li><a class="dropdown-item" asp-controller="BankTransaction" asp-action="BankTransactionReport">Bank Transaction Report</a>
+                            <li><a class="dropdown-item" asp-controller="Bank" asp-action="BankReport">Bank Report</a>
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="BankTransaction"
+                                   asp-action="BankDepositandWithdraw">Record Bank Transaction</a>
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="BankTransaction"
+                                   asp-action="BankTransactionReport">Bank Transaction Report</a>
                             </li>
                             @* <li> *@
                             @*     <hr class="dropdown-divider" /> *@
@@ -101,11 +108,34 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Accounts
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" asp-controller="Expense" asp-action="RecordExpense">Record
+                                    Expense</a>
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="Expense" asp-action="ExpenseReport">Expense
+                                    Report</a>
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="Income" asp-action="RecordIncome">Record
+                                    Income</a></li>
+                            <li><a class="dropdown-item" asp-controller="Income" asp-action="IncomeReport">Income
+                                    Report</a></li>
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                            <li><a class="dropdown-item" asp-controller="Voucher" asp-action="AccountingTransaction">Accounting Transaction</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             User
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <li><a class="dropdown-item" asp-controller="User" asp-action="AddUser">Add User</a></li>
-                            <li><a class="dropdown-item" asp-controller="User" asp-action="UserReport">User List</a></li>
+                            <li><a class="dropdown-item" asp-controller="User" asp-action="UserReport">User List</a>
+                            </li>
                             @* <li> *@
                             @*     <hr class="dropdown-divider" /> *@
                             @* </li> *@

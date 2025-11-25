@@ -1,15 +1,16 @@
-﻿@model TestApplication.ViewModels.ExpenseVm;
+﻿@model TestApplication.ViewModels.IncomeVm;
 
 @{
-    ViewData["Title"] = "Record Expense";
+    ViewData["Title"] = "Record Income";
 }
 
-<form asp-action="RecordExpense" method="post" id="expenseForm" class="container mt-4"
+
+<form asp-action="RecordIncome" method="post" id="expenseForm" class="container mt-4"
       style="max-width:500px;margin:auto;">
 
     <div class="card">
         <div class="card-header">
-            <h6>Add Expense</h6>
+            <h6>Add Income</h6>
         </div>
         <div class="card-body">
             <div class="mb-3">
@@ -20,9 +21,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Expense Ledger <span class="text-danger">*</span></label>
-                <select id="ExpenseLedger" asp-for="ExpenseLedger" class="form-select" required="required">
-                    <option value="">-- Select Expense Ledger --</option>
+                <label class="form-label">Income Ledger <span class="text-danger">*</span></label>
+                <select id="IncomeLedger" asp-for="IncomeLedger" class="form-select" required="required">
+                    <option value="">-- Select Income Ledger --</option>
                 </select>
             </div>
             <div class="mb-3">
@@ -30,8 +31,8 @@
                 <input type="number" name="Amount" class="form-control" required/>
             </div>
             <div class="mb-3">
-                <label class="form-label">Expense From Ledger <span class="text-danger">*</span></label>
-                <select id="ExpenseFromLedger" asp-for="ExpenseFromLedger" class="form-select" required="required">
+                <label class="form-label">Cash/Bank<span class="text-danger">*</span></label>
+                <select id="IncomeFrom" asp-for="IncomeFrom" class="form-select" required="required">
                     <option value="">-- Select Cash/Bank Ledger --</option>
                 </select>
             </div>
@@ -43,7 +44,7 @@
 
 
             <button type="submit" class="btn btn-primary">Record</button>
-            <button type="" formmethod="get" asp-action="RecordExpense" class="btn btn-danger">Discard</button>
+            <button type="" formmethod="get" asp-action="RecordIncome" class="btn btn-danger">Discard</button>
         </div>
     </div>
 </form>
@@ -54,10 +55,10 @@
         $(document).ready(function () {
 
             $.ajax({
-                url: '/DropdownProvider/GetExpenseLedgers',
+                url: '/DropdownProvider/GetIncomeLedgers',
                 type: 'GET',
                 success: function (data) {
-                    fillDropdown('#ExpenseLedger', data);
+                    fillDropdown('#IncomeLedger', data);
                 }
             });
 
@@ -65,7 +66,7 @@
                 url: '/DropdownProvider/GetCashBankLedgers',
                 type: 'GET',
                 success: function (data) {
-                    fillDropdown('#ExpenseFromLedger', data);
+                    fillDropdown('#IncomeFrom', data);
                 }
             });
 
@@ -98,4 +99,4 @@
     <div class="alert alert-danger">
         @TempData["ErrorMessage"]
     </div>
-}
+} 

@@ -6,16 +6,15 @@ using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
-public class ExpenseController : Controller
+public class IncomeController : Controller
 {
-    [HttpGet]
-    public IActionResult RecordExpense()
+    public IActionResult RecordIncome()
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> RecordExpense(ExpenseVm vm)
+    public async Task<IActionResult> RecordIncome(IncomeVm vm)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
@@ -23,34 +22,29 @@ public class ExpenseController : Controller
             {
                 try
                 {
-                    decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
-                    if (vm.Amount > frombalance)
-                    {
-                        TempData["AlertMessage"] = "Insufficient balance on selected Ledger";
-                        return RedirectToAction("RecordExpense");
-                    }
-
                     var query =
-                        @"INSERT INTO accounting.expenses ( ledger_id, dr_amount, cr_amount, txn_date, rec_status, status, rec_date, rec_by_id)
-                    values (@ledger_id ,@dr_amount , @cr_amount , @txn_date , @rec_status , @status, @rec_date , @rec_by_id) returning id";
+                        @"INSERT INTO accounting.income ( ledger_id, dr_amount, cr_amount, txn_date, rec_status, status, rec_date, rec_by_id)
+                        values (@ledger_id, @dr_amount, @cr_amount, @txn_date, @rec_status, @status, @rec_date, @rec_by_id) returning id 
+                        ";
 
-                    int expinsid = await conn.QueryFirstAsync<int>(query, new
+                    int incid = await conn.QueryFirstAsync<int>(query, new
                     {
-                        ledger_id = vm.ExpenseFromLedger,
-                        dr_amount = vm.Amount,
-                        cr_amount = 0,
+                        ledger_id = vm.IncomeLedger,
+                        dr_amount = 0,
+                        cr_amount = vm.Amount,
                         txn_date = vm.TxnDate,
                         rec_status = vm.RecStatus,
-                        status = 1,
+                        status = vm.Status,
                         rec_date = DateTime.Now,
                         rec_by_id = -1
                     });
-                    await VoucherController.RecordAccountingTransaction(vm.TxnDate, vm.Amount, 0, vm.Type, expinsid,
-                        vm.ExpenseLedger, vm.ExpenseFromLedger, vm.Remarks);
+
+                    await VoucherController.RecordAccountingTransaction(vm.TxnDate, 0, vm.Amount, vm.Type, incid,
+                        vm.IncomeFrom, vm.IncomeLedger, vm.Remarks);
                     await txn.CommitAsync();
                     await conn.CloseAsync();
-                    TempData["SuccessMessage"] = "Expense record successfully created";
-                    return RedirectToAction("ExpenseReport");
+                    TempData["SuccessMessage"] = "Income record successfully created";
+                    return View("RecordIncome");
                 }
                 catch (Exception e)
                 {
@@ -64,21 +58,20 @@ public class ExpenseController : Controller
         }
     }
 
-    public async Task<IActionResult> ExpenseReport()
+    public async Task<IActionResult> IncomeReport()
     {
         var conn = DapperConnectionProvider.GetConnection();
         var query = @"select e.*, voucherno, username,t.id as transactionid
-from accounting.expenses e
+from accounting.income e
          join accounting.transactions t on t.typeid = e.id
          join users u on e.rec_by_id = u.id
-where t.type = 'Expense'
+where t.type = 'Income'
   and e.status = 1
   and t.status = 1";
         var report = await conn.QueryAsync(query);
-        return View(report);
+        return View(report.ToList());
     }
-
-    public static async Task ReverseExpense(int id, int transactionid)
+    public static async Task ReverseIncome(int id, int transactionid)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
@@ -86,7 +79,7 @@ where t.type = 'Expense'
             {
                 try
                 {
-                    var mainupd = @"update accounting.expenses
+                    var mainupd = @"update accounting.income
                     set status=2
                     where id = @id;";
 

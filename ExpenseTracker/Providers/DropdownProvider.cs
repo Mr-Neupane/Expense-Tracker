@@ -44,4 +44,18 @@ FROM accounting.ledger ls where ls.subparentid in (-1,-2)";
             return Json(list);
         }
     }
+    
+    public JsonResult GetIncomeLedgers()
+    {
+        using (var conn = DapperConnectionProvider.GetConnection())
+        {
+            string sql = @"SELECT ls.ledgername,ls.id 
+FROM accounting.ledger l
+         join accounting.ledger ls on ls.subparentid = l.id
+         join accounting.coa c on l.parentid = c.id where c.name='Income' ";
+
+            var list = conn.Query(sql).ToList();
+            return Json(list);
+        }
+    }
 }
