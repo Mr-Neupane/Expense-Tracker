@@ -86,20 +86,22 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
                     await conn.ExecuteAsync(BankQuery);
 
 
-                    var banktransaction = @"create table if not exists bank.banktransactions
+                    var banktransaction = @"
+create table if not exists bank.banktransactions
 (
-    id       serial  primary key,
-    bankid    int not null ,
-    txndate   date,
-    amount    decimal not null,
-    type varchar(20) not null,
-    remarks   varchar(100),
-    recdate   timestamp default now(),
-recbyid int not null ,
-    recstatus char(1)      default 'A',
-    status    int       default 1,
-CONSTRAINT fk_bankid FOREIGN KEY (bankid) REFERENCES bank.bank(id),
-CONSTRAINT fk_recbyid FOREIGN KEY (recbyid) REFERENCES users(id)
+    id             serial primary key,
+    bank_id        int         not null,
+    txn_date       date,
+    amount         decimal     not null,
+    type           varchar(20) not null,
+    remarks        varchar(100),
+    rec_date       timestamp default now(),
+    rec_by_id      int         not null,
+    rec_status     char(1)   default 'A',
+    status         int       default 1,
+    transaction_id int         not null,
+    CONSTRAINT fk_bankid FOREIGN KEY (bank_id) REFERENCES bank.bank (id),
+    CONSTRAINT fk_recbyid FOREIGN KEY (rec_by_id) REFERENCES users (id)
 ) ;";
 
                     await conn.ExecuteAsync(banktransaction);

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ExpenseTracker.Providers;
+using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -66,6 +67,29 @@ public class VoucherController : Controller
                         recbyid = -1
                     });
 
+                    if (type == "Income" || type == "Expense")
+                    {
+                        if (type == "Expense")
+                        {
+                            int bankid = await Validator.ValidateBankTransaction(toledgerid);
+                            if (bankid != 0)
+                            {
+                                await BankTransactionController.OtherDeposits(bankid, amount, txndate, remarks,
+                                    "Withdraw", ins);
+                            }
+                        }
+
+                        if (type == "Income")
+                        {
+                            int bankid = await Validator.ValidateBankTransaction(fromledgerid);
+                            if (bankid != 0)
+                            {
+                                await BankTransactionController.OtherDeposits(bankid, amount, txndate, remarks,
+                                    "Deposit", ins);
+                            }
+                        }
+                    }
+
                     await txn.CommitAsync();
                     return 0;
                 }
@@ -120,7 +144,18 @@ where t.status = 1
   and t.recstatus = 'A';";
 
         var report = await conn.QueryAsync(query);
-        return View(report.ToList());
+        var finalreport = report.ToList();
+        if (finalreport.Any() ||  finalreport is not null)
+        {
+            return View(finalreport);
+           
+        }
+        else
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        
     }
 
     public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
