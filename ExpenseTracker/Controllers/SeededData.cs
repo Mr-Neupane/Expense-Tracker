@@ -109,37 +109,38 @@ create table if not exists bank.banktransactions
                     var acctransactions = @"
 create table if not exists accounting.transactions
 (
-    id        serial primary key,
-    txndate   date        not null,
-    voucherno varchar(15) not null,
-    amount    decimal     not null,
-    type      varchar(50) not null,
-    typeid    int         not null,
-    remarks   varchar(100),
-    recstatus char(1)              default 'A',
-    recdate   timestamp   not null default now(),
-    status    int                  default 1,
-    recbyid   int,
-    constraint fk_recbyid foreign key (recbyid) references users (id)
-);
+    id         serial primary key,
+    txn_date   date        not null,
+    voucher_no varchar(15) not null,
+    amount     decimal     not null,
+    type       varchar(50) not null,
+    type_id    int         not null,
+    remarks    varchar(100),
+    rec_status char(1)              default 'A',
+    rec_date   timestamp   not null default now(),
+    status     int                  default 1,
+    rec_by_id  int,
+    constraint fk_rec_by_id foreign key (rec_by_id) references users (id)
+)
+;
 ";
                     await conn.ExecuteAsync(acctransactions);
 
-                    var acctxndtl = @"create table if not exists accounting.transactiondetails
+                    var acctxndtl = @"create table if not exists accounting.transaction_details
 (
     id            serial primary key,
-    transactionid int     not null,
-    ledgerid int    not null,
-    dramount      decimal not null,
-    cramount      decimal not null,
-    drcr          char    not null,
-    recstatus     char(1) default 'A',
+    transaction_id int     not null,
+    ledger_id int    not null,
+    dr_amount      decimal not null,
+    cr_amount      decimal not null,
+    dr_cr          char    not null,
+    rec_status     char(1) default 'A',
     status        int     default 1,
-    recbyid       int,
-    constraint fk_transactionid foreign key (transactionid) references accounting.transactions (id),
-    constraint fk_ledgerid foreign key (ledgerid) references accounting.ledger (id),
-    constraint fk_recbyid foreign key (recbyid) references users (id)
-    
+    rec_by_id       int,
+    constraint fk_transaction_id foreign key (transaction_id) references accounting.transactions (id),
+    constraint fk_ledger_id foreign key (ledger_id) references accounting.ledger (id),
+    constraint fk_rec_by_id foreign key (rec_by_id) references users (id)
+
 ) ;";
                     await conn.ExecuteAsync(acctxndtl);
                     var defaultledger = @"

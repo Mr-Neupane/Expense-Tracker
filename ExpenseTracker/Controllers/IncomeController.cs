@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -39,8 +40,17 @@ public class IncomeController : Controller
                         rec_by_id = -1
                     });
 
-                    await VoucherController.RecordAccountingTransaction(vm.TxnDate, 0, vm.Amount, vm.Type, incid,
-                        vm.IncomeFrom, vm.IncomeLedger, vm.Remarks);
+                    await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    {
+                        TxnDate = vm.TxnDate,
+                        DrAmount = 0,
+                        CrAmount = vm.Amount,
+                        Type = vm.Type,
+                        TypeID = incid,
+                        FromLedgerID = vm.IncomeFrom,
+                        ToLedgerID = vm.IncomeFrom,
+                        Remarks = vm.Remarks
+                    });
                     await txn.CommitAsync();
                     await conn.CloseAsync();
                     TempData["SuccessMessage"] = "Income record successfully created";
@@ -71,6 +81,7 @@ where t.type = 'Income'
         var report = await conn.QueryAsync(query);
         return View(report.ToList());
     }
+
     public static async Task ReverseIncome(int id, int transactionid)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
