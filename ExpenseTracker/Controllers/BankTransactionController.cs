@@ -25,6 +25,7 @@ public class BankTransactionController : Controller
             {
                 try
                 {
+                    var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var frombankledgerid = await LedgerCode.GetBankLedgerId(vm.BankId);
                     var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
                     if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
@@ -39,7 +40,7 @@ public class BankTransactionController : Controller
 
                     int transactionid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
                     {
-                        TxnDate = vm.TxnDate,
+                        TxnDate = engtxndate,
                         DrAmount = vm.Type == "Deposit" ? vm.Amount : 0,
                         CrAmount = vm.Type == "Withdraw" ? vm.Amount : 0,
                         Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
@@ -48,7 +49,7 @@ public class BankTransactionController : Controller
                         ToLedgerID = -3,
                         Remarks = vm.Remarks,
                     });
-                 await   BankService.UpdateTransactionDuringBankTransaction(banktransactionid, transactionid);
+                    await BankService.UpdateTransactionDuringBankTransaction(banktransactionid, transactionid);
                     await txn.CommitAsync();
                     await BankRemainingBalanceManager(vm.BankId);
                     TempData["SuccessMessage"] =
@@ -67,10 +68,15 @@ public class BankTransactionController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> BankTransactionReport()
+    public async Task<IActionResult?> BankTransactionReport()
     {
         var report = await BankService.GetBankTransactionReport();
-        return View(report);
+        if (report != null || report.Any())
+        {
+            return View(report.ToList());
+            
+        }
+        return RedirectToAction("BankDepositandWithdraw");
     }
 
 
@@ -97,21 +103,6 @@ public class BankTransactionController : Controller
                 try
                 {
                     await BankService.ReverseBankTransactionByAccTranID(transactionid);
-                    // string revtype = type == "Deposit" ? "Bank Deposit" : "Bank Withdraw";
-                    // var revbank = @"update bank.banktransactions set status = 2 where id = @id";
-                    // await conn.ExecuteAsync(revbank, new { id });
-                    //
-                    // var revtxn =
-                    //     @"update accounting.transactions set status=2 where typeid = @id and type = @revtype;";
-                    //
-                    // await conn.ExecuteAsync(revtxn, new { id, revtype });
-                    //
-                    // var reversetransactiondetail =
-                    //     @"update accounting.transactiondetails set status=2 where transactionid in(select id from accounting.transactions t where t.typeid= @id and t.type= @revtype)";
-                    // await conn.ExecuteAsync(reversetransactiondetail, new { id, revtype });
-                    // await txn.CommitAsync();
-                    // await BankRemainingBalanceManager(bankId);
-                    // await conn.CloseAsync();
 
 
                     TempData["SuccessMessage"] = "Bank " + type.ToLower() + " reverse transaction completed";

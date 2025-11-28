@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Models;
 using Npgsql;
-using Newtonsoft.Json;
 
 namespace ExpenseTracker.Controllers;
 

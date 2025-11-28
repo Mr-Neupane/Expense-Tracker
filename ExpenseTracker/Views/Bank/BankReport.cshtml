@@ -41,10 +41,7 @@
             <td>@item.bankcontactnumber</td>
 
             <td>
-                @{
-                    DateTime? openDate = item.accountopendate as DateTime?;
-                }
-                @(openDate.HasValue ? openDate.Value.ToString("yyyy-MM-dd") : "-")
+               @await DateHelper.GetNepaliDate(item.accountopendate)
             </td>
 
             <td>@item.bankaddress</td>

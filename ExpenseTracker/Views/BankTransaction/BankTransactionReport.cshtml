@@ -32,10 +32,7 @@
             <td>@item.bankname</td>
 
             <td>
-                @{
-                    DateTime? txnDate = item.txn_date as DateTime?;
-                }
-                @(txnDate.HasValue ? txnDate.Value.ToString("yyyy-MM-dd") : "-")
+                @await DateHelper.GetNepaliDate(@item.txn_date)
             </td>
 
             <td class="text-right">@String.Format("{0:N2}", item.amount)</td>
@@ -50,7 +47,8 @@
                    asp-route-type="@item.type"
                    asp-route-bankid="@item.bankid"
                    asp-route-amount="@item.amount"
-                   class="btn btn-sm btn-danger">
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure you want to reverse this transaction?')">
                     Reverse
                 </a>
             </td>
