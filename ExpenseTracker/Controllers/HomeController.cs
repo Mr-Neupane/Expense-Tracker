@@ -1,7 +1,8 @@
 using System.Diagnostics;
-using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Models;
+using Npgsql;
+using Newtonsoft.Json;
 
 namespace ExpenseTracker.Controllers;
 
@@ -28,5 +29,19 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+[HttpPost]
+    public static async Task NepaliDate()
+    {
+        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        {
+            string sqlfilepath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Migrations", "NepaliDate.sql");
+            string query = System.IO.File.ReadAllText(sqlfilepath);
+
+            using (var cmd = new NpgsqlCommand(query, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }

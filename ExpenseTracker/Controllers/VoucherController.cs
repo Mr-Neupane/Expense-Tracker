@@ -8,7 +8,7 @@ namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
-    public static async Task<int> RecordAccountingTransaction(DateTime txndate, decimal dramount, decimal cramount,
+    public static async Task RecordAccountingTransaction(DateTime txndate, decimal dramount, decimal cramount,
         string type, int typeid, int fromledgerid, int toledgerid,
         string remarks)
     {
@@ -91,7 +91,6 @@ public class VoucherController : Controller
                     }
 
                     await txn.CommitAsync();
-                    return 0;
                 }
                 catch (Exception e)
                 {
@@ -138,7 +137,7 @@ from accounting.transactions t
                              where t.id = t2.transactionid
                                and t2.recstatus = 'A'
                                and t2.status = 1
-                             limit 1)
+                             limit 1)d
          join users u on u.id = t.recbyid
 where t.status = 1
   and t.recstatus = 'A';";

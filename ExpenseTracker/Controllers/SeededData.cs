@@ -13,6 +13,7 @@ public class SeededData
             {
                 try
                 {
+                    var date =  HomeController.NepaliDate();
                     var accschema = @"CREATE SCHEMA IF NOT EXISTS accounting;";
                     await conn.ExecuteAsync(accschema);
                     var bankschema = @"CREATE SCHEMA IF NOT EXISTS bank;";

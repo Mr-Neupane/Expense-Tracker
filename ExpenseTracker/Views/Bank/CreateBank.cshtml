@@ -19,7 +19,7 @@
             </div>
             <div class="mb-2">
                 <label asp-for="AccountOpenDate" class="form-label">Open Date <span class="text-danger">*</span></label>
-                <input asp-for="AccountOpenDate" class="form-control" data-date-mask type="text" value="@DateTime.Now.ToString("yyyy-MM-dd")" required="required"/>
+                <input asp-for="AccountOpenDate" class="form-control" data-date-mask type="text" value="@DateHelper.GetNepaliDate(DateTime.Now).Result" required="required"/>
                 <span asp-validation-for="AccountOpenDate" class="text-danger"></span>
             </div>
 
