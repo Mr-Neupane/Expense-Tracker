@@ -26,7 +26,7 @@ public class BankController : Controller
                 {
                     int subparentId = -2;
 
-
+                    DateTime accountopendate = await DateHelper.GetEnglishDate(vm.AccountOpenDate);
                     int lid = await LedgerController.NewLedger(new LedgerVm
                     {
                         Id = vm.Id,
@@ -49,7 +49,7 @@ public class BankController : Controller
                             ledgerid = lid,
                             remainingbalance = 0,
                             bankaddress = vm.BankAddress,
-                            accountopendate = vm.AccountOpenDate,
+                            accountopendate = accountopendate,
                             recstatus = vm.RecStatus,
                             recdate = DateTime.Now,
                             status = vm.Status,

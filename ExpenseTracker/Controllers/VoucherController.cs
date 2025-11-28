@@ -144,8 +144,8 @@ from accounting.transactions t
                              where t.id = t2.transaction_id
                                and t2.rec_status = 'A'
                                and t2.status = 1
-                             limit 1)
-         join users u on u.id = t.rec_by_id
+                             limit 1)d
+         join users u on u.id = t.recbyid
 where t.status = 1
   and t.rec_status = 'A';";
 
