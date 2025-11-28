@@ -37,7 +37,7 @@
 
                 <td>
                     @{
-                        DateTime? txnDate = item.txndate as DateTime?;
+                        DateTime? txnDate = item.txn_date as DateTime?;
                     }
                     @(txnDate.HasValue ? txnDate.Value.ToString("yyyy-MM-dd") : "-")
                 </td>
@@ -47,7 +47,7 @@
                 <td>
                     <a asp-action="VoucherDetail"
                        asp-route-transactionid="@item.id">
-                        @item.voucherno
+                        @item.voucher_no
                     </a>
                 </td>
 

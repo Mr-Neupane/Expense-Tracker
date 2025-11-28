@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -45,8 +46,17 @@ public class ExpenseController : Controller
                         rec_date = DateTime.Now,
                         rec_by_id = -1
                     });
-                    await VoucherController.RecordAccountingTransaction(vm.TxnDate, vm.Amount, 0, vm.Type, expinsid,
-                        vm.ExpenseLedger, vm.ExpenseFromLedger, vm.Remarks);
+                    await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    {
+                        TxnDate = vm.TxnDate,
+                        DrAmount = vm.Amount,
+                        CrAmount = 0,
+                        Type = vm.Type,
+                        TypeID = expinsid,
+                        FromLedgerID = vm.ExpenseLedger,
+                        ToLedgerID = vm.ExpenseFromLedger,
+                        Remarks = vm.Remarks
+                    });
                     await txn.CommitAsync();
                     await conn.CloseAsync();
                     TempData["SuccessMessage"] = "Expense record successfully created";
