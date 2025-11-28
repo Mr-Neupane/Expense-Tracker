@@ -14,13 +14,14 @@ public class BankService
             {
                 try
                 {
+                    var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var banktran =
                         @"INSERT INTO bank.banktransactions ( bank_id,txn_date,amount,type,remarks,rec_date,rec_by_id,rec_status,status,transaction_id)
                                     values (@bank_id, @txn_date, @amount, @type, @remarks, @rec_date,@rec_by_id,@recs_tatus,@status,@transaction_id) returning id";
                     var id = await con.QuerySingleAsync<int>(banktran, new
                     {
                         bank_id = vm.BankId,
-                        txn_date = vm.TxnDate,
+                        txn_date = engdate,
                         amount = vm.Amount,
                         type = vm.Type,
                         remarks = vm.Remarks,
@@ -67,7 +68,6 @@ public class BankService
             from bank.banktransactions t
                 join users u on u.id = t.rec_by_id
             join bank.bank b on b.id = bank_id where t.status=1");
-
         return txnreport.ToList();
     }
 
@@ -86,7 +86,7 @@ public class BankService
                         @"update accounting.transactions set status=2 where status=1 and id=@tranid";
                     await con.ExecuteAsync(transactionReverse, new { tranid });
                     var detailReverse =
-                        @"update accounting.transactiondetails set status=2 where status=1 and transactionid=@tranid";
+                        @"update accounting.transaction_details set status=2 where status=1 and transaction_id=@tranid";
                     await con.ExecuteAsync(detailReverse, new { tranid });
                     await txn.CommitAsync();
                     await con.CloseAsync();

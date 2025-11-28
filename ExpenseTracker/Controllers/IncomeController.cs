@@ -23,6 +23,7 @@ public class IncomeController : Controller
             {
                 try
                 {
+                    var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var query =
                         @"INSERT INTO accounting.income ( ledger_id, dr_amount, cr_amount, txn_date, rec_status, status, rec_date, rec_by_id)
                         values (@ledger_id, @dr_amount, @cr_amount, @txn_date, @rec_status, @status, @rec_date, @rec_by_id) returning id 
@@ -33,7 +34,7 @@ public class IncomeController : Controller
                         ledger_id = vm.IncomeLedger,
                         dr_amount = 0,
                         cr_amount = vm.Amount,
-                        txn_date = vm.TxnDate,
+                        txn_date = engdate,
                         rec_status = vm.RecStatus,
                         status = vm.Status,
                         rec_date = DateTime.Now,
@@ -42,7 +43,7 @@ public class IncomeController : Controller
 
                     await VoucherController.GetInsertedAccountingId(new AccountingTxn
                     {
-                        TxnDate = vm.TxnDate,
+                        TxnDate = engdate,
                         DrAmount = 0,
                         CrAmount = vm.Amount,
                         Type = vm.Type,
@@ -71,9 +72,9 @@ public class IncomeController : Controller
     public async Task<IActionResult> IncomeReport()
     {
         var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select e.*, voucherno, username,t.id as transactionid
+        var query = @"select e.*, voucher_no, username,t.id as transactionid
 from accounting.income e
-         join accounting.transactions t on t.typeid = e.id
+         join accounting.transactions t on t.type_id = e.id
          join users u on e.rec_by_id = u.id
 where t.type = 'Income'
   and e.status = 1
@@ -102,9 +103,9 @@ where t.type = 'Income'
 
                     await conn.ExecuteAsync(acctran, new { transactionid });
 
-                    var detail = @"update accounting.transactiondetails
+                    var detail = @"update accounting.transaction_details
                     set status=2
-                    where transactionid= @transactionid ;";
+                    where transaction_id= @transactionid ;";
 
                     await conn.ExecuteAsync(detail, new { transactionid });
 

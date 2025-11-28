@@ -24,6 +24,7 @@ public class ExpenseController : Controller
             {
                 try
                 {
+                    var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
                     if (vm.Amount > frombalance)
                     {
@@ -40,7 +41,7 @@ public class ExpenseController : Controller
                         ledger_id = vm.ExpenseFromLedger,
                         dr_amount = vm.Amount,
                         cr_amount = 0,
-                        txn_date = vm.TxnDate,
+                        txn_date = engdate,
                         rec_status = vm.RecStatus,
                         status = 1,
                         rec_date = DateTime.Now,
@@ -48,7 +49,7 @@ public class ExpenseController : Controller
                     });
                     await VoucherController.GetInsertedAccountingId(new AccountingTxn
                     {
-                        TxnDate = vm.TxnDate,
+                        TxnDate = engdate,
                         DrAmount = vm.Amount,
                         CrAmount = 0,
                         Type = vm.Type,
@@ -77,9 +78,9 @@ public class ExpenseController : Controller
     public async Task<IActionResult> ExpenseReport()
     {
         var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select e.*, voucherno, username,t.id as transactionid
+        var query = @"select e.*, voucher_no, username,t.id as transactionid
 from accounting.expenses e
-         join accounting.transactions t on t.typeid = e.id
+         join accounting.transactions t on t.type_id = e.id
          join users u on e.rec_by_id = u.id
 where t.type = 'Expense'
   and e.status = 1
@@ -108,9 +109,9 @@ where t.type = 'Expense'
 
                     await conn.ExecuteAsync(acctran, new { transactionid });
 
-                    var detail = @"update accounting.transactiondetails
+                    var detail = @"update accounting.transaction_details
                     set status=2
-                    where transactionid= @transactionid ;";
+                    where transaction_id= @transactionid ;";
 
                     await conn.ExecuteAsync(detail, new { transactionid });
 

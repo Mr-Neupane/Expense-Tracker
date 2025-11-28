@@ -33,17 +33,14 @@
             </td>
 
             <td>
-                @{
-                    DateTime? dt = item.txn_date as DateTime?;
-                }
-                @(dt.HasValue ? dt.Value.ToString("yyyy-MM-dd") : "-")
+              @await DateHelper.GetNepaliDate(item.txn_date)
             </td>
 
             <td>
                 <a asp-controller="Voucher"
                    asp-action="VoucherDetail"
                    asp-route-transactionid="@item.transactionid" style="text-decoration: none">
-                    @item.voucherno
+                    @item.voucher_no
                 </a>
             </td>
             <td>@item.username</td>

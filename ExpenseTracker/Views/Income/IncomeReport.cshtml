@@ -29,21 +29,18 @@
             <td class="text-center">@sn</td>
 
             <td class="text-right">
-                @String.Format("{0:N2}", item.dr_amount)
+                @String.Format("{0:N2}", item.cr_amount)
             </td>
 
             <td>
-                @{
-                    DateTime? dt = item.txn_date as DateTime?;
-                }
-                @(dt.HasValue ? dt.Value.ToString("yyyy-MM-dd") : "-")
+                @await DateHelper.GetNepaliDate(item.txn_date)
             </td>
 
             <td>
                 <a asp-controller="Voucher"
                    asp-action="VoucherDetail"
                    asp-route-transactionid="@item.transactionid" style="text-decoration: none">
-                    @item.voucherno
+                    @item.voucher_no
                 </a>
             </td>
             <td>@item.username</td>

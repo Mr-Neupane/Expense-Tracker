@@ -16,7 +16,7 @@
             <div class="mb-3">
                 <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
                 <input asp-for="TxnDate" class="form-control" data-date-mask type="text"
-                       value="@DateTime.Now.ToString("yyyy-MM-dd")"/>
+                       value="@DateHelper.GetNepaliDate(DateTime.Now).Result"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 
