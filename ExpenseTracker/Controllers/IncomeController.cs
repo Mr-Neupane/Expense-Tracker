@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
+using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using TestApplication.ViewModels;
@@ -41,7 +42,7 @@ public class IncomeController : Controller
                         rec_by_id = -1
                     });
 
-                    await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    var acctxnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
                     {
                         TxnDate = engdate,
                         DrAmount = 0,
@@ -49,9 +50,26 @@ public class IncomeController : Controller
                         Type = vm.Type,
                         TypeID = incid,
                         FromLedgerID = vm.IncomeFrom,
-                        ToLedgerID = vm.IncomeFrom,
+                        ToLedgerID = vm.IncomeLedger,
                         Remarks = vm.Remarks
                     });
+                    int bankid = await BankService.GetBankIdbyLedgerId(vm.IncomeFrom);
+                    if (bankid != 0)
+                    {
+                        int banktranid = await BankService.RecordBankTransaction(new BankTransactionVm
+                        {
+                            RecStatus = vm.RecStatus,
+                            Status = vm.Status,
+                            RecById = vm.RecById,
+                            BankId = bankid,
+                            TxnDate = vm.TxnDate,
+                            Amount = vm.Amount,
+                            Remarks = vm.Remarks,
+                            Type = "Deposit"
+                        });
+                        await BankService.UpdateTransactionDuringBankTransaction(banktranid, acctxnid);
+                    }
+
                     await txn.CommitAsync();
                     await conn.CloseAsync();
                     TempData["SuccessMessage"] = "Income record successfully created";
