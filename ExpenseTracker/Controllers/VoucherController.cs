@@ -66,30 +66,6 @@ public class VoucherController : Controller
                         status = 1,
                         recbyid = -1
                     });
-
-                    if (model.Type == "Income" || model.Type == "Expense")
-                    {
-                        if (model.Type == "Expense")
-                        {
-                            int bankid = await Validator.ValidateBankTransaction(model.ToLedgerID);
-                            if (bankid != 0)
-                            {
-                                // await BankTransactionController.OtherDeposits(bankid, amount, txndate, remarks,
-                                //     "Withdraw", ins);
-                            }
-                        }
-
-                        if (model.Type == "Income")
-                        {
-                            int bankid = await Validator.ValidateBankTransaction(model.ToLedgerID);
-                            if (bankid != 0)
-                            {
-                                // await BankTransactionController.OtherDeposits(bankid, amount, txndate, remarks,
-                                //     "Deposit", ins);
-                            }
-                        }
-                    }
-
                     await txn.CommitAsync();
                     return ins;
                 }

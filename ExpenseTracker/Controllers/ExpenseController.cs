@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
+using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using TestApplication.ViewModels;
@@ -47,7 +48,7 @@ public class ExpenseController : Controller
                         rec_date = DateTime.Now,
                         rec_by_id = -1
                     });
-                    await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    var acctxnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
                     {
                         TxnDate = engdate,
                         DrAmount = vm.Amount,
@@ -58,6 +59,24 @@ public class ExpenseController : Controller
                         ToLedgerID = vm.ExpenseFromLedger,
                         Remarks = vm.Remarks
                     });
+                    var bankid = await BankService.GetBankIdbyLedgerId(vm.ExpenseFromLedger);
+                    if (bankid != 0)
+                    {
+                        var banktranid = await BankService.RecordBankTransaction(new BankTransactionVm
+                        {
+                            RecStatus = vm.RecStatus,
+                            Status = vm.Status,
+                            RecById = vm.RecById,
+                            BankId = 1,
+                            TxnDate = vm.TxnDate,
+                            Amount = vm.Amount,
+                            Remarks = vm.Remarks,
+                            Type = "Withdraw",
+                        });
+                        await BankService.UpdateTransactionDuringBankTransaction(banktranid, acctxnid);
+                    }
+
+
                     await txn.CommitAsync();
                     await conn.CloseAsync();
                     TempData["SuccessMessage"] = "Expense record successfully created";

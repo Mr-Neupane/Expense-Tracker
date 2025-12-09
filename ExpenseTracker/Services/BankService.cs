@@ -101,4 +101,12 @@ public class BankService
             }
         }
     }
+
+    public static async Task<int> GetBankIdbyLedgerId(int ledgerid)
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"select id from bank.bank where ledgerid=@ledgerid";
+        int? bankid = await conn.QueryFirstOrDefaultAsync<int?>(query, new { ledgerid });
+        return bankid ?? 0;
+    }
 }
