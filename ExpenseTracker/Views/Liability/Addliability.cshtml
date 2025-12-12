@@ -1,0 +1,102 @@
+﻿@model TestApplication.ViewModels.LiabilityVm;
+
+@{
+    ViewData["Title"] = "Record Liability";
+}
+
+
+<form asp-action="AddLiability" method="post" id="" class="container mt-4"
+      style="max-width:500px;margin:auto;">
+
+    <div class="card">
+        <div class="card-header">
+            <h6>Add Income</h6>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
+                <input asp-for="TxnDate" class="form-control" data-date-mask type="text"
+                       value="@DateHelper.GetNepaliDate(DateTime.Now).Result"/>
+                <span asp-validation-for="TxnDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Liability Ledger <span class="text-danger">*</span></label>
+                <select id="LiabilityLedger" asp-for="LiabilityLedger" class="form-select" required="required">
+                    <option value="">-- Select Liability Ledger --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                <input type="number" name="Amount" class="form-control" required/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Cash/Bank<span class="text-danger">*</span></label>
+                <select id="LiabilityFromLedger" asp-for="LiabilityFromLedger" class="form-select" required="required">
+                    <option value="">-- Select Cash/Bank Ledger --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Remarks" class="form-label">Remarks</label>
+                <input type="text" name="Remarks" class="form-control" />
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Record</button>
+            <button type="" formmethod="get" asp-action="AddLiability" class="btn btn-danger">Discard</button>
+        </div>
+    </div>
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '/DropdownProvider/GetLiabilityLedgers/',
+            type: 'GET',
+            success: function (data) {
+                fillDropdown('#LiabilityLedger', data);
+            }
+        });
+
+        $.ajax({
+            url: '/DropdownProvider/GetCashBankLedgers',
+            type: 'GET',
+            success: function (data) {
+                fillDropdown('#LiabilityFromLedger', data);
+            }
+        });
+
+        function fillDropdown(selector, data) {
+            $.each(data, function (i, item) {
+                $(selector).append(
+                    $('<option>', {value: item.id, text: item.ledgername})
+                );
+            });
+        }
+    });
+</script>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["AlertMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["AlertMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+} 
