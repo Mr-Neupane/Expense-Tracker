@@ -9,5 +9,5 @@ public class AccountingTxn
     public int TypeID { get; set; }
     public int FromLedgerID { get; set; }
     public int ToLedgerID { get; set; }
-   public string Remarks { get; set; }
+   public string? Remarks { get; set; }
 }

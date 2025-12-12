@@ -32,6 +32,19 @@ FROM accounting.ledger l
             return Json(list);
         }
     }
+ public JsonResult GetLiabilityLedgers()
+    {
+        using (var conn = DapperConnectionProvider.GetConnection())
+        {
+            string sql = @"SELECT ls.ledgername,ls.id 
+FROM accounting.ledger l
+         join accounting.ledger ls on ls.subparentid = l.id
+         join accounting.coa c on l.parentid = c.id where c.name='Liabilities' ";
+
+            var list = conn.Query(sql).ToList();
+            return Json(list);
+        }
+    }
 
     public JsonResult GetCashBankLedgers()
     {

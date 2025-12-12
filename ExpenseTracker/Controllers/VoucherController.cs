@@ -27,7 +27,7 @@ public class VoucherController : Controller
                     var ins = await conn.QuerySingleAsync<int>(query, new
                     {
                         model.TxnDate, voucherno, amount, model.Type, model.TypeID, model.Remarks, recstatus = 'A',
-                        recdate = DateTime.Now,
+                        recdate = DateTime.UtcNow,
                         status = 1, recbyid = -1
                     });
 
