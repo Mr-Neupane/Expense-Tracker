@@ -2,13 +2,14 @@
 
 namespace ExpenseTracker.Providers;
 
-public class Validator
+public static class Validator
 {
-    public static async Task<int> ValidateBankTransaction(int ledgerid)
+    public static async Task<int> ValidateBankTransaction(int transactionid)
     {
-        var con = DapperConnectionProvider.GetConnection();
-        var query = @"select id from bank.bank where ledgerid= @ledgerid ";
-        int? res = await con.QueryFirstAsync<int?>(query, new { ledgerid = ledgerid });
+        var conn = DapperConnectionProvider.GetConnection();
+        int? res = await conn.QueryFirstOrDefaultAsync<int?>(@"select 1 from bank.banktransactions where transaction_id=@id",
+            new { id = transactionid });
+      
         return res ?? 0;
     }
 }

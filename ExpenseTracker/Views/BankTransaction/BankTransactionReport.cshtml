@@ -42,33 +42,34 @@
             <td>@item.username</td>
 
             <td class="text-center">
-                <a asp-action="ReverseBankTransaction"
+                <a   asp-action="ReverseBankTransaction"
                    asp-route-transactionid="@item.transaction_id"
-                   asp-route-type="@item.type"
-                   asp-route-bankid="@item.bankid"
-                   asp-route-amount="@item.amount"
-                   class="btn btn-sm btn-danger"
-                   onclick="return confirm('Are you sure you want to reverse this transaction?')">
-                    Reverse
+                  asp-route-id="@item.id"
+                asp-route-type="@item.type"
+                asp-route-bankid="@item.bankid"
+                asp-route-amount="@item.amount"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to reverse this transaction?')">
+                Reverse
                 </a>
             </td>
         </tr>
 
         sn++;
+        }
+        </tbody>
+    </table>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
     }
-    </tbody>
-</table>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["AlertMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["AlertMessage"]
-    </div>
-}
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["AlertMessage"]
+        </div>
+    }

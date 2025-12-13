@@ -1,15 +1,17 @@
 ﻿using Dapper;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Services;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
-    public static async Task<int> RecordAccountingTransaction(AccountingTxn model)
+    private static async Task<int> RecordAccountingTransaction(AccountingTxn model)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
@@ -137,15 +139,34 @@ where t.status = 1
         }
     }
 
+    [HttpGet]
+    public IActionResult AddJV()
+    {
+        var model = new JournalVoucherVm();
+        model.Entries.Add(new JournalEntryVm()); // add default row
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult AddJV(JournalVoucherVm vm)
+    {
+        
+        return View(vm);
+    }
+
     public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
     {
         if (type == "Expense")
         {
-            await ExpenseController.ReverseExpense(typeid, transactionid);
+            await ReverseService.ReverseExpense(typeid, transactionid);
         }
         else if (type == "Income")
         {
-            await IncomeController.ReverseIncome(typeid, transactionid);
+            await ReverseService.ReverseIncome(typeid, transactionid);
+        }
+        else if (type == "Liability")
+        {
+            await ReverseService.ReverseRecordedLiability(typeid, transactionid);
         }
 
         return RedirectToAction("AccountingTransaction");

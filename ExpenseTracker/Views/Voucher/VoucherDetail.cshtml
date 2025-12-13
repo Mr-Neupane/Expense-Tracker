@@ -80,15 +80,15 @@
             }
 
             <div class="text-start">
-                
-                        <div>
-                            <a class="btn btn-danger"
-                               asp-action="ReverseVoucher"
-                               asp-route-transactionid="@Model.FirstOrDefault().id"
-                               asp-route-type="@Model.FirstOrDefault()?.type"
-                               asp-route-typeid="@Model.FirstOrDefault()?.typeid"
-                               onclick="return confirm('Are you sure you want to reverse this voucher?');"
-                               >Reverse</a></div>
+
+                <div>
+                    <a class="btn btn-danger"
+                       asp-action="ReverseVoucher"
+                       asp-route-transactionid="@Model.FirstOrDefault().id"
+                       asp-route-type="@Model.FirstOrDefault()?.type"
+                       asp-route-typeid="@Model.FirstOrDefault().type_id"
+                       onclick="return confirm('Are you sure you want to reverse this voucher?');"
+                    >Reverse</a></div>
 
             </div>
         </div>

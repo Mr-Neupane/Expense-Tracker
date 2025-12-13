@@ -59,7 +59,7 @@ public class ExpenseController : Controller
                         ToLedgerID = vm.ExpenseFromLedger,
                         Remarks = vm.Remarks
                     });
-                    var bankid = await BankService.GetBankIdbyLedgerId(vm.ExpenseFromLedger);
+                    var bankid = await BankService.GetBankIdByLedgerId(vm.ExpenseFromLedger);
                     if (bankid != 0)
                     {
                         var banktranid = await BankService.RecordBankTransaction(new BankTransactionVm
@@ -108,43 +108,4 @@ where t.type = 'Expense'
         return View(report);
     }
 
-    public static async Task ReverseExpense(int id, int transactionid)
-    {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = conn.BeginTransaction())
-            {
-                try
-                {
-                    var mainupd = @"update accounting.expenses
-                    set status=2
-                    where id = @id;";
-
-                    await conn.ExecuteAsync(mainupd, new { id });
-
-                    var acctran = @"update accounting.transactions
-                    set status=2 where 
-                   id= @transactionid ;";
-
-                    await conn.ExecuteAsync(acctran, new { transactionid });
-
-                    var detail = @"update accounting.transaction_details
-                    set status=2
-                    where transaction_id= @transactionid ;";
-
-                    await conn.ExecuteAsync(detail, new { transactionid });
-
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-    }
 }

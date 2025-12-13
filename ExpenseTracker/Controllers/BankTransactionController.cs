@@ -4,7 +4,7 @@ using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using ExpenseTracker.Providers;
+using ExpenseTracker.Services;
 
 namespace ExpenseTracker.Controllers;
 
@@ -74,39 +74,24 @@ public class BankTransactionController : Controller
         if (report != null || report.Any())
         {
             return View(report.ToList());
-            
         }
+
         return RedirectToAction("BankDepositandWithdraw");
     }
 
 
     [HttpGet]
-    public async Task<IActionResult> ReverseBankTransaction(int transactionid, string type, int bankId, decimal amount)
+    public async Task<IActionResult> ReverseBankTransaction(int transactionid, string type, int bankId, decimal amount,
+        int id)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
         {
             using (var txn = conn.BeginTransaction())
             {
-                int ledgerid = await conn.QueryFirstOrDefaultAsync<int>(
-                    "select ledgerid from bank.bank where id = @bankid", new
-                    {
-                        bankId
-                    });
-                var bankbalance = await BalanceProvider.GetLedgerBalance(ledgerid);
-                if (type == "Deposit" && amount > bankbalance)
-                {
-                    TempData["AlertMessage"] = "Can not perform reverse. Insufficient bank balance";
-                    // TempData.Keep("AlertMessage");
-                    return RedirectToAction("BankTransactionReport");
-                }
-
                 try
                 {
-                    await BankService.ReverseBankTransactionByAccTranID(transactionid);
-
-
+                    await ReverseService.ReverseBankTransactionByAccTranId(transactionid);
                     TempData["SuccessMessage"] = "Bank " + type.ToLower() + " reverse transaction completed";
-                    // TempData.Keep("SuccessMessage");
                     return RedirectToAction("BankTransactionReport");
                 }
                 catch (Exception e)

@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using ExpenseTracker;
 using ExpenseTracker.ViewModels;
-using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 public class BankService
@@ -71,42 +70,27 @@ public class BankService
         return txnreport.ToList();
     }
 
-    public static async Task ReverseBankTransactionByAccTranID(int tranid)
-    {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = con.BeginTransaction())
-            {
-                try
-                {
-                    var query = @"update bank.banktransactions set status=2 where status=1 and transaction_id=@tranid";
-                    await con.ExecuteAsync(query, new { tranid });
+   
 
-                    var transactionReverse =
-                        @"update accounting.transactions set status=2 where status=1 and id=@tranid";
-                    await con.ExecuteAsync(transactionReverse, new { tranid });
-                    var detailReverse =
-                        @"update accounting.transaction_details set status=2 where status=1 and transaction_id=@tranid";
-                    await con.ExecuteAsync(detailReverse, new { tranid });
-                    await txn.CommitAsync();
-                    await con.CloseAsync();
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await con.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-    }
-
-    public static async Task<int> GetBankIdbyLedgerId(int ledgerid)
+    public static async Task<int> GetBankIdByLedgerId(int ledgerid)
     {
         var conn = DapperConnectionProvider.GetConnection();
         var query = @"select id from bank.bank where ledgerid=@ledgerid";
         int? bankid = await conn.QueryFirstOrDefaultAsync<int?>(query, new { ledgerid });
         return bankid ?? 0;
+    }
+
+    
+
+    public static async Task<List<dynamic>> GetBankTransactionList(int transactionid)
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"select bank_id, ledgerid, type, amount
+from bank.banktransactions bt
+         join bank.bank b on b.id = bt.bank_id
+where transaction_id=@transactionid ;";
+
+        var res = await conn.QueryAsync(query, new { transactionid });
+        return res.ToList();
     }
 }

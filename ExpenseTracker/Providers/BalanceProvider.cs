@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Providers;
 

@@ -53,7 +53,7 @@ public class IncomeController : Controller
                         ToLedgerID = vm.IncomeLedger,
                         Remarks = vm.Remarks
                     });
-                    int bankid = await BankService.GetBankIdbyLedgerId(vm.IncomeFrom);
+                    int bankid = await BankService.GetBankIdByLedgerId(vm.IncomeFrom);
                     if (bankid != 0)
                     {
                         int banktranid = await BankService.RecordBankTransaction(new BankTransactionVm
@@ -99,45 +99,5 @@ where t.type = 'Income'
   and t.status = 1";
         var report = await conn.QueryAsync(query);
         return View(report.ToList());
-    }
-
-    public static async Task ReverseIncome(int id, int transactionid)
-    {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = conn.BeginTransaction())
-            {
-                try
-                {
-                    var mainupd = @"update accounting.income
-                    set status=2
-                    where id = @id;";
-
-                    await conn.ExecuteAsync(mainupd, new { id });
-
-                    var acctran = @"update accounting.transactions
-                    set status=2 where 
-                   id= @transactionid ;";
-
-                    await conn.ExecuteAsync(acctran, new { transactionid });
-
-                    var detail = @"update accounting.transaction_details
-                    set status=2
-                    where transaction_id= @transactionid ;";
-
-                    await conn.ExecuteAsync(detail, new { transactionid });
-
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
     }
 }
