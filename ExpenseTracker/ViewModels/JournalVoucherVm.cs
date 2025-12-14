@@ -1,9 +1,10 @@
 ﻿namespace TestApplication.ViewModels;
 
-public class JournalVoucherVm
+public class JournalVoucherVm:BaseVm
 {
-    public string VoucherDate { get; set; }
+    public DateTime VoucherDate { get; set; }
     public string Narration { get; set; }
+    public string Type { get; set; } = "Journal Voucher";
 
     public List<JournalEntryVm> Entries { get; set; } = new List<JournalEntryVm>();
 }
