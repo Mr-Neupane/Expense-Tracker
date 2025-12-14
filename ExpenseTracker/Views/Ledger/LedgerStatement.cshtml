@@ -1,0 +1,60 @@
+﻿@model TestApplication.ViewModels.LedgerstatementVm
+@{
+    ViewData["Title"] = "Ledger Statement";
+}
+
+<div style="margin: 20px;">
+    <h2>Ledger Statement</h2>
+
+    <form id="searchForm" method="post" asp-action="LedgerStatement">
+        <label for="DateFrom" asp-for="DateFrom">Date From <span class="text-danger">*</span></label>
+        <input type="text" required="required" value="@await DateHelper.GetNepaliDate(DateTime.Now.AddDays(-30))" id="DateFrom"
+               name="DateFrom"/>
+
+        <label for="DateTo" asp-for="DateTo">Date To <span class="text-danger">*</span></label>
+        <input type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)" required="required" id="DateTo" name="DateTo"/>
+
+        <label for="">Select Ledger <span class="text-danger">*</span></label>
+        <select id="LedgerSelection" asp-for="LedgerId" name="LedgerSelection">
+            <option value="" >-- Select Ledger --</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Fetch ledgers when the page loads
+        function loadLedgers() {
+            $.ajax({
+                url: '/DropdownProvider/GetLedgers/',
+                method: 'GET',
+                success: function (data) {
+                    // Clear any existing options
+                    $('#LedgerSelection').empty();
+                    // Add the default option
+                    $('#LedgerSelection').append('<option value="">-- Select Ledger --</option>');
+
+                    // Iterate through the returned data and populate the dropdown
+                    $.each(data, function (index, ledger) {
+                        $('#LedgerSelection').append(
+                            $('<option>', {
+                                value: ledger.id,
+                                text: ledger.coaname + ' - ' + ledger.ledgername
+                            })
+                        );
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching ledgers: ' + error);
+                }
+            });
+        }
+
+        // Call the loadLedgers function to populate the dropdown on page load
+        loadLedgers();
+    });
+</script>

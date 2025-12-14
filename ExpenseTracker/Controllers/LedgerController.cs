@@ -115,6 +115,20 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
         return View(res);
     }
 
+    [HttpGet]
+    public IActionResult LedgerStatement()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
+    {
+        var report = await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
+
+        return View();
+    }
+
     public IActionResult GetSubParents(int parentId)
     {
         var con = DapperConnectionProvider.GetConnection();

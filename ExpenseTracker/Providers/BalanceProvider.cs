@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Dynamic;
+using Dapper;
 
 namespace ExpenseTracker.Providers;
 
@@ -35,5 +36,54 @@ select RemBalance from FinalData where ledger_id=@ledgerid";
             ledgerid
         });
         return balance ?? 0;
+    }
+
+    public static async Task<List<dynamic>> GetLedgerOpeningandCosingBalance(int ledgerid, DateTime datefrom,
+        DateTime dateto)
+    {
+        var fromdate = await DateHelper.GetEnglishDate(datefrom);
+        var todate = dateto == null ? DateTime.Now : await DateHelper.GetEnglishDate(dateto);
+
+        var conn = DapperConnectionProvider.GetConnection();
+        var query = @"
+With OpeningBalance as (select ledger_id,
+                               case
+                                   when rem_amount < 0 then
+                                       rem_amount * -1
+                                   else rem_amount end                          as openingamount,
+                               case when rem_amount < 0 then 'Cr' else 'Dr' end as drcr
+                        from (select sum(dr_amount) - sum(cr_amount) rem_amount, ledger_id
+                              from accounting.transaction_details td
+                                       join accounting.transactions t on td.transaction_id = t.id
+                              where cast(txn_date as date) <= @datefrom
+                              group by ledger_id) d),
+     ClosingBalance as (select ledger_id,
+                               case
+                                   when rem_amount < 0 then
+                                       rem_amount * -1
+                                   else rem_amount end                          as closingamount,
+                               case when rem_amount < 0 then 'Cr' else 'Dr' end as cdrcr
+                        from (select sum(dr_amount) - sum(cr_amount) rem_amount, ledger_id
+                              from accounting.transaction_details td
+                                       join accounting.transactions t on td.transaction_id = t.id
+                              where cast(txn_date as date) <= @dateto
+                              group by ledger_id) d)
+
+select 
+       coalesce(openingamount, 0)         openingamount,
+       coalesce(o.ledger_id, c.ledger_id) ledgerid,
+       coalesce(drcr, cdrcr)              drcr,c.*
+from OpeningBalance o
+         right join ClosingBalance c on o.ledger_id = c.ledger_id
+where c.ledger_id=@ledgerid;
+";
+        var res = await conn.QueryFirstOrDefaultAsync<List<dynamic>>(query, new
+        {
+            ledgerid,
+            datefrom = fromdate,
+            dateto = todate
+        });
+
+        return res.ToList();
     }
 }
