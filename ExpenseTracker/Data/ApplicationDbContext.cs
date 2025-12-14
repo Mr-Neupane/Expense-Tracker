@@ -13,5 +13,7 @@ public class ApplicationDbContext : IdentityDbContext
     }
 
     public DbSet<Liability> Liabilities { get; set; }
+    public DbSet<Transaction> AccountingTransaction { get; set; }
+    public DbSet<TransactionDetail> TransactionDetails { get; set; }
 }
 
