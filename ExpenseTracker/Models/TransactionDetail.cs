@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Models
 
 {
-    [Table("transaction_details", Schema = "public")]
+    [Table("transaction_details", Schema = "accounting")]
     public class TransactionDetail
     {
         [Key] [Column("id")] public int Id { get; set; }

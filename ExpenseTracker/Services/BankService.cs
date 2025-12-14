@@ -70,7 +70,6 @@ public class BankService
         return txnreport.ToList();
     }
 
-   
 
     public static async Task<int> GetBankIdByLedgerId(int ledgerid)
     {
@@ -80,7 +79,6 @@ public class BankService
         return bankid ?? 0;
     }
 
-    
 
     public static async Task<List<dynamic>> GetBankTransactionList(int transactionid)
     {
