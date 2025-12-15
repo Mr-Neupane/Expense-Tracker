@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
@@ -11,6 +12,15 @@ namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
+    private readonly ApplicationDbContext _context;
+    private readonly VoucherService _voucherService;
+
+    public VoucherController(ApplicationDbContext context, VoucherService voucherService)
+    {
+        _context = context;
+        _voucherService = voucherService;
+    }
+
     private static async Task<int> RecordAccountingTransaction(AccountingTxn model)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
@@ -140,33 +150,98 @@ where t.status = 1
     }
 
     [HttpGet]
-    public IActionResult AddJV()
+    public IActionResult AddJv()
     {
         var model = new JournalVoucherVm();
-        model.Entries.Add(new JournalEntryVm()); // add default row
+        model.Entries.Add(new JournalEntryVm());
         return View(model);
     }
 
     [HttpPost]
-    public IActionResult AddJV(JournalVoucherVm vm)
+    public async Task<IActionResult> AddJv(JournalVoucherVm vm)
     {
-        
-        return View(vm);
+        try
+        {
+            var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
+            var vouchernumber = _voucherService.GetNextJvVoucherNo();
+
+            var transaction = new Transaction
+            {
+                TxnDate = txndate.ToUniversalTime(),
+                VoucherNo = vouchernumber,
+                Amount = vm.Entries.Sum(e => e.DrAmount),
+                Type = vm.Type,
+                TypeId = 0,
+                Remarks = vm.Narration,
+                RecStatus = vm.RecStatus,
+                RecDate = DateTime.UtcNow,
+                Status = vm.Status,
+                RecById = vm.RecById,
+                TransactionDetails = vm.Entries.Select(e => new TransactionDetail
+                {
+                    LedgerId = e.LedgerId,
+                    DrAmount = e.DrAmount,
+                    CrAmount = e.CrAmount,
+                    DrCr = e.DrAmount != 0 ? 'D' : 'C',
+                    RecStatus = vm.RecStatus,
+                    Status = vm.Status,
+                    RecById = vm.RecById
+                }).ToList()
+            };
+            await _context.AccountingTransaction.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+
+            foreach (var data in vm.Entries)
+            {
+                var conn = DapperConnectionProvider.GetConnection();
+                int? query = await conn.QueryFirstOrDefaultAsync<int>(
+                    "select ledgerId from bank.bank where ledgerid = @ledgerid",
+                    new { ledgerid = data.LedgerId });
+
+                var bankledger = query ?? 0;
+
+                var bankid = await BankService.GetBankIdByLedgerId(bankledger);
+                var banktrans = vm.Entries.Where(e => e.LedgerId == bankledger)
+                    .Select(e => new BankTransaction
+                    {
+                        BankId = bankid,
+                        TxnDate = vm.VoucherDate.ToUniversalTime(),
+                        Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
+                        Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
+                        Remarks = vm.Narration,
+                        RecDate = DateTime.UtcNow,
+                        RecById = vm.RecById,
+                        RecStatus = vm.RecStatus,
+                        Status = vm.Status,
+                        TransactionId = transaction.Id
+                    }).ToList();
+                await _context.BankTransaction.AddRangeAsync(banktrans);
+                await _context.SaveChangesAsync();
+            }
+
+
+            return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
     {
-        if (type == "Expense")
+        switch (type)
         {
-            await ReverseService.ReverseExpense(typeid, transactionid);
-        }
-        else if (type == "Income")
-        {
-            await ReverseService.ReverseIncome(typeid, transactionid);
-        }
-        else if (type == "Liability")
-        {
-            await ReverseService.ReverseRecordedLiability(typeid, transactionid);
+            case "Expense":
+                await ReverseService.ReverseExpense(typeid, transactionid);
+                break;
+            case "Income":
+                await ReverseService.ReverseIncome(typeid, transactionid);
+                break;
+            case "Liability":
+                await ReverseService.ReverseRecordedLiability(typeid, transactionid);
+                break;
         }
 
         return RedirectToAction("AccountingTransaction");
