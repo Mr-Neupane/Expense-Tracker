@@ -1,13 +1,23 @@
 ﻿using Dapper;
+using ExpenseTracker.Data;
+using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
 using ExpenseTracker.Providers;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace ExpenseTracker.Controllers;
 
 public class LedgerController : Controller
 {
+    private readonly ApplicationDbContext _context;
+
+    public LedgerController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     public async Task<IActionResult> CreateLedger()
     {
@@ -124,9 +134,21 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
     {
+        var conn = DapperConnectionProvider.GetConnection();
         var report = await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
+        var res = await _context.AccountingTransaction.Join(
+            _context.TransactionDetails.Where(e => e.LedgerId == vm.LedgerId),
+            transaction => transaction.Id,
+            detail => detail.TransactionId, (t, d) => new LedgerStatement
+            {
+                LedgerName = "",
+                DrAmount = d.DrAmount,
+                CrAmount = d.CrAmount,
+                TxnDate = t.TxnDate
+            }).ToListAsync();
 
-        return View();
+        vm.LedgerStatements = res;
+        return View(vm);
     }
 
     public IActionResult GetSubParents(int parentId)

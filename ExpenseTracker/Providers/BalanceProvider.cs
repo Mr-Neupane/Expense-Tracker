@@ -38,7 +38,7 @@ select RemBalance from FinalData where ledger_id=@ledgerid";
         return balance ?? 0;
     }
 
-    public static async Task<List<dynamic>> GetLedgerOpeningandCosingBalance(int ledgerid, DateTime datefrom,
+    public static async Task<LedgerStatementDto> GetLedgerOpeningandCosingBalance(int ledgerid, DateTime datefrom,
         DateTime dateto)
     {
         var fromdate = await DateHelper.GetEnglishDate(datefrom);
@@ -77,13 +77,13 @@ from OpeningBalance o
          right join ClosingBalance c on o.ledger_id = c.ledger_id
 where c.ledger_id=@ledgerid;
 ";
-        var res = await conn.QueryFirstOrDefaultAsync<List<dynamic>>(query, new
+        var res = await conn.QueryFirstOrDefaultAsync<LedgerStatementDto>(query, new
         {
-            ledgerid,
+            LedgerId = ledgerid,
             datefrom = fromdate,
             dateto = todate
         });
 
-        return res.ToList();
+        return res;
     }
 }
