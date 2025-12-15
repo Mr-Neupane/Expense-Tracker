@@ -3,59 +3,160 @@
 @{
     ViewData["Title"] = "Ledger Statement";
 }
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header text-white py-2">
+        </div>
+        <div class="card-body">
+            <form id="searchForm" method="post" asp-action="LedgerStatement" class="fw-bold">
+                
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="DateFrom" asp-for="DateFrom" class="form-label">
+                            Date From <span class="text-danger">*</span>
+                            
+                        </label>
+                        <input type="text" required="required"
+                               value="@await DateHelper.GetNepaliDate(DateTime.Now.AddDays(-30))"
+                               id="DateFrom"
+                               data-date-mask
+                               name="DateFrom"
+                               style="width: 40%"
+                               class="form-control"/>
+                    </div>
 
-<div style="margin: 20px;">
-    <h2>Ledger Statement</h2>
+                    <div class="col-md-3">
+                        <label for="DateTo" asp-for="DateTo" class="form-label">
+                            Date To <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)"
+                               required="required"
+                               id="DateTo"
+                               name="DateTo"
+                               data-date-mask
+                               style="width: 40%"
+                               class="form-control"/>
+                    </div>
 
-    <form id="searchForm" method="post" asp-action="LedgerStatement">
-        <label for="DateFrom" asp-for="DateFrom">Date From <span class="text-danger">*</span></label>
-        <input type="text" required="required" value="@await DateHelper.GetNepaliDate(DateTime.Now.AddDays(-30))"
-               id="DateFrom"
-               name="DateFrom"/>
+                    <div class="col-md-4">
+                        <label for="LedgerSelection" class="form-label">
+                            Select Ledger <span class="text-danger">*</span>
+                        </label>
+                        <select id="LedgerSelection" asp-for="LedgerId" name="LedgerId" required="required"
+                                class="form-select">
+                            <option value="">-- Select Ledger --</option>
+                        </select>
+                    </div>
 
-        <label for="DateTo" asp-for="DateTo">Date To <span class="text-danger">*</span></label>
-        <input type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)" required="required" id="DateTo"
-               name="DateTo"/>
-
-        <label for="">Select Ledger <span class="text-danger">*</span></label>
-        <select id="LedgerSelection" asp-for="LedgerId" name="LedgerId">
-            <option value="">-- Select Ledger --</option>
-        </select>
-
-        <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+@if (Model != null)
+{
+    <h3 class="d-flex justify-content-center mb-3">Ledger Statement</h3>
+    <div class="container-fluid mt-3">
+
+        <!-- Opening & Closing Balance -->
+        <div class="row mb-3">
+            <div class="col-md-6 offset-md-6 text-end fw-bold">
+                <strong>Opening Balance:</strong>
+                <span>@Model.OpeningBalance.ToString("N2")</span>
+                <br/>
+                <strong>Closing Balance:</strong>
+                <span>@Model.ClosingBalance.ToString("N2")</span>
+            </div>
+        </div>
+
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped w-100">
+                <thead class="table-light">
+                <tr>
+                    <th>S.N</th>
+                    <th style="width: 35%;">Ledger Name</th>
+                    <th style="width: 20%;">Transaction Date</th>
+                    <th class="text-end" style="width: 22%;">Debit Amount</th>
+                    <th class="text-end" style="width: 23%;">Credit Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                @{
+                    int sn = 1;
+                }
+                @foreach (var item in Model.LedgerStatements)
+                {
+                    <tr>
+                        <td>@sn</td>
+                        <td>@item.LedgerName</td>
+                        <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td>
+                        <td class="text-end">@item.DrAmount.ToString("N2")</td>
+                        <td class="text-end">@item.CrAmount.ToString("N2")</td>
+                    </tr>
+                    sn++;
+                }
+
+
+                <tr class="fw-bold">
+                    <td></td>
+                    <td>Total Amount</td>
+                    <td></td>
+                    <td>@Model.LedgerStatements.Sum(e => e.DrAmount).ToString("N2")</td>
+                    <td>@Model.LedgerStatements.Sum(e => e.CrAmount).ToString("N2")</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+}
+
+else
+{
+    TempData["AlertMessage"] = "Ledger statement not found";
+}
+
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Function to load the ledgers
+
         function loadLedgers() {
+            var selectedLedgerId = localStorage.getItem('selectedLedgerId');
+
             $.ajax({
                 url: '/DropdownProvider/GetLedgers/',
                 method: 'GET',
                 success: function (data) {
                     $('#LedgerSelection').empty();
-
                     $('#LedgerSelection').append('<option value="">-- Select Ledger --</option>');
+
                     $.each(data, function (index, ledger) {
                         $('#LedgerSelection').append(
                             $('<option>', {
                                 value: ledger.id,
-                                text: ledger.coaname + ' | ' + ledger.ledgername
+                                text: ledger.coaname + ' | ' + ledger.ledgername,
+                                selected: ledger.id == selectedLedgerId
                             })
                         );
                     });
                 },
                 error: function (xhr, status, error) {
-
                     alert('Error fetching ledgers: ' + error);
                 }
             });
         }
 
-        // Initialize the loading of ledgers when the page is ready
+        $('#LedgerSelection').on('change', function () {
+            localStorage.setItem('selectedLedgerId', $(this).val());
+        });
+
         loadLedgers();
     });
 

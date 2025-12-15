@@ -134,20 +134,24 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
     {
-        var conn = DapperConnectionProvider.GetConnection();
         var report = await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
-        var res = await _context.AccountingTransaction.Join(
-            _context.TransactionDetails.Where(e => e.LedgerId == vm.LedgerId),
-            transaction => transaction.Id,
-            detail => detail.TransactionId, (t, d) => new LedgerStatement
+        var statement = _context.Ledgers.Join(_context.TransactionDetails, l => l.Id, d => d.LedgerId, (l, td) => new
+        {
+            l, td
+        }).Join(_context.AccountingTransaction, x => x.td.TransactionId,
+            t => t.Id,
+            (x, t) => new LedgerStatement
             {
-                LedgerName = "",
-                DrAmount = d.DrAmount,
-                CrAmount = d.CrAmount,
+                LedgerId = x.td.LedgerId,
+                LedgerName = x.l.Ledgername,
+                DrAmount = x.td.DrAmount,
+                CrAmount = x.td.CrAmount,
                 TxnDate = t.TxnDate
-            }).ToListAsync();
+            }).Where(x => x.LedgerId != vm.LedgerId).ToListAsync();
 
-        vm.LedgerStatements = res;
+        vm.LedgerStatements = await statement;
+        vm.OpeningBalance = report.OpeningBalance;
+        vm.ClosingBalance = report.ClosingBalance;
         return View(vm);
     }
 

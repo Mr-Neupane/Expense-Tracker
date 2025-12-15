@@ -46,22 +46,22 @@ select RemBalance from FinalData where ledger_id=@ledgerid";
 
         var conn = DapperConnectionProvider.GetConnection();
         var query = @"
-With OpeningBalance as (select ledger_id,
+With Opening as (select ledger_id,
                                case
                                    when rem_amount < 0 then
                                        rem_amount * -1
-                                   else rem_amount end                          as openingamount,
+                                   else rem_amount end                          as OpeningBalance,
                                case when rem_amount < 0 then 'Cr' else 'Dr' end as drcr
                         from (select sum(dr_amount) - sum(cr_amount) rem_amount, ledger_id
                               from accounting.transaction_details td
                                        join accounting.transactions t on td.transaction_id = t.id
                               where cast(txn_date as date) <= @datefrom
                               group by ledger_id) d),
-     ClosingBalance as (select ledger_id,
+     Closing as (select ledger_id,
                                case
                                    when rem_amount < 0 then
                                        rem_amount * -1
-                                   else rem_amount end                          as closingamount,
+                                   else rem_amount end                          as ClosingBalance,
                                case when rem_amount < 0 then 'Cr' else 'Dr' end as cdrcr
                         from (select sum(dr_amount) - sum(cr_amount) rem_amount, ledger_id
                               from accounting.transaction_details td
@@ -70,11 +70,11 @@ With OpeningBalance as (select ledger_id,
                               group by ledger_id) d)
 
 select 
-       coalesce(openingamount, 0)         openingamount,
+       coalesce(OpeningBalance, 0)         OpeningBalance,
        coalesce(o.ledger_id, c.ledger_id) ledgerid,
        coalesce(drcr, cdrcr)              drcr,c.*
-from OpeningBalance o
-         right join ClosingBalance c on o.ledger_id = c.ledger_id
+from Opening o
+         right join Closing c on o.ledger_id = c.ledger_id
 where c.ledger_id=@ledgerid;
 ";
         var res = await conn.QueryFirstOrDefaultAsync<LedgerStatementDto>(query, new
@@ -84,6 +84,13 @@ where c.ledger_id=@ledgerid;
             dateto = todate
         });
 
-        return res;
+        var rep = new LedgerStatementDto
+        {
+            LedgerId = res.LedgerId,
+            OpeningBalance = res.OpeningBalance,
+            ClosingBalance = res.ClosingBalance,
+        };
+        conn.Close();
+        return rep;
     }
 }

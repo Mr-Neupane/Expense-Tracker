@@ -8,10 +8,12 @@ public class DateHelper
         var engdate = date.ToString("yyyy-MM-dd").Trim();
         var con = DapperConnectionProvider.GetConnection();
         var query = @"select nepalidate from tbl_NepaliDate where englishdate = CAST(@engdate AS DATE) ";
-        var nepdate = await con.QueryFirstAsync<string>(query, new { engdate });
-        return nepdate;
+        var nepdate = await con.QueryFirstAsync<DateTime>(query, new { engdate });
+        var res = nepdate.ToString("yyyy-MM-dd").Trim();
+        con.Close();
+        return res;
     }
-    
+
     public static async Task<DateTime> GetEnglishDate(DateTime date)
     {
         var nepalidate = date.ToString("yyyy-MM-dd").Trim();
