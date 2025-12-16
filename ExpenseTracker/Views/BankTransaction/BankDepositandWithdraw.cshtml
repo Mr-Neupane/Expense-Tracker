@@ -52,7 +52,6 @@
             <div class="mb-3">
                 <label asp-for="Remarks"></label>
                 <textarea asp-for="Remarks" class="form-control" placeholder="Enter remarks"></textarea>
-                <span asp-validation-for="Remarks" class="text-danger"></span>
             </div>
 
             <button type="submit" class="btn btn-primary">Record Transaction</button>
@@ -85,17 +84,5 @@
     </script>
 }
 
-@if (TempData["AlertMessage"] != null)
-{
-    <script>
-        alert("@TempData["AlertMessage"]");
-    </script>
-}
-@if (TempData["SuccessMessage"] != null)
-{
-    <script>
-        alert("@TempData["SuccessMessage"]");
-    </script>
-}
 
 

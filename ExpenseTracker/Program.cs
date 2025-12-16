@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
 using ExpenseTracker.Services;
+using NToastNotify;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,14 @@ builder.Services.AddScoped<VoucherService, VoucherService>();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddNToastNotifyToastr(new ToastrOptions
+    {
+        PositionClass = ToastPositions.BottomRight,
+        CloseButton = true,
+        TimeOut = 5000
+    });
+
 
 DapperConnectionProvider.Initialize(builder.Configuration);
 
@@ -39,6 +48,13 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Lax
+});
+
+app.UseNToastNotify();
 
 // Run Seeded Query During Build
 await SeededData.SeededQuery();
