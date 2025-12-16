@@ -79,10 +79,11 @@
                 <thead class="table-light">
                 <tr>
                     <th>S.N</th>
-                    <th style="width: 35%;">Ledger Name</th>
+                    <th style="width: 30%;">Ledger Name</th>
+                    <th style="width: 15%;">Voucher No</th>
                     <th style="width: 20%;">Transaction Date</th>
                     <th class="text-end" style="width: 22%;">Debit Amount</th>
-                    <th class="text-end" style="width: 23%;">Credit Amount</th>
+                    <th class="text-end" style="width: 25%;">Credit Amount</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -94,6 +95,7 @@
                     <tr>
                         <td>@sn</td>
                         <td>@item.LedgerName</td>
+                        <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher" asp-action="VoucherDetail" asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
                         <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td>
                         <td class="text-end">@item.DrAmount.ToString("N2")</td>
                         <td class="text-end">@item.CrAmount.ToString("N2")</td>
@@ -105,6 +107,7 @@
                 <tr class="fw-bold">
                     <td></td>
                     <td>Total Amount</td>
+                    <td></td>
                     <td></td>
                     <td>@Model.LedgerStatements.Sum(e => e.DrAmount).ToString("N2")</td>
                     <td>@Model.LedgerStatements.Sum(e => e.CrAmount).ToString("N2")</td>

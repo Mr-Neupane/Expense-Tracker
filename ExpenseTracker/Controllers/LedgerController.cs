@@ -135,21 +135,24 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
     public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
     {
         var report = await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
-        var statement = _context.Ledgers.Join(_context.TransactionDetails, l => l.Id, d => d.LedgerId, (l, td) => new
-        {
-            l, td
-        }).Join(_context.AccountingTransaction, x => x.td.TransactionId,
-            t => t.Id,
-            (x, t) => new LedgerStatement
+        var statement = await (from t in _context.AccountingTransaction
+            join td in _context.TransactionDetails.Where(d => d.LedgerId == vm.LedgerId) on t.Id equals td
+                .TransactionId
+            join td2 in _context.TransactionDetails on td.TransactionId equals td2.TransactionId
+            join l in _context.Ledgers on td2.LedgerId equals l.Id
+            where td2.LedgerId != vm.LedgerId && t.Status == 1 && td.Status == 1
+            select new LedgerStatement
             {
-                LedgerId = x.td.LedgerId,
-                LedgerName = x.l.Ledgername,
-                DrAmount = x.td.DrAmount,
-                CrAmount = x.td.CrAmount,
+                TransactionID = t.Id,
+                LedgerId = td2.LedgerId,
+                VoucherNo = t.VoucherNo,
+                LedgerName = l.Ledgername,
+                DrAmount = td.DrAmount,
+                CrAmount = td.CrAmount,
                 TxnDate = t.TxnDate
-            }).Where(x => x.LedgerId != vm.LedgerId).ToListAsync();
+            }).ToListAsync();
 
-        vm.LedgerStatements = await statement;
+        vm.LedgerStatements = statement;
         vm.OpeningBalance = report.OpeningBalance;
         vm.ClosingBalance = report.ClosingBalance;
         return View(vm);
