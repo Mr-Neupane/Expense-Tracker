@@ -51,6 +51,7 @@ public class BankTransactionController : Controller
                     });
                     await BankService.UpdateTransactionDuringBankTransaction(banktransactionid, transactionid);
                     await txn.CommitAsync();
+                    await con.CloseAsync();
                     await BankRemainingBalanceManager(vm.BankId);
                     TempData["SuccessMessage"] =
                         "Bank " + vm.Type.ToLower() + " completed with amount Rs. " + vm.Amount;
@@ -125,7 +126,7 @@ public class BankTransactionController : Controller
           and status = 1
         group by bank_id
     ) d
-    where bank_id =1 group by bank_id
+    group by bank_id
 )  
 update bank.bank b
 set remainingbalance = amount

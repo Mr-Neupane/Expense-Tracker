@@ -1,9 +1,10 @@
 ﻿using Dapper;
 using ExpenseTracker;
 using ExpenseTracker.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
-public class BankService
+public class BankService 
 {
     public static async Task<int> RecordBankTransaction(BankTransactionVm vm)
     {
