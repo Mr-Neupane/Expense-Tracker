@@ -6,16 +6,19 @@ using TestApplication.ViewModels;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using NToastNotify;
 
 namespace ExpenseTracker.Controllers;
 
 public class LedgerController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IToastNotification _toastNotification;
 
-    public LedgerController(ApplicationDbContext context)
+    public LedgerController(ApplicationDbContext context, IToastNotification toastNotification)
     {
         _context = context;
+        _toastNotification = toastNotification;
     }
 
     [HttpGet]
@@ -33,15 +36,27 @@ public class LedgerController : Controller
             {
                 try
                 {
-                    await NewLedger(vm);
-                    return RedirectToAction("LedgerReport");
+                    var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
+                        .AnyAsync();
+
+                    if (!exists)
+                    {
+                        await NewLedger(vm);
+                        _toastNotification.AddSuccessToastMessage($"{vm.LedgerName} created successfully");
+                        return RedirectToAction("LedgerReport");
+                    }
+                    else
+                    {
+                        _toastNotification.AddErrorToastMessage($"Ledger with name {vm.LedgerName} already exists.");
+                        return View();
+                    }
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Error creating ledger." + e.Message);
+                    return View();
                 }
             }
         }

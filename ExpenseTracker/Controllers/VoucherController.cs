@@ -6,6 +6,7 @@ using ExpenseTracker.Services;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
@@ -14,11 +15,14 @@ public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly VoucherService _voucherService;
+    private readonly IToastNotification _toastNotification;
 
-    public VoucherController(ApplicationDbContext context, VoucherService voucherService)
+    public VoucherController(ApplicationDbContext context, VoucherService voucherService,
+        IToastNotification toastNotification)
     {
         _context = context;
         _voucherService = voucherService;
+        _toastNotification = toastNotification;
     }
 
     private static async Task<int> RecordAccountingTransaction(AccountingTxn model)
@@ -219,13 +223,15 @@ where t.status = 1
                 await _context.SaveChangesAsync();
             }
 
-
+            
+            _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
             return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            _toastNotification.AddErrorToastMessage("Issue creating voucher."+e.Message);
+            return View();
         }
     }
 

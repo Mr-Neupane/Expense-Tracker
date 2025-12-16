@@ -3,12 +3,20 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Providers;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
 public class BankController : Controller
 {
+    private readonly IToastNotification _toastNotification;
+
+    public BankController(IToastNotification toastNotification)
+    {
+        _toastNotification = toastNotification;
+    }
+
     [HttpGet]
     public IActionResult CreateBank()
     {
@@ -56,14 +64,16 @@ public class BankController : Controller
                             recbyid = -1
                         });
                     await txn.CommitAsync();
+                    
+                    _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
 
                     return RedirectToAction("BankReport");
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Error creating bank." + e.Message);
+                    return View();
                 }
             }
         }

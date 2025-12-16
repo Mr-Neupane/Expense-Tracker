@@ -5,11 +5,19 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ExpenseTracker.Services;
+using NToastNotify;
 
 namespace ExpenseTracker.Controllers;
 
 public class BankTransactionController : Controller
 {
+    private readonly IToastNotification _toastNotification;
+
+    public BankTransactionController(IToastNotification toastNotification)
+    {
+        _toastNotification = toastNotification;
+    }
+
     [HttpGet]
     public IActionResult BankDepositandWithdraw()
     {
@@ -30,9 +38,9 @@ public class BankTransactionController : Controller
                     var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
                     if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
                     {
-                        TempData["AlertMessage"] =
+                        _toastNotification.AddAlertToastMessage(
                             "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
-                            ".";
+                            ".");
                         return RedirectToAction("BankDepositandWithdraw");
                     }
 
@@ -53,16 +61,17 @@ public class BankTransactionController : Controller
                     await txn.CommitAsync();
                     await con.CloseAsync();
                     await BankRemainingBalanceManager(vm.BankId);
-                    TempData["SuccessMessage"] =
-                        "Bank " + vm.Type.ToLower() + " completed with amount Rs. " + vm.Amount;
-                    return RedirectToAction("BankDepositandWithdraw");
+
+                    _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
+                                                              " completed with amount Rs. " + vm.Amount);
+                    return View();
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await con.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage($"Issue recording {vm.Type.ToLower()}." + e.Message);
+                    return View();
                 }
             }
         }
@@ -92,14 +101,14 @@ public class BankTransactionController : Controller
                 try
                 {
                     await ReverseService.ReverseBankTransactionByAccTranId(transactionid);
-                    TempData["SuccessMessage"] = "Bank " + type.ToLower() + " reverse transaction completed";
+                    _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() + " reverse transaction completed");
                     return RedirectToAction("BankTransactionReport");
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Issuee reversing bank transaction: " + e.Message);
+                    return RedirectToAction("BankTransactionReport");
                 }
             }
         }
