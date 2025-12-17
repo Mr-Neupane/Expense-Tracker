@@ -96,7 +96,7 @@ from accounting.ledger l
                 {
                     if (validation == 1)
                     {
-                        TempData["AlertMessage"] = "Ledger code already exists";
+                     _toastNotification.AddErrorToastMessage("Parent ledger already exists");
                         return RedirectToAction("CreateParentLedger");
                     }
 
@@ -117,14 +117,15 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
                     });
                     await txn.CommitAsync();
                     await conn.CloseAsync();
-                    return RedirectToAction("CreateParentLedger");
+                    _toastNotification.AddSuccessToastMessage($"{vm.ParentLedgerName} created successfully");
+                    return View();
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Error creating parent ledger" + e.Message);
+                    return View(vm);
                 }
             }
         }
@@ -191,33 +192,23 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
         {
             using (var txn = conn.BeginTransaction())
             {
-                try
-                {
-                    var ledgercode = await LedgerCode.GetLedgerCode(vm.SubParentId);
+                var ledgercode = await LedgerCode.GetLedgerCode(vm.SubParentId);
 
-                    var newLedger = @"
+                var newLedger = @"
                                 INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, code, subparentid)
                                  values (@parentId, @ledgerName, @recStatus, @status, @recById, @code, @subparentid)
                               ON CONFLICT (ledgername, code) DO NOTHING returning id; ";
-                    int? parentid = null;
-                    var ledgerid = await conn.QueryFirstAsync<int>(newLedger,
-                        new
-                        {
-                            parentid = parentid, Ledgername = vm.LedgerName, recstatus = vm.RecStatus,
-                            status = vm.Status,
-                            RecById = -1, subparentid = vm.SubParentId, code = ledgercode
-                        });
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                    return ledgerid;
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
+                int? parentid = null;
+                var ledgerid = await conn.QueryFirstAsync<int>(newLedger,
+                    new
+                    {
+                        parentid = parentid, Ledgername = vm.LedgerName, recstatus = vm.RecStatus,
+                        status = vm.Status,
+                        RecById = -1, subparentid = vm.SubParentId, code = ledgercode
+                    });
+                await txn.CommitAsync();
+                await conn.CloseAsync();
+                return ledgerid;
             }
         }
     }

@@ -2,10 +2,11 @@
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Providers;
 using Npgsql;
+using NToastNotify;
 
 namespace ExpenseTracker.Services;
 
-public static class ReverseService
+public class ReverseService
 {
     public static async Task ReverseBankTransactionByAccTranId(int tranid)
     {
@@ -85,8 +86,6 @@ public static class ReverseService
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
-                    Console.WriteLine(e);
-                    throw;
                 }
             }
         }
@@ -130,8 +129,6 @@ public static class ReverseService
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
                 }
             }
         }
@@ -176,8 +173,6 @@ public static class ReverseService
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
                 }
             }
         }

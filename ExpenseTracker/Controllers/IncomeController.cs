@@ -4,12 +4,20 @@ using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
 public class IncomeController : Controller
 {
+    private readonly IToastNotification _toastNotification;
+
+    public IncomeController(IToastNotification toastNotification)
+    {
+        _toastNotification = toastNotification;
+    }
+
     public IActionResult RecordIncome()
     {
         return View();
@@ -72,16 +80,15 @@ public class IncomeController : Controller
 
                     await txn.CommitAsync();
                     await conn.CloseAsync();
-                    TempData["SuccessMessage"] = "Income record successfully created";
-                    return View("RecordIncome");
+                    _toastNotification.AddSuccessToastMessage("Income recorded successfully.");
+                    return View();
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    TempData["ErrorMessage"] = e.Message;
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Error recording income" + e.Message);
+                    return View();
                 }
             }
         }
