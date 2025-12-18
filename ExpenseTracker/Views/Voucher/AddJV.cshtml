@@ -1,13 +1,14 @@
 ﻿@model TestApplication.ViewModels.JournalVoucherVm
 @{
-int initialRows = 1;
+    int initialRows = 1;
 }
 
 <form method="post" asp-action="AddJV">
     <div class="row mb-2">
         <div class="col-md-3">
             <label asp-for="VoucherDate" class="form-label mb-1">Voucher Date <span class="text-danger">*</span></label>
-            <input asp-for="VoucherDate" type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)" required="required" class="form-control form-control-sm" />
+            <input asp-for="VoucherDate" type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)"
+                   required="required" class="form-control form-control-sm"/>
             @* <span asp-validation-for="VoucherDate" class="text-danger"></span> *@
         </div>
     </div>
@@ -18,6 +19,7 @@ int initialRows = 1;
             <tr>
                 <th>Ledger Name</th>
                 <th width="130">Ledger Code</th>
+                <th width="130">Balance</th>
                 <th width="120" class="text-end">Total Dr</th>
                 <th width="120" class="text-end">Total Cr</th>
                 <th width="60" class="text-center">Action</th>
@@ -32,13 +34,18 @@ int initialRows = 1;
                         <span asp-validation-for="Entries[i].LedgerId" class="text-danger"></span>
                     </td>
                     <td>
-                        <input asp-for="Entries[i].LedgerCode" class="form-control form-control-sm ledger-code" readonly />
+                        <input asp-for="Entries[i].LedgerCode" class="form-control form-control-sm ledger-code"
+                               readonly/>
                     </td>
                     <td>
-                        <input asp-for="Entries[i].DrAmount" class="form-control form-control-sm text-end dr-amount" />
+                        <input asp-for="Entries[i].LedgerBalance" value="" class="form-control form-control-sm ledger-balance "
+                               readonly/>
                     </td>
                     <td>
-                        <input asp-for="Entries[i].CrAmount" class="form-control form-control-sm text-end cr-amount" />
+                        <input asp-for="Entries[i].DrAmount" class="form-control form-control-sm text-end dr-amount"/>
+                    </td>
+                    <td>
+                        <input asp-for="Entries[i].CrAmount" class="form-control form-control-sm text-end cr-amount"/>
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
@@ -49,9 +56,10 @@ int initialRows = 1;
             </tbody>
             <tfoot class="table-light">
             <tr>
-                <th colspan="2" class="text-end">Total</th>
+                <th colspan="3" class="text-end">Total</th>
                 <th class="text-end" id="totalDr">0.00</th>
                 <th class="text-end" id="totalCr">0.00</th>
+
                 <th></th>
             </tr>
             </tfoot>
@@ -80,13 +88,18 @@ int initialRows = 1;
             <select name="Entries[__index__].LedgerId" class="form-select form-select-sm ledger-select"></select>
         </td>
         <td>
-            <input name="Entries[__index__].LedgerCode" class="form-control form-control-sm ledger-code" readonly />
+            <input name="Entries[__index__].LedgerCode" class="form-control form-control-sm ledger-code" readonly/>
         </td>
         <td>
-            <input type="number" step="0.01" name="Entries[__index__].DrAmount" class="form-control form-control-sm text-end dr-amount" value="0" />
+            <input name="Entries[__index__].LedgerBalance" class="form-control form-control-sm ledger-balance" readonly/>
         </td>
         <td>
-            <input type="number" step="0.01" name="Entries[__index__].CrAmount" class="form-control form-control-sm text-end cr-amount" value="0" />
+            <input type="number" step="0.01" name="Entries[__index__].DrAmount"
+                   class="form-control form-control-sm text-end dr-amount" value="0"/>
+        </td>
+        <td>
+            <input type="number" step="0.01" name="Entries[__index__].CrAmount"
+                   class="form-control form-control-sm text-end cr-amount" value="0"/>
         </td>
         <td class="text-center">
             <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
@@ -126,11 +139,16 @@ int initialRows = 1;
         // Calculate totals
         function calculateTotals() {
             let dr = 0, cr = 0;
-            $('.dr-amount').each(function () { dr += parseFloat($(this).val()) || 0; });
-            $('.cr-amount').each(function () { cr += parseFloat($(this).val()) || 0; });
+            $('.dr-amount').each(function () {
+                dr += parseFloat($(this).val()) || 0;
+            });
+            $('.cr-amount').each(function () {
+                cr += parseFloat($(this).val()) || 0;
+            });
             $('#totalDr').text(dr.toFixed(2));
             $('#totalCr').text(cr.toFixed(2));
         }
+
         $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
         calculateTotals();
 
@@ -160,24 +178,37 @@ int initialRows = 1;
 
         function calculateTotals() {
             let dr = 0, cr = 0;
-            $('.dr-amount').each(function () { dr += parseFloat($(this).val()) || 0; });
-            $('.cr-amount').each(function () { cr += parseFloat($(this).val()) || 0; });
+            $('.dr-amount').each(function () {
+                dr += parseFloat($(this).val()) || 0;
+            });
+            $('.cr-amount').each(function () {
+                cr += parseFloat($(this).val()) || 0;
+            });
 
             $('#totalDr').text(dr.toFixed(2));
             $('#totalCr').text(cr.toFixed(2));
 
             // Enable save button only if Dr = Cr and both > 0
-            if(dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
+            if (dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
                 $('button[type="submit"]').prop('disabled', false);
             } else {
                 $('button[type="submit"]').prop('disabled', true);
             }
         }
-
         $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
         calculateTotals();
 
-        // Other code for adding/removing rows...
+        $(document).on('input', '.dr-amount, .cr-amount', function () {
+            let drAmount = $('.dr-amount').val();
+            let crAmount = $('.cr-amount').val();
+
+            if (drAmount != 0 && crAmount != 0) {
+                $('.dr-amount').val(0);
+                $('.cr-amount').val(0);
+                calculateTotals().val(0)
+            }
+        });
+
     });
 
 </script>
