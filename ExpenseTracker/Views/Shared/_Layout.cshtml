@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using NToastNotify
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -177,6 +178,5 @@
 <script src="~/js/date-mask.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 @await Component.InvokeAsync("NToastNotify")
-
 </body>
 </html>

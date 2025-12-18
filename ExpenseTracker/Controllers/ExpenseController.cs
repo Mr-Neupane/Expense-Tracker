@@ -4,12 +4,20 @@ using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
 
 public class ExpenseController : Controller
 {
+    private readonly IToastNotification _toastNotification;
+
+    public ExpenseController(IToastNotification toastNotification)
+    {
+        _toastNotification = toastNotification;
+    }
+
     [HttpGet]
     public IActionResult RecordExpense()
     {
@@ -79,16 +87,15 @@ public class ExpenseController : Controller
 
                     await txn.CommitAsync();
                     await conn.CloseAsync();
-                    TempData["SuccessMessage"] = "Expense record successfully created";
+                    _toastNotification.AddSuccessToastMessage("Expense recorded successfully.");
                     return RedirectToAction("ExpenseReport");
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    TempData["ErrorMessage"] = e.Message;
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage("Error recording expense." + e.Message);
+                    return View(vm);
                 }
             }
         }
@@ -107,5 +114,4 @@ where t.type = 'Expense'
         var report = await conn.QueryAsync(query);
         return View(report);
     }
-
 }

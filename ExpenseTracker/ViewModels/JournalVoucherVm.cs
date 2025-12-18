@@ -13,6 +13,7 @@ public class JournalEntryVm
 {
     public int LedgerId { get; set; }
     public string LedgerCode { get; set; }
+    public decimal LedgerBalance  { get; set; }
     public decimal DrAmount { get; set; }
     public decimal CrAmount { get; set; }
 }
