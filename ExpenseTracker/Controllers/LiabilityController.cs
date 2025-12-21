@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
@@ -7,17 +8,20 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using TestApplication.ViewModels;
+using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class LiabilityController : Controller
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly IVoucherService _voucherService;
 
 
-    public LiabilityController(ApplicationDbContext dbContext)
+    public LiabilityController(ApplicationDbContext dbContext, IVoucherService voucherService)
     {
         _dbContext = dbContext;
+        _voucherService = voucherService;
     }
 
     // GET
@@ -44,19 +48,32 @@ public class LiabilityController : Controller
         await _dbContext.Liabilities.AddAsync(liab);
         await _dbContext.SaveChangesAsync();
 
-        var txnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
+        var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
+
+        var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
         {
             TxnDate = engdate,
-            DrAmount = 0,
-            CrAmount = vm.Amount,
+            Amount = vm.Amount,
             Type = "Liability",
-            TypeID = liab.Id,
-            FromLedgerID = vm.LiabilityLedger,
-            ToLedgerID = vm.LiabilityFromLedger,
+            TypeId = liab.Id,
             Remarks = vm.Remarks,
+            IsJv = false,
+            Details = new List<TransactionDetailDto>()
+            {
+                new()
+                {
+                    IsDr = true,
+                    Amount = vm.Amount,
+                    LedgerID = vm.LiabilityFromLedger
+                },
+                new()
+                {
+                    IsDr = false,
+                    Amount = vm.Amount,
+                    LedgerID = vm.LiabilityLedger
+                }
+            },
         });
-
-        var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
 
         if (bankid != 0)
         {
@@ -71,7 +88,7 @@ public class LiabilityController : Controller
                 Remarks = vm.Remarks,
                 Type = "Deposit"
             });
-            await BankService.UpdateTransactionDuringBankTransaction(banktransaction, txnid);
+            await BankService.UpdateTransactionDuringBankTransaction(banktransaction, acctxn.Id);
         }
 
         return RedirectToAction("AccountingTransaction", "Voucher");
@@ -91,5 +108,4 @@ where t.type = 'Liability'
         var report = await conn.QueryAsync(query);
         return View(report);
     }
-   
 }

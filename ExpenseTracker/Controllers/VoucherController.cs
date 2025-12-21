@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using NToastNotify;
 using TestApplication.ViewModels;
+using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
-    private readonly VoucherService _voucherService;
+    private readonly IVoucherService _voucherService;
     private readonly IToastNotification _toastNotification;
 
-    public VoucherController(ApplicationDbContext context, VoucherService voucherService,
+    public VoucherController(ApplicationDbContext context, IVoucherService voucherService,
         IToastNotification toastNotification)
     {
         _context = context;
@@ -166,71 +167,73 @@ where t.status = 1
     {
         try
         {
-            var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
-            var vouchernumber = _voucherService.GetNextJvVoucherNo();
+            // var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
+            // var vouchernumber = _voucherService.GetNextJvVoucherNo();
+            //
+            // var transaction = new Transaction
+            // {
+            //     TxnDate = txndate.ToUniversalTime(),
+            //     VoucherNo = vouchernumber,
+            //     Amount = vm.Entries.Sum(e => e.DrAmount),
+            //     Type = vm.Type,
+            //     TypeId = 0,
+            //     Remarks = vm.Narration,
+            //     RecStatus = vm.RecStatus,
+            //     RecDate = DateTime.UtcNow,
+            //     Status = vm.Status,
+            //     RecById = vm.RecById,
+            //     TransactionDetails = vm.Entries.Select(e => new TransactionDetail
+            //     {
+            //         LedgerId = e.LedgerId,
+            //         DrAmount = e.DrAmount,
+            //         CrAmount = e.CrAmount,
+            //         DrCr = e.DrAmount != 0 ? 'D' : 'C',
+            //         RecStatus = vm.RecStatus,
+            //         Status = vm.Status,
+            //         RecById = vm.RecById
+            //     }).ToList()
+            // };
+            // await _context.AccountingTransaction.AddAsync(transaction);
+            // await _context.SaveChangesAsync();
+            //
+            // foreach (var data in vm.Entries)
+            // {
+            //     var conn = DapperConnectionProvider.GetConnection();
+            //     int? query = await conn.QueryFirstOrDefaultAsync<int>(
+            //         "select ledgerId from bank.bank where ledgerid = @ledgerid",
+            //         new { ledgerid = data.LedgerId });
+            //
+            //     var bankledger = query ?? 0;
+            //
+            //     var bankid = await BankService.GetBankIdByLedgerId(bankledger);
+            //     var banktrans = vm.Entries.Where(e => e.LedgerId == bankledger)
+            //         .Select(e => new BankTransaction
+            //         {
+            //             BankId = bankid,
+            //             TxnDate = vm.VoucherDate.ToUniversalTime(),
+            //             Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
+            //             Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
+            //             Remarks = vm.Narration,
+            //             RecDate = DateTime.UtcNow,
+            //             RecById = vm.RecById,
+            //             RecStatus = vm.RecStatus,
+            //             Status = vm.Status,
+            //             TransactionId = transaction.Id
+            //         }).ToList();
+            //     await _context.BankTransaction.AddRangeAsync(banktrans);
+            //     await _context.SaveChangesAsync();
+            // }
+            //
+            //
+            // _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
+            // return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
 
-            var transaction = new Transaction
-            {
-                TxnDate = txndate.ToUniversalTime(),
-                VoucherNo = vouchernumber,
-                Amount = vm.Entries.Sum(e => e.DrAmount),
-                Type = vm.Type,
-                TypeId = 0,
-                Remarks = vm.Narration,
-                RecStatus = vm.RecStatus,
-                RecDate = DateTime.UtcNow,
-                Status = vm.Status,
-                RecById = vm.RecById,
-                TransactionDetails = vm.Entries.Select(e => new TransactionDetail
-                {
-                    LedgerId = e.LedgerId,
-                    DrAmount = e.DrAmount,
-                    CrAmount = e.CrAmount,
-                    DrCr = e.DrAmount != 0 ? 'D' : 'C',
-                    RecStatus = vm.RecStatus,
-                    Status = vm.Status,
-                    RecById = vm.RecById
-                }).ToList()
-            };
-            await _context.AccountingTransaction.AddAsync(transaction);
-            await _context.SaveChangesAsync();
-
-            foreach (var data in vm.Entries)
-            {
-                var conn = DapperConnectionProvider.GetConnection();
-                int? query = await conn.QueryFirstOrDefaultAsync<int>(
-                    "select ledgerId from bank.bank where ledgerid = @ledgerid",
-                    new { ledgerid = data.LedgerId });
-
-                var bankledger = query ?? 0;
-
-                var bankid = await BankService.GetBankIdByLedgerId(bankledger);
-                var banktrans = vm.Entries.Where(e => e.LedgerId == bankledger)
-                    .Select(e => new BankTransaction
-                    {
-                        BankId = bankid,
-                        TxnDate = vm.VoucherDate.ToUniversalTime(),
-                        Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
-                        Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
-                        Remarks = vm.Narration,
-                        RecDate = DateTime.UtcNow,
-                        RecById = vm.RecById,
-                        RecStatus = vm.RecStatus,
-                        Status = vm.Status,
-                        TransactionId = transaction.Id
-                    }).ToList();
-                await _context.BankTransaction.AddRangeAsync(banktrans);
-                await _context.SaveChangesAsync();
-            }
-
-            
-            _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
-            return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
+            return View();
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            _toastNotification.AddErrorToastMessage("Issue creating voucher."+e.Message);
+            _toastNotification.AddErrorToastMessage("Issue creating voucher." + e.Message);
             return View();
         }
     }

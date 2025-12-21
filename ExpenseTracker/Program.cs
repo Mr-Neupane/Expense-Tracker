@@ -6,6 +6,7 @@ using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
 using ExpenseTracker.Services;
 using NToastNotify;
+using TestApplication.ViewModels.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddScoped<VoucherService, VoucherService>();
+builder.Services.AddScoped<IVoucherService, VoucherService>();
 
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

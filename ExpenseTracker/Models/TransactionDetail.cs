@@ -9,7 +9,9 @@ namespace ExpenseTracker.Models
     {
         [Key] [Column("id")] public int Id { get; set; }
 
+        public virtual Transaction Transaction { get; set; }
         [Column("transaction_id")] public int TransactionId { get; set; }
+
 
         [Column("ledger_id")] public int LedgerId { get; set; }
 
