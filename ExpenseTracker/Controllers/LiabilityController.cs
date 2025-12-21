@@ -6,6 +6,7 @@ using ExpenseTracker.Services;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;
@@ -13,11 +14,13 @@ namespace ExpenseTracker.Controllers;
 public class LiabilityController : Controller
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly IToastNotification _toastNotification;
 
 
-    public LiabilityController(ApplicationDbContext dbContext)
+    public LiabilityController(ApplicationDbContext dbContext, IToastNotification toastNotification)
     {
         _dbContext = dbContext;
+        _toastNotification = toastNotification;
     }
 
     // GET
@@ -27,54 +30,64 @@ public class LiabilityController : Controller
     }
 
     [HttpPost]
-    public async Task<RedirectToActionResult> AddLiability(LiabilityVm vm)
+    public async Task<IActionResult> AddLiability(LiabilityVm vm)
     {
-        var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
-        var liab = new Liability
+        try
         {
-            LedgerId = vm.LiabilityLedger,
-            DrAmount = 0,
-            CrAmount = vm.Amount,
-            TxnDate = engdate,
-            RecDate = DateTime.UtcNow,
-            RecStatus = vm.RecStatus,
-            Status = vm.Status,
-            RecById = vm.RecById,
-        };
-        await _dbContext.Liabilities.AddAsync(liab);
-        await _dbContext.SaveChangesAsync();
-
-        var txnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
-        {
-            TxnDate = engdate,
-            DrAmount = 0,
-            CrAmount = vm.Amount,
-            Type = "Liability",
-            TypeID = liab.Id,
-            FromLedgerID = vm.LiabilityLedger,
-            ToLedgerID = vm.LiabilityFromLedger,
-            Remarks = vm.Remarks,
-        });
-
-        var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
-
-        if (bankid != 0)
-        {
-            int banktransaction = await BankService.RecordBankTransaction(new BankTransactionVm
+            var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
+            var liab = new Liability
             {
+                LedgerId = vm.LiabilityLedger,
+                DrAmount = 0,
+                CrAmount = vm.Amount,
+                TxnDate = engdate,
+                RecDate = DateTime.UtcNow,
                 RecStatus = vm.RecStatus,
                 Status = vm.Status,
                 RecById = vm.RecById,
-                BankId = bankid,
-                TxnDate = vm.TxnDate,
-                Amount = vm.Amount,
-                Remarks = vm.Remarks,
-                Type = "Deposit"
-            });
-            await BankService.UpdateTransactionDuringBankTransaction(banktransaction, txnid);
-        }
+            };
+            await _dbContext.Liabilities.AddAsync(liab);
+            await _dbContext.SaveChangesAsync();
 
-        return RedirectToAction("AccountingTransaction", "Voucher");
+            var txnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
+            {
+                TxnDate = engdate,
+                DrAmount = 0,
+                CrAmount = vm.Amount,
+                Type = "Liability",
+                TypeID = liab.Id,
+                FromLedgerID = vm.LiabilityLedger,
+                ToLedgerID = vm.LiabilityFromLedger,
+                Remarks = vm.Remarks,
+            });
+
+            var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
+
+            if (bankid != 0)
+            {
+                int banktransaction = await BankService.RecordBankTransaction(new BankTransactionVm
+                {
+                    RecStatus = vm.RecStatus,
+                    Status = vm.Status,
+                    RecById = vm.RecById,
+                    BankId = bankid,
+                    TxnDate = vm.TxnDate,
+                    Amount = vm.Amount,
+                    Remarks = vm.Remarks,
+                    Type = "Deposit"
+                });
+                await BankService.UpdateTransactionDuringBankTransaction(banktransaction, txnid);
+            }
+
+            _toastNotification.AddSuccessToastMessage("Liability recorded successfully");
+
+            return RedirectToAction("AccountingTransaction", "Voucher");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error recording liability." + e.Message);
+            return View();
+        }
     }
 
     [HttpGet]
@@ -91,5 +104,4 @@ where t.type = 'Liability'
         var report = await conn.QueryAsync(query);
         return View(report);
     }
-   
 }

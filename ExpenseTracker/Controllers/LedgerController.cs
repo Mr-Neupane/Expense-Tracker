@@ -96,7 +96,7 @@ from accounting.ledger l
                 {
                     if (validation == 1)
                     {
-                        TempData["AlertMessage"] = "Ledger code already exists";
+                      _toastNotification.AddSuccessToastMessage("Ledger code already exists");
                         return RedirectToAction("CreateParentLedger");
                     }
 
