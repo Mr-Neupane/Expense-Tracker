@@ -1,11 +1,8 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using System.Transactions;
-using Dapper;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
-using Microsoft.AspNetCore.Mvc;
-using Npgsql;
+using ExpenseTracker.Providers;
+using Microsoft.EntityFrameworkCore;
 using TestApplication.ViewModels.Interface;
 using static ExpenseTracker.Providers.VoucherNumberProvider;
 using Transaction = ExpenseTracker.Models.Transaction;
@@ -37,36 +34,74 @@ public class VoucherService : IVoucherService
 
     public async Task<Transaction> RecordTransactionAsync(AccTransactionDto dto)
     {
-        using (var trans = DapperConnectionProvider.GetConnection().BeginTransaction())
+        string voucherNo = dto.IsJv ? GetNextJvVoucherNo() : await GetVoucherNumber();
+        var txn = new Transaction()
         {
-            string voucherNo = dto.IsJv ? GetNextJvVoucherNo() : await GetVoucherNumber();
-            var txn = new Transaction()
+            TxnDate = dto.TxnDate.ToUniversalTime(),
+            VoucherNo = voucherNo,
+            Amount = dto.Amount,
+            Type = dto.Type,
+            TypeId = dto.TypeId,
+            Remarks = dto.Remarks,
+            RecStatus = 'A',
+            RecDate = DateTime.Now.ToUniversalTime(),
+            Status = 1,
+            RecById = -1,
+            TransactionDetails = dto.Details.Select(d => new TransactionDetail
             {
-                TxnDate = dto.TxnDate.ToUniversalTime(),
-                VoucherNo = voucherNo,
-                Amount = dto.Amount,
-                Type = dto.Type,
-                TypeId = dto.TypeId,
-                Remarks = dto.Remarks,
+                LedgerId = d.LedgerID,
+                DrAmount = d.IsDr ? d.Amount : 0,
+                CrAmount = !d.IsDr ? d.Amount : 0,
+                DrCr = d.IsDr ? 'D' : 'C',
                 RecStatus = 'A',
-                RecDate = DateTime.Now.ToUniversalTime(),
                 Status = 1,
-                RecById = -1,
-                TransactionDetails = dto.Details.Select(d => new TransactionDetail
-                {
-                    LedgerId = d.LedgerID,
-                    DrAmount = d.IsDr ? d.Amount : 0,
-                    CrAmount = !d.IsDr ? d.Amount : 0,
-                    DrCr = d.IsDr ? 'D' : 'C',
-                    RecStatus = 'A',
-                    Status = 1,
-                    RecById = -1
-                }).ToList()
-            };
-            await _dbContext.AccountingTransaction.AddAsync(txn);
-            await _dbContext.SaveChangesAsync();
-            trans.Commit();
-            return txn;
+                RecById = -1
+            }).ToList()
+        };
+        await _dbContext.AccountingTransaction.AddAsync(txn);
+        await _dbContext.SaveChangesAsync();
+        return txn;
+    }
+
+    public async Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync()
+    {
+        var list = await (from l in _dbContext.Ledgers
+            join td in _dbContext.TransactionDetails on l.Id equals td.LedgerId
+            join t in _dbContext.AccountingTransaction on td.TransactionId equals t.Id
+            join l2 in _dbContext.Ledgers on l.SubParentId equals l2.Id
+            join u in _dbContext.Users on t.RecById equals u.Id
+                into rep
+            from user in rep.DefaultIfEmpty()
+            where t.Status == 1 && td.Status == 1
+            select new AccountingTransactionReportDto()
+            {
+                Ledgername = string.Concat(l2.Ledgername, '|', l.Ledgername),
+                TxnDate = t.TxnDate,
+                VoucherNo = t.VoucherNo,
+                Amount = t.Amount,
+                Status = t.Status,
+                Id = t.Id,
+                Type = t.Type,
+                Lcode = l.Code,
+                Username = user.Username,
+                Remarks = t.Remarks,
+            }).ToListAsync();
+        return list;
+    }
+
+    public async Task ReverseTransactionAsync(int transactionId)
+    {
+        var txn = await _dbContext.AccountingTransaction.Where(x => x.Id == transactionId && x.Status == 1)
+            .Include(transaction => transaction.TransactionDetails)
+            .ToListAsync();
+
+
+        foreach (var t in txn)
+        {
+            t.Status = 2;
+            foreach (var i in t.TransactionDetails.Select(td => td.Status = 2)) ;
         }
+
+        await _dbContext.SaveChangesAsync();
     }
 }

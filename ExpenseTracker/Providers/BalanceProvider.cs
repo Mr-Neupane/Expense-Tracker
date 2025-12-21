@@ -35,6 +35,7 @@ select RemBalance from FinalData where ledger_id=@ledgerid";
         {
             ledgerid
         });
+        conn.Close();
         return balance ?? 0;
     }
 

@@ -1,7 +1,4 @@
-﻿using System.Transactions;
-using ExpenseTracker.Dtos;
-using ExpenseTracker.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using ExpenseTracker.Dtos;
 using Transaction = ExpenseTracker.Models.Transaction;
 
 namespace TestApplication.ViewModels.Interface;
@@ -9,4 +6,6 @@ namespace TestApplication.ViewModels.Interface;
 public interface IVoucherService
 {
     Task<Transaction> RecordTransactionAsync(AccTransactionDto dto);
+    Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync();
+    Task ReverseTransactionAsync(int transactionId);
 }

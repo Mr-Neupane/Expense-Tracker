@@ -26,6 +26,7 @@ public class LedgerCode : Controller
         var con = DapperConnectionProvider.GetConnection();
         var bankledgerid = @"select ledgerid from bank.bank b where b.id = @bankId";
         var ledgerid = await con.QueryFirstAsync<int>(bankledgerid, new { bankId = bankid });
+        con.Close();
         return ledgerid;
     }
 
@@ -34,10 +35,10 @@ public class LedgerCode : Controller
         var con = DapperConnectionProvider.GetConnection();
         var bankledgerid = @"select ledgerid from bank.bank b where b.ledgerid = @ledgerid";
         var bankid = await con.QueryFirstAsync<int>(bankledgerid, new { bankId = ledgerid });
+        con.Close();
         return bankid;
     }
 
-  
 
     public static async Task<int?> ValidateLedgerCode(string ledgercode)
     {

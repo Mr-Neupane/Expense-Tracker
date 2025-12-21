@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<ExpenseTracker.Dtos.AccountingTransactionReportDto>
 
 @{
     ViewData["Title"] = "Accounting Transaction Report";
@@ -33,27 +33,27 @@
             <tr>
                 <td class="text-center">@sn</td>
 
-                <td>@item.type</td>
+                <td>@item.Type</td>
 
                 <td>
                     @{
-                        DateTime? txnDate = item.txn_date as DateTime?;
+                        DateTime? txnDate = item.TxnDate as DateTime?;
                     }
                     @(txnDate.HasValue ? txnDate.Value.ToString("yyyy-MM-dd") : "-")
                 </td>
 
-                <td class="text-right">@String.Format("{0:N2}", item.amount)</td>
+                <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
 
                 <td>
                     <a asp-action="VoucherDetail"
-                       asp-route-transactionid="@item.id">
-                        @item.voucher_no
+                       asp-route-transactionid="@item.Id">
+                        @item.VoucherNo
                     </a>
                 </td>
 
-                <td>@item.username</td>
-                <td class="@(item.status == 1 ? "text-success" : "text-danger")">@(item.status == 1 ? "Active" : "Inactive")</td>
-                <td>@item.remarks</td>
+                <td>@item.Username</td>
+                <td class="@(item.Status == 1 ? "text-success" : "text-danger")">@(item.Status == 1 ? "Active" : "Inactive")</td>
+                <td>@item.Remarks</td>
 
 
             </tr>

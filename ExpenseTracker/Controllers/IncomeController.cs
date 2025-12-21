@@ -1,15 +1,25 @@
 ﻿using Dapper;
-using ExpenseTracker.Models;
-using ExpenseTracker.Providers;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using NToastNotify;
 using TestApplication.ViewModels;
+using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class IncomeController : Controller
 {
+    private readonly IToastNotification _toastNotification;
+    private readonly IVoucherService _voucherService;
+
+    public IncomeController(IVoucherService voucherService, IToastNotification toastNotification)
+    {
+        _voucherService = voucherService;
+        _toastNotification = toastNotification;
+    }
+
     public IActionResult RecordIncome()
     {
         return View();
@@ -42,17 +52,32 @@ public class IncomeController : Controller
                         rec_by_id = -1
                     });
 
-                    var acctxnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    var transaction = _voucherService.RecordTransactionAsync(new AccTransactionDto
                     {
-                        TxnDate = engdate,
-                        DrAmount = 0,
-                        CrAmount = vm.Amount,
+                        TxnDate = engdate.ToUniversalTime(),
+                        Amount = vm.Amount,
                         Type = vm.Type,
-                        TypeID = incid,
-                        FromLedgerID = vm.IncomeFrom,
-                        ToLedgerID = vm.IncomeLedger,
-                        Remarks = vm.Remarks
+                        TypeId = incid,
+                        Remarks = vm.Remarks,
+                        IsJv = false,
+                        Details = new List<TransactionDetailDto>
+                        {
+                            new() { LedgerID = vm.IncomeFrom, IsDr = true, Amount = vm.Amount },
+                            new() { LedgerID = vm.IncomeLedger, IsDr = false, Amount = vm.Amount },
+                        }
                     });
+
+                    // var acctxnid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
+                    // {
+                    //     TxnDate = engdate,
+                    //     DrAmount = 0,
+                    //     CrAmount = vm.Amount,
+                    //     Type = vm.Type,
+                    //     TypeID = incid,
+                    //     FromLedgerID = vm.IncomeFrom,
+                    //     ToLedgerID = vm.IncomeLedger,
+                    //     Remarks = vm.Remarks
+                    // });
                     int bankid = await BankService.GetBankIdByLedgerId(vm.IncomeFrom);
                     if (bankid != 0)
                     {
@@ -67,21 +92,20 @@ public class IncomeController : Controller
                             Remarks = vm.Remarks,
                             Type = "Deposit"
                         });
-                        await BankService.UpdateTransactionDuringBankTransaction(banktranid, acctxnid);
+                        await BankService.UpdateTransactionDuringBankTransaction(banktranid, transaction.Id);
                     }
 
                     await txn.CommitAsync();
                     await conn.CloseAsync();
-                    TempData["SuccessMessage"] = "Income record successfully created";
-                    return View("RecordIncome");
+                    _toastNotification.AddSuccessToastMessage("Income recorded successfully.");
+                    return View();
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
                     await conn.CloseAsync();
-                    TempData["ErrorMessage"] = e.Message;
-                    Console.WriteLine(e);
-                    throw;
+                    _toastNotification.AddErrorToastMessage(e.Message);
+                    return View();
                 }
             }
         }

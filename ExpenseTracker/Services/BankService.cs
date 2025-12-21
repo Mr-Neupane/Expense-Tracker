@@ -1,11 +1,22 @@
 ﻿using Dapper;
 using ExpenseTracker;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+using ExpenseTracker.Models;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using TestApplication.ViewModels.Interface;
 
-public class BankService 
+public class BankService : IBankService
 {
+    private readonly ApplicationDbContext _context;
+
+    public BankService(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     public static async Task<int> RecordBankTransaction(BankTransactionVm vm)
     {
         using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
@@ -91,5 +102,25 @@ where transaction_id=@transactionid ;";
 
         var res = await conn.QueryAsync(query, new { transactionid });
         return res.ToList();
+    }
+
+    public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
+    {
+        var banktransaction = new BankTransaction
+        {
+            BankId = dto.BankId,
+            TxnDate = dto.TxnDate.ToUniversalTime(),
+            Amount = dto.Amount,
+            Type = dto.Type,
+            Remarks = dto.Remarks,
+            RecDate = DateTime.Now.ToUniversalTime(),
+            RecById = -1,
+            RecStatus = 'A',
+            Status = 1,
+            TransactionId = 0
+        };
+        await _context.BankTransaction.AddAsync(banktransaction);
+        await _context.SaveChangesAsync();
+        return banktransaction;
     }
 }

@@ -17,3 +17,4 @@ public class TransactionDetailDto
     public int LedgerID { get; set; }
     public decimal Amount { get; set; }
 }
+

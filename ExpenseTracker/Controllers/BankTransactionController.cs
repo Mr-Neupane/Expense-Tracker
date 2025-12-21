@@ -1,21 +1,26 @@
 ﻿using Dapper;
-using ExpenseTracker.Models;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using ExpenseTracker.Services;
 using NToastNotify;
+using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class BankTransactionController : Controller
 {
     private readonly IToastNotification _toastNotification;
+    private readonly IVoucherService _voucherService;
+    private readonly IBankService _bankService;
 
-    public BankTransactionController(IToastNotification toastNotification)
+    public BankTransactionController(IToastNotification toastNotification, IVoucherService voucherService,
+        IBankService bankService)
     {
         _toastNotification = toastNotification;
+        _voucherService = voucherService;
+        _bankService = bankService;
     }
 
     [HttpGet]
@@ -27,11 +32,11 @@ public class BankTransactionController : Controller
     [HttpPost]
     public async Task<IActionResult> BankDepositandWithdraw(BankTransactionVm vm)
     {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        try
         {
-            using (var txn = con.BeginTransaction())
+            using (var conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
             {
-                try
+                using (var txn = conn.BeginTransaction())
                 {
                     var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var frombankledgerid = await LedgerCode.GetBankLedgerId(vm.BankId);
@@ -44,36 +49,45 @@ public class BankTransactionController : Controller
                         return RedirectToAction("BankDepositandWithdraw");
                     }
 
-                    int banktransactionid = await BankService.RecordBankTransaction(vm);
+                    await conn.CloseAsync();
 
-                    int transactionid = await VoucherController.GetInsertedAccountingId(new AccountingTxn
+
+                    var banktxn = await _bankService.RecordBankTransactionAsync(new BankTransactionDto
                     {
+                        BankId = vm.BankId,
                         TxnDate = engtxndate,
-                        DrAmount = vm.Type == "Deposit" ? vm.Amount : 0,
-                        CrAmount = vm.Type == "Withdraw" ? vm.Amount : 0,
-                        Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
-                        TypeID = banktransactionid,
-                        FromLedgerID = frombankledgerid,
-                        ToLedgerID = -3,
+                        Amount = vm.Amount,
+                        Type = vm.Type,
                         Remarks = vm.Remarks,
                     });
-                    await BankService.UpdateTransactionDuringBankTransaction(banktransactionid, transactionid);
-                    await txn.CommitAsync();
-                    await con.CloseAsync();
+
+                    var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
+                    {
+                        TxnDate = engtxndate,
+                        Amount = vm.Amount,
+                        Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
+                        TypeId = banktxn.Id,
+                        Remarks = vm.Remarks,
+                        IsJv = false,
+                        Details = new List<TransactionDetailDto>
+                        {
+                            new() { LedgerID = vm.BankId, IsDr = vm.Type == "Deposit", Amount = vm.Amount },
+                            new() { LedgerID = -3, IsDr = vm.Type != "Deposit", Amount = vm.Amount },
+                        }
+                    });
+                    await BankService.UpdateTransactionDuringBankTransaction(banktxn.Id, acctxn.Id);
                     await BankRemainingBalanceManager(vm.BankId);
 
                     _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
                                                               " completed with amount Rs. " + vm.Amount);
                     return View();
                 }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await con.CloseAsync();
-                    _toastNotification.AddErrorToastMessage($"Issue recording {vm.Type.ToLower()}." + e.Message);
-                    return View();
-                }
             }
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage($"Issue recording {vm.Type.ToLower()}." + e.Message);
+            return View();
         }
     }
 
@@ -100,14 +114,18 @@ public class BankTransactionController : Controller
             {
                 try
                 {
-                    await ReverseService.ReverseBankTransactionByAccTranId(transactionid);
-                    _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() + " reverse transaction completed");
+                    // await ReverseService.ReverseBankTransactionByAccTranId(transactionid);
+
+                    await _voucherService.ReverseTransactionAsync(transactionid);
+
+                    _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() +
+                                                              " reverse transaction completed");
                     return RedirectToAction("BankTransactionReport");
                 }
                 catch (Exception e)
                 {
                     await txn.RollbackAsync();
-                    _toastNotification.AddErrorToastMessage("Issuee reversing bank transaction: " + e.Message);
+                    _toastNotification.AddErrorToastMessage("Issue reversing bank transaction: " + e.Message);
                     return RedirectToAction("BankTransactionReport");
                 }
             }
