@@ -52,14 +52,16 @@ public class BankTransactionController : Controller
                     await conn.CloseAsync();
 
 
-                    var banktxn = await _bankService.RecordBankTransactionAsync(new BankTransactionDto
+                    var banktransaction = new BankTransactionDto
                     {
                         BankId = vm.BankId,
                         TxnDate = engtxndate,
                         Amount = vm.Amount,
                         Type = vm.Type,
                         Remarks = vm.Remarks,
-                    });
+                    };
+                    var banktxn = await _bankService.RecordBankTransactionAsync(banktransaction);
+
 
                     var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
                     {

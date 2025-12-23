@@ -8,6 +8,7 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using NToastNotify;
+using TestApplication.Interface;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -17,14 +18,16 @@ public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IVoucherService _voucherService;
+    private readonly IIncomeService _incomeService;
     private readonly IToastNotification _toastNotification;
 
     public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context)
+        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
+        _incomeService = incomeService;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
@@ -145,7 +148,9 @@ where t.status = 1
                 await ReverseService.ReverseExpense(typeid, transactionid);
                 break;
             case "Income":
-                await ReverseService.ReverseIncome(typeid, transactionid);
+                // await ReverseService.ReverseIncome(typeid, transactionid);
+                await _incomeService.ReverseIncomeAsync(typeid);
+                await _voucherService.ReverseTransactionAsync(transactionid);
                 break;
             case "Liability":
                 await ReverseService.ReverseRecordedLiability(typeid, transactionid);

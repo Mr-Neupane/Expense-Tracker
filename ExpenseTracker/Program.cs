@@ -1,4 +1,3 @@
-using Dapper;
 using ExpenseTracker;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +5,7 @@ using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
 using ExpenseTracker.Services;
 using NToastNotify;
+using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IBankService, BankService>();
+builder.Services.AddScoped<IIncomeService, IncomeService>();
 
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

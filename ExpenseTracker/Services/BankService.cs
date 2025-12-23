@@ -5,6 +5,7 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TestApplication.ViewModels.Interface;
 
@@ -122,5 +123,16 @@ where transaction_id=@transactionid ;";
         await _context.BankTransaction.AddAsync(banktransaction);
         await _context.SaveChangesAsync();
         return banktransaction;
+    }
+
+    public async Task UpdateAccountingTransactionIdInBankTransactionAsync(int id, int transactionId)
+    {
+        var txn = await _context.BankTransaction.Where(t => t.Id == id).ToListAsync();
+        foreach (var t in txn)
+        {
+            t.TransactionId = transactionId;
+        }
+
+        await _context.SaveChangesAsync();
     }
 }
