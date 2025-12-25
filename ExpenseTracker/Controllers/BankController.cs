@@ -1,8 +1,10 @@
 ﻿using Dapper;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Providers;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NToastNotify;
 using TestApplication.ViewModels;
@@ -14,11 +16,13 @@ public class BankController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
+    private readonly ApplicationDbContext _context;
 
-    public BankController(IToastNotification toastNotification, IBankService bankService)
+    public BankController(IToastNotification toastNotification, IBankService bankService, ApplicationDbContext context)
     {
         _toastNotification = toastNotification;
         _bankService = bankService;
+        _context = context;
     }
 
     [HttpGet]
@@ -58,7 +62,7 @@ public class BankController : Controller
                         RemainingBalance = 0
                     });
 
-                   _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
+                    _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
 
                     return RedirectToAction("BankReport");
                 }
@@ -73,9 +77,37 @@ public class BankController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> EditBank(int id)
+    {
+        var res = await _context.Banks.FindAsync(id);
+
+        var editBankDetail = new BankDto
+        {
+            Id = res.Id,
+            BankName = res.BankName,
+            AccountNumber = res.AccountNumber,
+            BankContact = res.BankContactNumber,
+            BankAddress = res.BankAddress,
+            AccountOpenDate = res.AccountOpendate,
+            LedgerId = res.LedgerId,
+            RemainingBalance = res.RemainingBalance
+        };
+
+        return View(editBankDetail);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditBank(BankDto dto)
+    {
+        await _bankService.EditBankAsync(dto);
+        _toastNotification.AddSuccessToastMessage("Bank edited successfully");
+        return RedirectToAction("BankReport");
+    }
+
+    [HttpGet]
     public async Task<IActionResult> BankReport()
     {
-      var res=  await _bankService.BankReportAsync();
+        var res = await _bankService.BankReportAsync();
         return View(res);
     }
 }

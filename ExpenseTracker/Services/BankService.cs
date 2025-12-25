@@ -112,6 +112,32 @@ where transaction_id=@transactionid ;";
         return report;
     }
 
+    public async Task EditBankAsync(BankDto dto)
+    {
+        var bank = await _context.Banks.FindAsync(dto.Id);
+        if (bank.BankName != dto.BankName)
+        {
+            bank.BankName = dto.BankName;
+        }
+
+        if (bank.AccountNumber != dto.AccountNumber)
+        {
+            bank.AccountNumber = dto.AccountNumber;
+        }
+
+        if (bank.BankContactNumber != dto.BankContact)
+        {
+            bank.BankContactNumber = dto.BankContact;
+        }
+
+        if (bank.BankAddress != dto.BankAddress)
+        {
+            bank.BankAddress = dto.BankAddress;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
     {
         var banktransaction = new BankTransaction
