@@ -105,6 +105,13 @@ where transaction_id=@transactionid ;";
         return res.ToList();
     }
 
+
+    public async Task<List<Bank>> BankReportAsync()
+    {
+        var report = await _context.Banks.Where(b => b.Status == 1).ToListAsync();
+        return report;
+    }
+
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
     {
         var banktransaction = new BankTransaction
@@ -131,6 +138,56 @@ where transaction_id=@transactionid ;";
         foreach (var t in txn)
         {
             t.TransactionId = transactionId;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Bank> AddBankAsync(BankDto dto)
+    {
+        var bank = new Bank
+        {
+            BankName = dto.BankName,
+            AccountNumber = dto.AccountNumber,
+            BankContactNumber = dto.BankContact,
+            LedgerId = dto.LedgerId,
+            RemainingBalance = dto.RemainingBalance,
+            BankAddress = dto.BankAddress,
+            AccountOpendate = dto.AccountOpenDate,
+            RecStatus = 'A',
+            RecDate = DateTime.Now.ToUniversalTime(),
+            Status = 1,
+            RecbyId = -1
+        };
+
+        await _context.Banks.AddAsync(bank);
+        await _context.SaveChangesAsync();
+        return bank;
+    }
+
+    public async Task UpdateRemainingBalanceInBankAsync(int bid)
+    {
+        var deposit = _context.BankTransaction.Where(t => t.Status == 1 && t.Type == "Deposit" && t.BankId == bid)
+            .Sum(t => t.Amount);
+        var withdraw = _context.BankTransaction.Where(t => t.Status == 1 && t.Type == "Withdraw" && t.BankId == bid)
+            .Sum(t => t.Amount);
+        var rembal = deposit - withdraw;
+        var banks = await _context.Banks.Where(b => b.Id == bid).ToListAsync();
+        foreach (var b in banks)
+        {
+            b.RemainingBalance = rembal;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ReverseBankTransactionAsync(int id, int transactionId)
+    {
+        var txn = await _context.BankTransaction.Where(t => t.Id == id || t.TransactionId == transactionId)
+            .ToListAsync();
+        foreach (var t in txn)
+        {
+            t.Status = 2;
         }
 
         await _context.SaveChangesAsync();

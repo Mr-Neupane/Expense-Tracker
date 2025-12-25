@@ -3,9 +3,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
-using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using NToastNotify;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
@@ -16,14 +14,16 @@ public class ExpenseController : Controller
 {
     private readonly IVoucherService _voucherService;
     private readonly IToastNotification _toastNotification;
+    private readonly IBankService _bankService;
     private readonly ApplicationDbContext _context;
 
     public ExpenseController(IVoucherService voucherService, IToastNotification toastNotification,
-        ApplicationDbContext context)
+        ApplicationDbContext context, IBankService bankService)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
+        _bankService = bankService;
     }
 
     [HttpGet]
@@ -35,79 +35,68 @@ public class ExpenseController : Controller
     [HttpPost]
     public async Task<IActionResult> RecordExpense(ExpenseVm vm)
     {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        try
         {
-            using (var txn = conn.BeginTransaction())
+            var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
+            decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
+            if (vm.Amount > frombalance)
             {
-                try
-                {
-                    var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
-                    decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
-                    if (vm.Amount > frombalance)
-                    {
-                        _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
-                        return View();
-                    }
-
-                    var expenseid = _context.Expenses.AddRangeAsync(new Expense
-                    {
-                        LedgerId = vm.ExpenseLedger,
-                        DrAmount = vm.Amount,
-                        CrAmount = 0,
-                        TxnDate = engdate.ToUniversalTime(),
-                        RecDate = DateTime.Now.ToUniversalTime(),
-                        RecStatus = vm.RecStatus,
-                        Status = vm.Status,
-                        RecById = vm.RecById,
-                    });
-                    await _context.SaveChangesAsync();
-
-                    var accTrans = _voucherService.RecordTransactionAsync(
-                        new AccTransactionDto
-                        {
-                            TxnDate = engdate,
-                            Amount = vm.Amount,
-                            Type = vm.Type,
-                            TypeId = expenseid.Id,
-                            Remarks = vm.Remarks,
-                            IsJv = false,
-                            Details = new List<TransactionDetailDto>()
-                            {
-                                new() { IsDr = true, Amount = vm.Amount, LedgerID = vm.ExpenseLedger },
-                                new() { IsDr = false, Amount = vm.Amount, LedgerID = vm.ExpenseFromLedger }
-                            }
-                        });
-
-                    var bankid = await BankService.GetBankIdByLedgerId(vm.ExpenseFromLedger);
-                    if (bankid != 0)
-                    {
-                        var banktranid = await BankService.RecordBankTransaction(new BankTransactionVm
-                        {
-                            RecStatus = vm.RecStatus,
-                            Status = vm.Status,
-                            RecById = vm.RecById,
-                            BankId = 1,
-                            TxnDate = vm.TxnDate,
-                            Amount = vm.Amount,
-                            Remarks = vm.Remarks,
-                            Type = "Withdraw",
-                        });
-                        await BankService.UpdateTransactionDuringBankTransaction(banktranid, accTrans.Id);
-                    }
-
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                    _toastNotification.AddSuccessToastMessage("Expense recorded successfully.");
-                    return RedirectToAction("ExpenseReport");
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    _toastNotification.AddErrorToastMessage("Expense could not be recorded." + e.Message);
-                    return View();
-                }
+                _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
+                return View();
             }
+
+            var expenseid = _context.Expenses.AddRangeAsync(new Expense
+            {
+                LedgerId = vm.ExpenseLedger,
+                DrAmount = vm.Amount,
+                CrAmount = 0,
+                TxnDate = engdate.ToUniversalTime(),
+                RecDate = DateTime.Now.ToUniversalTime(),
+                RecStatus = vm.RecStatus,
+                Status = vm.Status,
+                RecById = vm.RecById,
+            });
+            await _context.SaveChangesAsync();
+
+            var accTrans = _voucherService.RecordTransactionAsync(
+                new AccTransactionDto
+                {
+                    TxnDate = engdate,
+                    Amount = vm.Amount,
+                    Type = vm.Type,
+                    TypeId = expenseid.Id,
+                    Remarks = vm.Remarks,
+                    IsJv = false,
+                    Details = new List<TransactionDetailDto>()
+                    {
+                        new() { IsDr = true, Amount = vm.Amount, LedgerID = vm.ExpenseLedger },
+                        new() { IsDr = false, Amount = vm.Amount, LedgerID = vm.ExpenseFromLedger }
+                    }
+                });
+
+            var bankid = await BankService.GetBankIdByLedgerId(vm.ExpenseFromLedger);
+            if (bankid != 0)
+            {
+                var bankTransaction = await _bankService.RecordBankTransactionAsync(new BankTransactionDto
+                {
+                    BankId = bankid,
+                    TxnDate = engdate.ToUniversalTime(),
+                    Amount = vm.Amount,
+                    Type = "Withdraw",
+                    Remarks = vm.Remarks
+                });
+                await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
+                    accTrans.Id);
+                await _bankService.UpdateRemainingBalanceInBankAsync(bankTransaction.BankId);
+            }
+
+            _toastNotification.AddSuccessToastMessage("Expense recorded successfully.");
+            return RedirectToAction("ExpenseReport");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Expense could not be recorded." + e.Message);
+            return View();
         }
     }
 

@@ -18,3 +18,18 @@ public class TransactionDetailDto
     public decimal Amount { get; set; }
 }
 
+public class VoucherDetailDto
+{
+    public string LedgerName { get; set; }
+    public string Code { get; set; }
+    public string VoucherNo { get; set; }
+    public decimal DrAmount { get; set; }
+    public decimal CrAmount { get; set; }
+    public string Type { get; set; }
+    public string Remarks { get; set; }
+    public DateTime TxnDate { get; set; }
+    public string UserName { get; set; }
+
+    public int Typeid { get; set; }
+    public int TransactionId { get; set; }
+}

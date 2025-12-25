@@ -41,12 +41,22 @@ public class BankTransactionController : Controller
                     var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var frombankledgerid = await LedgerCode.GetBankLedgerId(vm.BankId);
                     var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
-                    if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
+                    // if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
+                    // {
+                    //     _toastNotification.AddAlertToastMessage(
+                    //         "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
+                    //         ".");
+                    //     return View();
+                    // }
+                    var banks = await _bankService.BankReportAsync();
+
+                    var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
+
+                    if (res.RemainingBalance < vm.Amount)
                     {
                         _toastNotification.AddAlertToastMessage(
                             "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
                             ".");
-                        return RedirectToAction("BankDepositandWithdraw");
                     }
 
                     await conn.CloseAsync();
@@ -77,8 +87,9 @@ public class BankTransactionController : Controller
                             new() { LedgerID = -3, IsDr = vm.Type != "Deposit", Amount = vm.Amount },
                         }
                     });
-                    await BankService.UpdateTransactionDuringBankTransaction(banktxn.Id, acctxn.Id);
-                    await BankRemainingBalanceManager(vm.BankId);
+                    await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(banktxn.Id, acctxn.Id);
+
+                    await _bankService.UpdateRemainingBalanceInBankAsync(vm.BankId);
 
                     _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
                                                               " completed with amount Rs. " + vm.Amount);
@@ -110,29 +121,35 @@ public class BankTransactionController : Controller
     public async Task<IActionResult> ReverseBankTransaction(int transactionid, string type, int bankId, decimal amount,
         int id)
     {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        try
         {
-            using (var txn = conn.BeginTransaction())
+            var banks = await _bankService.BankReportAsync();
+
+            var res = banks.FirstOrDefault(b => b.Id == bankId);
+
+            if (res.RemainingBalance - amount < 0)
             {
-                try
-                {
-                    // await ReverseService.ReverseBankTransactionByAccTranId(transactionid);
-
-                    await _voucherService.ReverseTransactionAsync(transactionid);
-
-                    _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() +
-                                                              " reverse transaction completed");
-                    return RedirectToAction("BankTransactionReport");
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    _toastNotification.AddErrorToastMessage("Issue reversing bank transaction: " + e.Message);
-                    return RedirectToAction("BankTransactionReport");
-                }
+                _toastNotification.AddErrorToastMessage("Not enough balance in bank to reverse transaction.");
             }
+            else
+            {
+                await _bankService.ReverseBankTransactionAsync(id, transactionid);
+                await _voucherService.ReverseTransactionAsync(transactionid);
+                await _bankService.UpdateRemainingBalanceInBankAsync(bankId);
+
+                _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() +
+                                                          " reverse transaction completed");
+            }
+
+            return RedirectToAction("BankTransactionReport");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Issue reversing bank transaction: " + e.Message);
+            return RedirectToAction("BankTransactionReport");
         }
     }
+
 
     [HttpPost]
     public static async Task BankRemainingBalanceManager(int bankid)

@@ -1,20 +1,24 @@
 ﻿using Dapper;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Providers;
 using Npgsql;
 using NToastNotify;
 using TestApplication.ViewModels;
+using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class BankController : Controller
 {
     private readonly IToastNotification _toastNotification;
+    private readonly IBankService _bankService;
 
-    public BankController(IToastNotification toastNotification)
+    public BankController(IToastNotification toastNotification, IBankService bankService)
     {
         _toastNotification = toastNotification;
+        _bankService = bankService;
     }
 
     [HttpGet]
@@ -42,30 +46,19 @@ public class BankController : Controller
                         ParentId = 0,
                         LedgerName = vm.BankName
                     });
-                    var newbank =
-                        @"INSERT INTO bank.bank ( bankname, accountnumber, bankcontactnumber, ledgerid,remainingbalance, bankaddress, accountopendate,
-                       recstatus, recdate, status, recbyid)
-    VALUES (@bankname, @accountnumber,@bankcontactnumber,@ledgerid,@remainingbalance, @bankaddress, @accountopendate, @recstatus,@recdate, @status,@recbyid)
-    ON CONFLICT (bankname,accountnumber) DO NOTHING;";
 
-                    await con.ExecuteAsync(newbank,
-                        new
-                        {
-                            bankname = vm.BankName,
-                            accountnumber = vm.AccountNumber,
-                            bankcontactnumber = vm.BankContact,
-                            ledgerid = lid,
-                            remainingbalance = 0,
-                            bankaddress = vm.BankAddress,
-                            accountopendate = accountopendate,
-                            recstatus = vm.RecStatus,
-                            recdate = DateTime.Now,
-                            status = vm.Status,
-                            recbyid = -1
-                        });
-                    await txn.CommitAsync();
-                    
-                    _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
+                    await _bankService.AddBankAsync(new BankDto
+                    {
+                        BankName = vm.BankName,
+                        AccountNumber = vm.AccountNumber,
+                        BankContact = vm.BankContact,
+                        BankAddress = vm.BankAddress,
+                        AccountOpenDate = accountopendate.ToUniversalTime(),
+                        LedgerId = lid,
+                        RemainingBalance = 0
+                    });
+
+                   _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
 
                     return RedirectToAction("BankReport");
                 }
@@ -82,9 +75,7 @@ public class BankController : Controller
     [HttpGet]
     public async Task<IActionResult> BankReport()
     {
-        var con = DapperConnectionProvider.GetConnection();
-        var bank = @"SELECT * FROM bank.bank";
-        var sql = await con.QueryAsync(bank);
-        return View(sql);
+      var res=  await _bankService.BankReportAsync();
+        return View(res);
     }
 }
