@@ -1,12 +1,12 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<Bank>
 
 @{
     ViewData["Title"] = "Bank Report";
 }
 
-<h2 class="mt-3 mb-4 text-center font-weight-bold">Bank Report</h2>
+<h2 class="mt-3 mb-4 text-center font-weight-bold" >Bank Report</h2>
 
-<table class="table table-bordered table-striped table-hover">
+<table class="table table-bordered table-striped table-hover" style="border-collapse: collapse" id="datatable">
     <thead class="bg-dark text-white text-center">
     <tr>
         <th style="width: 50px;">SN</th>
@@ -17,6 +17,7 @@
         <th>Account Open Date</th>
         <th>Bank Address</th>
         <th>Status</th>
+        <th>Action</th>
     </tr>
     </thead>
 
@@ -30,24 +31,27 @@
         <tr>
             <td class="text-center">@sn</td>
 
-            <td>@item.bankname</td>
+            <td>@item.BankName</td>
 
-            <td>@item.accountnumber</td>
+            <td>@item.AccountNumber</td>
 
             <td class="text-right">
-                @String.Format("{0:N2}", item.remainingbalance)
+                @String.Format("{0:N2}", item.RemainingBalance)
             </td>
 
-            <td>@item.bankcontactnumber</td>
+            <td>@item.BankContactNumber</td>
 
             <td>
-               @await DateHelper.GetNepaliDate(item.accountopendate)
+               @await DateHelper.GetNepaliDate(item.AccountOpendate)
             </td>
 
-            <td>@item.bankaddress</td>
+            <td>@item.BankAddress</td>
 
-            <td class="@(item.status == 1 ? "text-success" : "text-danger")">
-                @(item.status == 1 ? "Active" : "Inactive")
+            <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
+                @(item.Status == 1 ? "Active" : "Inactive")
+            </td>
+            <td>
+                <a asp-action="EditBank" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
             </td>
         </tr>
 

@@ -71,7 +71,7 @@ values ( -1,'Admin User', 'admin' ) ON CONFLICT (username) DO NOTHING
     id                serial primary key,
     bankname          varchar(100) not null ,
     accountnumber     varchar(50) not null ,
-    bankcontactnumber int,
+    bankcontactnumber bigint,
     ledgerid          int not null ,
     remainingbalance  decimal   default 0,
     bankaddress       varchar(100),

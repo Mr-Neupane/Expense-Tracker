@@ -1,0 +1,54 @@
+﻿@model ExpenseTracker.Dtos.BankDto;
+
+@{
+    ViewData["Title"] = "Edit Bank";
+}
+
+<form asp-action="EditBank" method="post" class="container mt-4" style="max-width:500px;margin:auto;">
+    <div class="card">
+        <div class="card-header">
+            <h6>Bank Account Information</h6>
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label asp-for="BankName" class="form-label"> Bank Name <span class="text-danger">*</span> </label>
+                <input asp-for="BankName" value="@Model.BankName" class="form-control" required="required"/>
+                <span asp-validation-for="BankName" class="text-danger"></span>
+            </div>
+            <div class="mb-2">
+                <label asp-for="AccountOpenDate" class="form-label">Open Date <span class="text-danger">*</span></label>
+                <input asp-for="AccountOpenDate" class="form-control" data-date-mask type="text"
+                       value="@await DateHelper.GetNepaliDate(Model.AccountOpenDate)" disabled="disabled"/>
+                <span asp-validation-for="AccountOpenDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AccountNumber" class="form-label">Account Number
+                    <span
+                        class="text-danger">*</span></label>
+                <input asp-for="AccountNumber" value="@Model.AccountNumber" class="form-control" required="required"/>
+                <span asp-validation-for="AccountNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BankContact" class="form-label">Bank Contact Number
+                    <span
+                        class="text-danger">*</span></label>
+                <input asp-for="BankContact" value="@Model.BankContact" class="form-control" required="required"/>
+                <span asp-validation-for="BankContact" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BankAddress" class="form-label">Address <span class="text-danger">*</span></label>
+                <input asp-for="BankAddress" value="@Model.BankAddress" class="form-control" type="text"></input>
+                <span asp-validation-for="BankAddress" class="text-danger"></span>
+            </div>
+
+
+            <button type="submit"  class="btn btn-primary mt-2">Save</button>
+            <button onclick="window.location.reload(true)" class="btn btn-danger mt-2">Reset</button>
+        </div>
+    </div>
+</form>

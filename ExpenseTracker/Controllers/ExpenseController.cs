@@ -1,10 +1,9 @@
-﻿using Dapper;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
-using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
+using TestApplication.Interface;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -12,18 +11,20 @@ namespace ExpenseTracker.Controllers;
 
 public class ExpenseController : Controller
 {
+    private readonly IExpenseService _expenseService;
     private readonly IVoucherService _voucherService;
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
     private readonly ApplicationDbContext _context;
 
     public ExpenseController(IVoucherService voucherService, IToastNotification toastNotification,
-        ApplicationDbContext context, IBankService bankService)
+        ApplicationDbContext context, IBankService bankService, IExpenseService expenseService)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
         _bankService = bankService;
+        _expenseService = expenseService;
     }
 
     [HttpGet]
@@ -45,18 +46,12 @@ public class ExpenseController : Controller
                 return View();
             }
 
-            var expenseid = _context.Expenses.AddRangeAsync(new Expense
+            var expense = await _expenseService.RecordExpenseAsync(new NewExpenseDto
             {
                 LedgerId = vm.ExpenseLedger,
-                DrAmount = vm.Amount,
-                CrAmount = 0,
-                TxnDate = engdate.ToUniversalTime(),
-                RecDate = DateTime.Now.ToUniversalTime(),
-                RecStatus = vm.RecStatus,
-                Status = vm.Status,
-                RecById = vm.RecById,
+                Amount = vm.Amount,
+                TxnDate = engdate,
             });
-            await _context.SaveChangesAsync();
 
             var accTrans = _voucherService.RecordTransactionAsync(
                 new AccTransactionDto
@@ -64,7 +59,7 @@ public class ExpenseController : Controller
                     TxnDate = engdate,
                     Amount = vm.Amount,
                     Type = vm.Type,
-                    TypeId = expenseid.Id,
+                    TypeId = expense.Id,
                     Remarks = vm.Remarks,
                     IsJv = false,
                     Details = new List<TransactionDetailDto>()
@@ -102,15 +97,7 @@ public class ExpenseController : Controller
 
     public async Task<IActionResult> ExpenseReport()
     {
-        var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select e.*, voucher_no, username,t.id as transactionid
-from accounting.expenses e
-         join accounting.transactions t on t.type_id = e.id
-         join users u on e.rec_by_id = u.id
-where t.type = 'Expense'
-  and e.status = 1
-  and t.status = 1";
-        var report = await conn.QueryAsync(query);
+        var report =await _expenseService.GetExpenseReportsAsync();
         return View(report);
     }
 }
