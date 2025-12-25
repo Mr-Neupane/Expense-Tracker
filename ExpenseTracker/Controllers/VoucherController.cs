@@ -2,11 +2,9 @@
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
-using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
-using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
+using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
@@ -18,41 +16,24 @@ public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IVoucherService _voucherService;
+    private readonly IBankService _bankService;
     private readonly IIncomeService _incomeService;
     private readonly IToastNotification _toastNotification;
 
     public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService)
+        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService,
+        IBankService bankService)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
         _incomeService = incomeService;
+        _bankService = bankService;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
     {
-        var conn = DapperConnectionProvider.GetConnection();
-        var query = @"
-select ledgername,
-       txn_date,voucher_no,
-       dr_amount,
-       cr_amount,
-       dr_cr,
-       username,t.id,
-       t.type,
-       t.type_id,
-       remarks,
-       code
-from accounting.transactions t
-         join accounting.transaction_details td on t.id = td.transaction_id
-         join accounting.ledger l on l.id = ledger_id
-         join users u on u.id = t.rec_by_id
-where t.status = 1
-  and td.status = 1
-  and t.id = @transactionid";
-        var res = await conn.QueryAsync(query, new { transactionid });
-
+        var res = await _voucherService.VoucherDetailAsync(transactionid);
         return View(res);
     }
 
@@ -99,6 +80,7 @@ where t.status = 1
                         Amount = e.CrAmount != 0 ? e.CrAmount : e.DrAmount,
                     }).ToList()
                 });
+
             foreach (var data in vm.Entries)
             {
                 var conn = DapperConnectionProvider.GetConnection();
@@ -129,8 +111,6 @@ where t.status = 1
 
             _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
             return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
-
-            return View();
         }
         catch (Exception e)
         {
@@ -148,7 +128,6 @@ where t.status = 1
                 await ReverseService.ReverseExpense(typeid, transactionid);
                 break;
             case "Income":
-                // await ReverseService.ReverseIncome(typeid, transactionid);
                 await _incomeService.ReverseIncomeAsync(typeid);
                 await _voucherService.ReverseTransactionAsync(transactionid);
                 break;

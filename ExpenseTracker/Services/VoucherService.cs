@@ -104,4 +104,27 @@ public class VoucherService : IVoucherService
 
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<VoucherDetailDto>> VoucherDetailAsync(int transactionId)
+    {
+        var report = await (from t in _dbContext.AccountingTransaction
+            join td in _dbContext.TransactionDetails on t.Id equals td.TransactionId
+            join l in _dbContext.Ledgers on td.LedgerId equals l.Id
+            join p in _dbContext.Ledgers on l.SubParentId equals p.Id
+            join u in _dbContext.Users on t.RecById equals u.Id
+            where t.Status == 1 && td.Status == 1 && td.TransactionId == transactionId
+            select new VoucherDetailDto
+            {
+                LedgerName = string.Concat(p.Ledgername, " > ", l.Ledgername),
+                Code = l.Code,
+                VoucherNo = t.VoucherNo,
+                DrAmount = td.DrAmount,
+                CrAmount = td.CrAmount,
+                Type = t.Type,
+                Remarks = t.Remarks,
+                TxnDate = t.TxnDate,
+                UserName = u.Username
+            }).ToListAsync();
+        return report;
+    }
 }

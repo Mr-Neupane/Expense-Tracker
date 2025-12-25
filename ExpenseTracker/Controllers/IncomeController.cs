@@ -1,8 +1,5 @@
-﻿using Dapper;
-using ExpenseTracker.Dtos;
-using ExpenseTracker.ViewModels;
+﻿using ExpenseTracker.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
