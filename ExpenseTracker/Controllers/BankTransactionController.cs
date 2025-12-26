@@ -41,13 +41,6 @@ public class BankTransactionController : Controller
                     var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
                     var frombankledgerid = await LedgerCode.GetBankLedgerId(vm.BankId);
                     var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
-                    // if (vm.Type == "Withdraw" && vm.Amount > ledgerbalance)
-                    // {
-                    //     _toastNotification.AddAlertToastMessage(
-                    //         "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
-                    //         ".");
-                    //     return View();
-                    // }
                     var banks = await _bankService.BankReportAsync();
 
                     var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
@@ -148,36 +141,5 @@ public class BankTransactionController : Controller
             _toastNotification.AddErrorToastMessage("Issue reversing bank transaction: " + e.Message);
             return RedirectToAction("BankTransactionReport");
         }
-    }
-
-
-    [HttpPost]
-    public static async Task BankRemainingBalanceManager(int bankid)
-    {
-        var con = DapperConnectionProvider.GetConnection();
-
-        await con.ExecuteAsync(@"
-;with bankd as (
-    select sum(am)amount,bank_id
-    from (
-        select sum(amount) am, bank_id
-        from bank.banktransactions t
-        where type = 'Deposit'
-          and status = 1
-        group by bank_id
-        union
-        select sum(amount) * -1 am, bank_id
-        from bank.banktransactions t
-        where type = 'Withdraw'
-          and status = 1
-        group by bank_id
-    ) d
-    group by bank_id
-)  
-update bank.bank b
-set remainingbalance = amount
-from bankd bd
-where bd.bank_id = b.id;
-", new { bankid });
     }
 }

@@ -7,54 +7,6 @@ namespace ExpenseTracker.Services;
 
 public static class ReverseService
 {
-    public static async Task ReverseBankTransactionByAccTranId(int tranid)
-    {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = await con.BeginTransactionAsync())
-            {
-                try
-                {
-                    var rep = await BankService.GetBankTransactionList(tranid);
-
-                    if (rep.First().type == "Deposit")
-                    {
-                        var balance = await BalanceProvider.GetLedgerBalance((int)rep.First().ledgerid);
-                        if (rep.First().amount > balance)
-                        {
-                            throw new Exception("Insufficient balance");
-                        }
-                    }
-
-                    else
-                    {
-                        var query =
-                            @"update bank.banktransactions set status=2 where status=1 and transaction_id=@tranid";
-                        await con.ExecuteAsync(query, new { tranid });
-
-                        var transactionReverse =
-                            @"update accounting.transactions set status=2 where status=1 and id=@tranid";
-                        await con.ExecuteAsync(transactionReverse, new { tranid });
-                        var detailReverse =
-                            @"update accounting.transaction_details set status=2 where status=1 and transaction_id=@tranid";
-                        await con.ExecuteAsync(detailReverse, new { tranid });
-                        await txn.CommitAsync();
-
-                        await BankTransactionController.BankRemainingBalanceManager(rep.First().bank_id);
-                        await con.CloseAsync();
-                    }
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await con.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-    }
-
     public static async Task ReverseRecordedLiability(int liabid, int tranid)
     {
         using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
@@ -77,7 +29,7 @@ public static class ReverseService
                     var isbanktran = await Validator.ValidateBankTransaction(tranid);
                     if (isbanktran != 0)
                     {
-                        await ReverseBankTransactionByAccTranId(tranid);
+                        // await ReverseBankTransactionByAccTranId(tranid);
                     }
 
                     await txn.CommitAsync();
@@ -120,7 +72,7 @@ public static class ReverseService
                     var isbanktran = await Validator.ValidateBankTransaction(transactionid);
                     if (isbanktran != 0)
                     {
-                        await ReverseBankTransactionByAccTranId(transactionid);
+                        // await ReverseBankTransactionByAccTranId(transactionid);
                     }
 
                     await txn.CommitAsync();
@@ -166,7 +118,7 @@ public static class ReverseService
                     var isbanktran = await Validator.ValidateBankTransaction(transactionid);
                     if (isbanktran != 0)
                     {
-                        await ReverseBankTransactionByAccTranId(transactionid);
+                        // await ReverseBankTransactionByAccTranId(transactionid);
                     }
 
                     await txn.CommitAsync();

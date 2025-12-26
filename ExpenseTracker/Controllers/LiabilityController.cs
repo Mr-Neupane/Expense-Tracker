@@ -7,6 +7,7 @@ using ExpenseTracker.Services;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using TestApplication.Interface;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -14,13 +15,13 @@ namespace ExpenseTracker.Controllers;
 
 public class LiabilityController : Controller
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly ILiabilityService _liabilityService;
     private readonly IVoucherService _voucherService;
 
 
-    public LiabilityController(ApplicationDbContext dbContext, IVoucherService voucherService)
+    public LiabilityController(IVoucherService voucherService, ILiabilityService liabilityService)
     {
-        _dbContext = dbContext;
+        _liabilityService = liabilityService;
         _voucherService = voucherService;
     }
 
@@ -34,19 +35,13 @@ public class LiabilityController : Controller
     public async Task<RedirectToActionResult> AddLiability(LiabilityVm vm)
     {
         var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
-        var liab = new Liability
+        var liability = _liabilityService.RecordLiabilityAsync(new LiabilityDto
         {
             LedgerId = vm.LiabilityLedger,
-            DrAmount = 0,
-            CrAmount = vm.Amount,
             TxnDate = engdate,
-            RecDate = DateTime.UtcNow,
-            RecStatus = vm.RecStatus,
-            Status = vm.Status,
-            RecById = vm.RecById,
-        };
-        await _dbContext.Liabilities.AddAsync(liab);
-        await _dbContext.SaveChangesAsync();
+            Amount = vm.Amount,
+            Remarks = vm.Remarks,
+        });
 
         var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
 
@@ -55,7 +50,7 @@ public class LiabilityController : Controller
             TxnDate = engdate,
             Amount = vm.Amount,
             Type = "Liability",
-            TypeId = liab.Id,
+            TypeId = liability.Id,
             Remarks = vm.Remarks,
             IsJv = false,
             Details = new List<TransactionDetailDto>()
