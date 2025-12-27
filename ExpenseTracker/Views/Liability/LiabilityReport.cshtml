@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<ExpenseTracker.Dtos.LiabilityReportDto>
 
 @{
     ViewData["Title"] = "Liability Report";
@@ -29,23 +29,23 @@
             <td class="text-center">@sn</td>
 
             <td class="text-right">
-                @String.Format("{0:N2}", item.dr_amount)
+                @String.Format("{0:N2}", item.Amount)
             </td>
 
             <td>
-                @await DateHelper.GetNepaliDate(item.txn_date)
+                @await DateHelper.GetNepaliDate(item.TxnDate)
             </td>
 
             <td>
                 <a asp-controller="Voucher"
                    asp-action="VoucherDetail"
-                   asp-route-transactionid="@item.transactionid" style="text-decoration: none">
-                    @item.voucher_no
+                   asp-route-transactionid="@item.Transactionid" style="text-decoration: none">
+                    @item.Voucherno
                 </a>
             </td>
-            <td>@item.username</td>
+            <td>@item.Username</td>
             <td>
-                @(item.status == 1 ? "Active" : "Inactive")
+                @(item.Status == 1 ? "Active" : "Inactive")
             </td>
         </tr>
 

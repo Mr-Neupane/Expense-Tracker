@@ -18,23 +18,26 @@ public class VoucherService : IVoucherService
         _dbContext = dbContext;
     }
 
-    public string GetNextJvVoucherNo()
+    public async Task<string> GetNextJvVoucherNoAsync()
     {
-        var vouchernumber = _dbContext.AccountingTransaction
+        var numbers = await _dbContext.AccountingTransaction
+            .AsNoTracking()
             .Where(x => x.VoucherNo.StartsWith("JV"))
             .Select(x => x.VoucherNo.Substring(2))
-            .AsEnumerable()
-            .Select(x => int.Parse(x))
+            .ToListAsync();
+
+        var max = numbers
+            .Select(int.Parse)
             .DefaultIfEmpty(0)
             .Max();
-        var nextVoucherNumber = "JV0000" + (vouchernumber + 1);
-        return nextVoucherNumber;
+
+        return $"JV{(max + 1):D4}";
     }
 
 
     public async Task<Transaction> RecordTransactionAsync(AccTransactionDto dto)
     {
-        string voucherNo = dto.IsJv ? GetNextJvVoucherNo() : await GetVoucherNumber();
+        string voucherNo = dto.IsJv ? await GetNextJvVoucherNoAsync() : await GetVoucherNumber();
         var txn = new Transaction()
         {
             TxnDate = dto.TxnDate.ToUniversalTime(),

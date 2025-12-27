@@ -18,59 +18,8 @@ public class BankService : IBankService
         _context = context;
     }
 
-    public static async Task<int> RecordBankTransaction(BankTransactionVm vm)
-    {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = con.BeginTransaction())
-            {
-                try
-                {
-                    var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
-                    var banktran =
-                        @"INSERT INTO bank.banktransactions ( bank_id,txn_date,amount,type,remarks,rec_date,rec_by_id,rec_status,status,transaction_id)
-                                    values (@bank_id, @txn_date, @amount, @type, @remarks, @rec_date,@rec_by_id,@recs_tatus,@status,@transaction_id) returning id";
-                    var id = await con.QuerySingleAsync<int>(banktran, new
-                    {
-                        bank_id = vm.BankId,
-                        txn_date = engdate,
-                        amount = vm.Amount,
-                        type = vm.Type,
-                        remarks = vm.Remarks,
-                        rec_date = DateTime.Now,
-                        rec_by_id = -1,
-                        recs_tatus = vm.RecStatus,
-                        status = vm.Status,
-                        transaction_id = 0,
-                    });
-                    await txn.CommitAsync();
-                    await con.CloseAsync();
-                    return id;
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await con.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-    }
 
-    public static async Task UpdateTransactionDuringBankTransaction(int btid, int transactionid)
-    {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = con.BeginTransaction())
-            {
-                var query = @"UPDATE bank.banktransactions SET transaction_id = @transactionid where id =@id";
-                await con.ExecuteAsync(query, new { transactionid = transactionid, id = btid });
-                await txn.CommitAsync();
-                await con.CloseAsync();
-            }
-        }
-    }
+    
 
     public static async Task<List<dynamic>> GetBankTransactionReport()
     {
@@ -91,20 +40,6 @@ public class BankService : IBankService
         int? bankid = await conn.QueryFirstOrDefaultAsync<int?>(query, new { ledgerid });
         return bankid ?? 0;
     }
-
-
-    public static async Task<List<dynamic>> GetBankTransactionList(int transactionid)
-    {
-        var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select bank_id, ledgerid, type, amount
-from bank.banktransactions bt
-         join bank.bank b on b.id = bt.bank_id
-where transaction_id=@transactionid ;";
-
-        var res = await conn.QueryAsync(query, new { transactionid });
-        return res.ToList();
-    }
-
 
     public async Task<List<Bank>> BankReportAsync()
     {

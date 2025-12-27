@@ -4,6 +4,7 @@ using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
+using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -15,16 +16,16 @@ public class ExpenseController : Controller
     private readonly IVoucherService _voucherService;
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
-    private readonly ApplicationDbContext _context;
+    private readonly AccTransactionManager _accTransactionManager;
 
     public ExpenseController(IVoucherService voucherService, IToastNotification toastNotification,
-        ApplicationDbContext context, IBankService bankService, IExpenseService expenseService)
+        IBankService bankService, IExpenseService expenseService, AccTransactionManager accTransactionManager)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
-        _context = context;
         _bankService = bankService;
         _expenseService = expenseService;
+        _accTransactionManager = accTransactionManager;
     }
 
     [HttpGet]
@@ -46,14 +47,15 @@ public class ExpenseController : Controller
                 return View();
             }
 
-            var expense = await _expenseService.RecordExpenseAsync(new NewExpenseDto
+            var expense = new NewExpenseDto
             {
                 LedgerId = vm.ExpenseLedger,
+                FromLedgerId = vm.ExpenseFromLedger,
                 Amount = vm.Amount,
                 TxnDate = engdate,
-            });
+            };
 
-            var accTrans = _voucherService.RecordTransactionAsync(
+            var accTrans =
                 new AccTransactionDto
                 {
                     TxnDate = engdate,
@@ -67,23 +69,9 @@ public class ExpenseController : Controller
                         new() { IsDr = true, Amount = vm.Amount, LedgerID = vm.ExpenseLedger },
                         new() { IsDr = false, Amount = vm.Amount, LedgerID = vm.ExpenseFromLedger }
                     }
-                });
+                };
 
-            var bankid = await BankService.GetBankIdByLedgerId(vm.ExpenseFromLedger);
-            if (bankid != 0)
-            {
-                var bankTransaction = await _bankService.RecordBankTransactionAsync(new BankTransactionDto
-                {
-                    BankId = bankid,
-                    TxnDate = engdate.ToUniversalTime(),
-                    Amount = vm.Amount,
-                    Type = "Withdraw",
-                    Remarks = vm.Remarks
-                });
-                await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
-                    accTrans.Id);
-                await _bankService.UpdateRemainingBalanceInBankAsync(bankTransaction.BankId);
-            }
+            await _accTransactionManager.RecordExpenseTransaction(expense, accTrans);
 
             _toastNotification.AddSuccessToastMessage("Expense recorded successfully.");
             return RedirectToAction("ExpenseReport");
@@ -97,7 +85,7 @@ public class ExpenseController : Controller
 
     public async Task<IActionResult> ExpenseReport()
     {
-        var report =await _expenseService.GetExpenseReportsAsync();
+        var report = await _expenseService.GetExpenseReportsAsync();
         return View(report);
     }
 }

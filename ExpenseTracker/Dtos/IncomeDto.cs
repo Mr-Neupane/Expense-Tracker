@@ -4,7 +4,9 @@ public class IncomeDto
 {
     public int Id { get; set; }
     public int Ledgerid { get; set; }
+    public int FromLedgerid { get; set; }
     public decimal Amount { get; set; }
+    public string Remarks { get; set; }
     public DateTime TxnDate { get; set; }
 }
 

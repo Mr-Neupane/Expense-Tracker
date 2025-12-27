@@ -6,6 +6,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.Services;
 using NToastNotify;
 using TestApplication.Interface;
+using TestApplication.Manager;
 using TestApplication.ViewModels.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,8 @@ builder.Services.AddScoped<IVoucherService, VoucherService>();
 builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<ILiabilityService, LiabilityService>();
+builder.Services.AddScoped<AccTransactionManager>();
 
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

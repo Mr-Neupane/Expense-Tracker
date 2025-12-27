@@ -1,7 +1,9 @@
-﻿using ExpenseTracker.Dtos;
+﻿using System.Transactions;
+using ExpenseTracker.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
+using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -11,16 +13,18 @@ public class IncomeController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly IVoucherService _voucherService;
+    private readonly AccTransactionManager _transactionManager;
     private readonly IIncomeService _incomeService;
     private readonly IBankService _bankService;
 
     public IncomeController(IVoucherService voucherService, IToastNotification toastNotification,
-        IIncomeService incomeService, IBankService bankService)
+        IIncomeService incomeService, IBankService bankService, AccTransactionManager transactionManager)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _incomeService = incomeService;
         _bankService = bankService;
+        _transactionManager = transactionManager;
     }
 
     public IActionResult RecordIncome()
@@ -37,13 +41,13 @@ public class IncomeController : Controller
             var income = new IncomeDto
             {
                 Ledgerid = vm.IncomeLedger,
+                FromLedgerid = vm.IncomeFrom,
                 Amount = vm.Amount,
+                Remarks = vm.Remarks,
                 TxnDate = engdate.ToUniversalTime()
             };
 
-            await _incomeService.RecordIncomeAsync(income);
-
-            var transaction = _voucherService.RecordTransactionAsync(new AccTransactionDto
+            var accTransaction = new AccTransactionDto
             {
                 TxnDate = engdate.ToUniversalTime(),
                 Amount = vm.Amount,
@@ -56,23 +60,10 @@ public class IncomeController : Controller
                     new() { LedgerID = vm.IncomeFrom, IsDr = true, Amount = vm.Amount },
                     new() { LedgerID = vm.IncomeLedger, IsDr = false, Amount = vm.Amount },
                 }
-            });
+            };
 
-            int bankid = await BankService.GetBankIdByLedgerId(vm.IncomeFrom);
-            if (bankid != 0)
-            {
-                var bankTransaction = new BankTransactionDto
-                {
-                    BankId = bankid,
-                    TxnDate = engdate.ToUniversalTime(),
-                    Amount = vm.Amount,
-                    Type = "Deposit",
-                    Remarks = vm.Remarks
-                };
-                await _bankService.RecordBankTransactionAsync(bankTransaction);
-                await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
-                    transaction.Id);
-            }
+            await _transactionManager.RecordIncomeTransaction(income, accTransaction);
+
 
             _toastNotification.AddSuccessToastMessage("Income recorded successfully.");
             return View();
