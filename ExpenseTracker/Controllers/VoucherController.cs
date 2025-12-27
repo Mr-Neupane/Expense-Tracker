@@ -4,7 +4,6 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
@@ -16,19 +15,16 @@ public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IVoucherService _voucherService;
-    private readonly IBankService _bankService;
     private readonly IIncomeService _incomeService;
     private readonly IToastNotification _toastNotification;
 
     public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService,
-        IBankService bankService)
+        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
         _incomeService = incomeService;
-        _bankService = bankService;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
@@ -40,13 +36,13 @@ public class VoucherController : Controller
     public async Task<IActionResult> AccountingTransaction()
     {
         var finalreport = await _voucherService.AccountingTransactionReportAsync();
-        if (finalreport is not null)
+        if (finalreport.Count > 0)
         {
             return View(finalreport);
         }
         else
         {
-            _toastNotification.AddWarningToastMessage("No Vouchers found");
+            _toastNotification.AddAlertToastMessage("No Vouchers found");
             return RedirectToAction("Index", "Home");
         }
     }
