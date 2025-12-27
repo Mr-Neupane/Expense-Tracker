@@ -20,8 +20,8 @@ public class IncomeService : IIncomeService
         var income = new Income
         {
             LedgerId = dto.Ledgerid,
-            DrAmount = dto.Amount,
-            CrAmount = 0,
+            DrAmount = 0,
+            CrAmount = dto.Amount,
             TxnDate = dto.TxnDate,
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = 1,

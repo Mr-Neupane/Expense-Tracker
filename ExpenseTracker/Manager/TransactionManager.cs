@@ -1,19 +1,18 @@
 ﻿using System.Transactions;
 using ExpenseTracker.Dtos;
-using ExpenseTracker.Models;
 using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
 
 namespace TestApplication.Manager;
 
-public class TransactionManager
+public class AccTransactionManager
 {
     private readonly IVoucherService _voucherService;
     private readonly IBankService _bankService;
     private readonly IIncomeService _incomeService;
     private readonly IExpenseService _expenseService;
 
-    public TransactionManager(IVoucherService voucherService, IBankService bankService, IIncomeService incomeService,
+    public AccTransactionManager(IVoucherService voucherService, IBankService bankService, IIncomeService incomeService,
         IExpenseService expenseService)
     {
         _voucherService = voucherService;
@@ -33,7 +32,7 @@ public class TransactionManager
             Remarks = dto.Remarks,
         };
         var banktxn = await _bankService.RecordBankTransactionAsync(banktransaction);
-        var acctxn = _voucherService.RecordTransactionAsync(new AccTransactionDto
+        var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
         {
             TxnDate = dto.TxnDate,
             Amount = dto.Amount,
@@ -48,7 +47,37 @@ public class TransactionManager
             }
         });
         await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(banktxn.Id, acctxn.Id);
-
         await _bankService.UpdateRemainingBalanceInBankAsync(dto.BankId);
+    }
+
+    public async Task RecordIncomeTransaction(IncomeDto idto, AccTransactionDto dto)
+    {
+        var income = await _incomeService.RecordIncomeAsync(idto);
+        var transaction = await _voucherService.RecordTransactionAsync(new AccTransactionDto
+        {
+            TxnDate = dto.TxnDate,
+            Amount = dto.Amount,
+            Type = dto.Type,
+            TypeId = income.Id,
+            Remarks = dto.Remarks,
+            IsJv = false,
+            Details = dto.Details,
+        });
+
+        int bankid = await BankService.GetBankIdByLedgerId(idto.FromLedgerid);
+        if (bankid != 0)
+        {
+            var bankTransaction = new BankTransactionDto
+            {
+                BankId = bankid,
+                TxnDate = dto.TxnDate.ToLocalTime(),
+                Amount = dto.Amount,
+                Type = "Deposit",
+                Remarks = dto.Remarks
+            };
+            await _bankService.RecordBankTransactionAsync(bankTransaction);
+            await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
+                transaction.Id);
+        }
     }
 }
