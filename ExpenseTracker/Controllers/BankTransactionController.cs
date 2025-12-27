@@ -38,8 +38,8 @@ public class BankTransactionController : Controller
         {
             {
                 var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
-                var frombankledgerid = await LedgerCode.GetBankLedgerId(vm.BankId);
-                var ledgerbalance = await BalanceProvider.GetLedgerBalance(frombankledgerid);
+                var bankLedgerId = await LedgerCode.GetBankLedgerId(vm.BankId);
+                var ledgerbalance = await BalanceProvider.GetLedgerBalance(bankLedgerId);
                 var banks = await _bankService.BankReportAsync();
 
                 var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
@@ -51,15 +51,36 @@ public class BankTransactionController : Controller
                         ".");
                 }
 
-                await _accTransactionManager.RecordBankTransaction(new BankTransactionDto
+                var acctransaction = new AccTransactionDto
+                {
+                    TxnDate = engtxndate,
+                    Amount = vm.Amount,
+                    Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
+                    TypeId = 0,
+                    Remarks = vm.Remarks,
+                    IsJv = false,
+                    Details = new List<TransactionDetailDto>
+                    {
+                        new() { LedgerID = vm.Type == "Deposit" ? bankLedgerId : -3, IsDr = true, Amount = vm.Amount },
+                        new()
+                        {
+                            LedgerID = vm.Type == "Withdraw" ? bankLedgerId : -3, IsDr = false, Amount = vm.Amount
+                        },
+                    }
+                };
+
+               var bankTransaction=new BankTransactionDto
                 {
                     BankId = vm.BankId,
-                    LedgerId = frombankledgerid,
+                    LedgerId = bankLedgerId,
                     TxnDate = engtxndate,
                     Amount = vm.Amount,
                     Type = vm.Type,
                     Remarks = vm.Remarks,
-                });
+                };
+
+                await _accTransactionManager.RecordBankTransaction(bankTransaction, acctransaction);
+
 
                 _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
                                                           " completed with amount Rs. " + vm.Amount);
