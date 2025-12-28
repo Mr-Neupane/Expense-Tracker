@@ -7,5 +7,6 @@ public interface ILiabilityService
 {
     Task<Liability> RecordLiabilityAsync(LiabilityDto dto);
     Task<List<LiabilityReportDto>> GetAllLiabilityReportAsync();
+    Task ReverseLiabilityTransactionAsync(int id);
 }
 

@@ -12,15 +12,17 @@ namespace ExpenseTracker.Controllers;
 public class BankTransactionController : Controller
 {
     private readonly IToastNotification _toastNotification;
-    private readonly IVoucherService _voucherService;
+    private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IBankService _bankService;
     private readonly AccTransactionManager _accTransactionManager;
 
-    public BankTransactionController(IToastNotification toastNotification, IVoucherService voucherService,
-        IBankService bankService, AccTransactionManager accTransactionManager)
+
+    public BankTransactionController(IToastNotification toastNotification,
+        ReverseTransactionManager reverseTransactionManager, IBankService bankService,
+        AccTransactionManager accTransactionManager)
     {
         _toastNotification = toastNotification;
-        _voucherService = voucherService;
+        _reverseTransactionManager = reverseTransactionManager;
         _bankService = bankService;
         _accTransactionManager = accTransactionManager;
     }
@@ -50,40 +52,46 @@ public class BankTransactionController : Controller
                         "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
                         ".");
                 }
-
-                var acctransaction = new AccTransactionDto
+                else
                 {
-                    TxnDate = engtxndate,
-                    Amount = vm.Amount,
-                    Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
-                    TypeId = 0,
-                    Remarks = vm.Remarks,
-                    IsJv = false,
-                    Details = new List<TransactionDetailDto>
+                    var acctransaction = new AccTransactionDto
                     {
-                        new() { LedgerID = vm.Type == "Deposit" ? bankLedgerId : -3, IsDr = true, Amount = vm.Amount },
-                        new()
+                        TxnDate = engtxndate,
+                        Amount = vm.Amount,
+                        Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
+                        TypeId = 0,
+                        Remarks = vm.Remarks,
+                        IsJv = false,
+                        Details = new List<TransactionDetailDto>
                         {
-                            LedgerID = vm.Type == "Withdraw" ? bankLedgerId : -3, IsDr = false, Amount = vm.Amount
-                        },
-                    }
-                };
+                            new()
+                            {
+                                LedgerID = vm.Type == "Deposit" ? bankLedgerId : -3, IsDr = true, Amount = vm.Amount
+                            },
+                            new()
+                            {
+                                LedgerID = vm.Type == "Withdraw" ? bankLedgerId : -3, IsDr = false, Amount = vm.Amount
+                            },
+                        }
+                    };
 
-               var bankTransaction=new BankTransactionDto
-                {
-                    BankId = vm.BankId,
-                    LedgerId = bankLedgerId,
-                    TxnDate = engtxndate,
-                    Amount = vm.Amount,
-                    Type = vm.Type,
-                    Remarks = vm.Remarks,
-                };
+                    var bankTransaction = new BankTransactionDto
+                    {
+                        BankId = vm.BankId,
+                        LedgerId = bankLedgerId,
+                        TxnDate = engtxndate,
+                        Amount = vm.Amount,
+                        Type = vm.Type,
+                        Remarks = vm.Remarks,
+                    };
 
-                await _accTransactionManager.RecordBankTransaction(bankTransaction, acctransaction);
+                    await _accTransactionManager.RecordBankTransaction(bankTransaction, acctransaction);
 
 
-                _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
-                                                          " completed with amount Rs. " + vm.Amount);
+                    _toastNotification.AddSuccessToastMessage("Bank " + vm.Type.ToLower() +
+                                                              " completed with amount Rs. " + vm.Amount);
+                }
+
                 return View();
             }
         }
@@ -123,10 +131,7 @@ public class BankTransactionController : Controller
             }
             else
             {
-                await _bankService.ReverseBankTransactionAsync(id, transactionid);
-                await _voucherService.ReverseTransactionAsync(transactionid);
-                await _bankService.UpdateRemainingBalanceInBankAsync(bankId);
-
+                await _reverseTransactionManager.ReverseBankTransaction(id, transactionid, bankId);
                 _toastNotification.AddSuccessToastMessage("Bank " + type.ToLower() +
                                                           " reverse transaction completed");
             }

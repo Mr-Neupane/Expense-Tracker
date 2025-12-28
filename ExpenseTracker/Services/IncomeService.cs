@@ -35,13 +35,9 @@ public class IncomeService : IIncomeService
 
     public async Task ReverseIncomeAsync(int id)
     {
-        var income = await _context.Incomes.Where(i => i.Id == id && i.Status == 1).ToListAsync();
+        var income = await _context.Incomes.FindAsync(id);
 
-        foreach (var txn in income)
-        {
-            txn.Status = 2;
-        }
-
+        if (income is { Status: 1 }) income.Status = 2;
         await _context.SaveChangesAsync();
     }
 
