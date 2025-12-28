@@ -6,6 +6,7 @@ using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
+using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -16,6 +17,7 @@ public class VoucherController : Controller
     private readonly ApplicationDbContext _context;
     private readonly IVoucherService _voucherService;
     private readonly IIncomeService _incomeService;
+    private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
 
     public VoucherController(IVoucherService voucherService,
@@ -121,14 +123,14 @@ public class VoucherController : Controller
         switch (type)
         {
             case "Expense":
-                await ReverseService.ReverseExpense(typeid, transactionid);
+                await _reverseTransactionManager.ReverseExpenseTransaction(typeid, transactionid);
+
                 break;
             case "Income":
-                await _incomeService.ReverseIncomeAsync(typeid);
-                await _voucherService.ReverseTransactionAsync(transactionid);
+                await _reverseTransactionManager.ReverseIncomeTransaction(typeid, transactionid);
                 break;
             case "Liability":
-                await ReverseService.ReverseRecordedLiability(typeid, transactionid);
+                await _reverseTransactionManager.ReverseLiabilityTransaction(typeid, transactionid);
                 break;
         }
 

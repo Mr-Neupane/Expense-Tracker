@@ -26,6 +26,7 @@ builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ILiabilityService, LiabilityService>();
 builder.Services.AddScoped<AccTransactionManager>();
+builder.Services.AddScoped<ReverseTransactionManager>();
 
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

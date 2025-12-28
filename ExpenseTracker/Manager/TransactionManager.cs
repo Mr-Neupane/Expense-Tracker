@@ -80,16 +80,8 @@ public class AccTransactionManager
     public async Task RecordIncomeTransaction(IncomeDto idto, AccTransactionDto dto)
     {
         var income = await _incomeService.RecordIncomeAsync(idto);
-        var transaction = await _voucherService.RecordTransactionAsync(new AccTransactionDto
-        {
-            TxnDate = dto.TxnDate,
-            Amount = dto.Amount,
-            Type = dto.Type,
-            TypeId = income.Id,
-            Remarks = dto.Remarks,
-            IsJv = false,
-            Details = dto.Details,
-        });
+        var transaction =await RecordVoucher(dto, income.Id);
+
 
         int bankid = await BankService.GetBankIdByLedgerId(idto.FromLedgerid);
         if (bankid != 0)
@@ -111,16 +103,7 @@ public class AccTransactionManager
     public async Task RecordLiabilityTransaction(LiabilityDto lidto, AccTransactionDto txndto)
     {
         var liability = await _liabilityService.RecordLiabilityAsync(lidto);
-        var accTransaction = await _voucherService.RecordTransactionAsync(new AccTransactionDto
-        {
-            TxnDate = txndto.TxnDate,
-            Amount = txndto.Amount,
-            Type = txndto.Type,
-            TypeId = liability.Id,
-            Remarks = txndto.Remarks,
-            IsJv = false,
-            Details = txndto.Details,
-        });
+        var accTransaction =await RecordVoucher(txndto, liability.Id);
 
         if (lidto.BankId != 0)
         {

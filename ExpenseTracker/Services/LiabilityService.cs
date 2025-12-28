@@ -54,4 +54,14 @@ public class LiabilityService : ILiabilityService
             }).ToListAsync();
         return report;
     }
+
+    public async Task ReverseLiabilityTransactionAsync(int id)
+    {
+        var liability = await _context.Liabilities.FindAsync(id);
+        if (liability is { Status: 1 })
+        {
+            liability.Status = 2;
+            await _context.SaveChangesAsync();
+        }
+    }
 }

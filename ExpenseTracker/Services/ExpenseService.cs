@@ -52,4 +52,14 @@ public class ExpenseService : IExpenseService
             }).ToListAsync();
         return report;
     }
+
+    public async Task ReverseRecordedExpenseAsync(int id)
+    {
+        var expense = await _context.Expenses.FindAsync(id);
+        if (expense is { Status: 1 })
+        {
+            expense.Status = 1;
+            await _context.SaveChangesAsync();
+        }
+    }
 }
