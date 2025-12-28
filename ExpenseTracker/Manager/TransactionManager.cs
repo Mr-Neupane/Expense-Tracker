@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Models;
 using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
 
@@ -22,6 +23,21 @@ public class AccTransactionManager
         _liabilityService = liabilityService;
     }
 
+    private async Task<Transaction> RecordVoucher(AccTransactionDto accTransaction, int typeId)
+    {
+        var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
+        {
+            TxnDate = accTransaction.TxnDate,
+            Amount = accTransaction.Amount,
+            Type = accTransaction.Type,
+            TypeId = typeId,
+            Remarks = accTransaction.Remarks,
+            IsJv = false,
+            Details = accTransaction.Details,
+        });
+        return acctxn;
+    }
+
     public async Task RecordBankTransaction(BankTransactionDto dto, AccTransactionDto accTransaction)
     {
         var banktransaction = new BankTransactionDto
@@ -33,16 +49,7 @@ public class AccTransactionManager
             Remarks = dto.Remarks,
         };
         var banktxn = await _bankService.RecordBankTransactionAsync(banktransaction);
-        var acctxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
-        {
-            TxnDate = accTransaction.TxnDate,
-            Amount = accTransaction.Amount,
-            Type = accTransaction.Type,
-            TypeId = banktxn.Id,
-            Remarks = accTransaction.Remarks,
-            IsJv = false,
-            Details = accTransaction.Details,
-        });
+        var acctxn = await RecordVoucher(accTransaction, banktxn.Id);
         await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(banktxn.Id, acctxn.Id);
         await _bankService.UpdateRemainingBalanceInBankAsync(dto.BankId);
     }
@@ -52,18 +59,7 @@ public class AccTransactionManager
     {
         var expense = await _expenseService.RecordExpenseAsync(dto);
 
-        var accTrans = _voucherService.RecordTransactionAsync(
-            new AccTransactionDto
-            {
-                TxnDate = txndto.TxnDate,
-                Amount = txndto.Amount,
-                Type = txndto.Type,
-                TypeId = expense.Id,
-                Remarks = txndto.Remarks,
-                IsJv = false,
-                Details = txndto.Details,
-            });
-
+        var accTrans = await RecordVoucher(txndto, expense.Id);
         var bankid = await BankService.GetBankIdByLedgerId(dto.FromLedgerId);
         if (bankid != 0)
         {

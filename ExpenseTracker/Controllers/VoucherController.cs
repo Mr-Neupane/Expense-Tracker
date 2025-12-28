@@ -61,7 +61,7 @@ public class VoucherController : Controller
         try
         {
             var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
-            var transaction = _voucherService.RecordTransactionAsync(
+            var transaction = await _voucherService.RecordTransactionAsync(
                 new AccTransactionDto
                 {
                     TxnDate = txndate.ToUniversalTime(),

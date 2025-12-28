@@ -37,7 +37,6 @@ public class ExpenseService : IExpenseService
     public async Task<List<ExpenseReportDto>> GetExpenseReportsAsync()
     {
         var report = await (from t in _context.AccountingTransaction
-            // join td in _context.TransactionDetails on t.Id equals td.TransactionId
             join e in _context.Expenses on t.TypeId equals e.Id
             join u in _context.Users on e.RecById equals u.Id
             where t.Status == 1 && t.Type == "Expense" && e.Status == 1
