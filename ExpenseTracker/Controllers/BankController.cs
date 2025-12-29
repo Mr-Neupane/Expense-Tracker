@@ -7,6 +7,7 @@ using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NToastNotify;
+using TestApplication.Interface;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
@@ -16,13 +17,16 @@ public class BankController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
+    private readonly ILedgerService _ledgerService;
     private readonly ApplicationDbContext _context;
 
-    public BankController(IToastNotification toastNotification, IBankService bankService, ApplicationDbContext context)
+    public BankController(IToastNotification toastNotification, IBankService bankService, ApplicationDbContext context,
+        ILedgerService ledgerService)
     {
         _toastNotification = toastNotification;
         _bankService = bankService;
         _context = context;
+        _ledgerService = ledgerService;
     }
 
     [HttpGet]
@@ -34,47 +38,40 @@ public class BankController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateBank(BankVm vm)
     {
-        using (NpgsqlConnection con = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        try
         {
-            using (var txn = con.BeginTransaction())
+           
+            DateTime accountopendate = await DateHelper.GetEnglishDate(vm.AccountOpenDate);
+
+            var lid = await _ledgerService.AddLedgerAsync(new LedgerDto
             {
-                try
-                {
-                    int subparentId = -2;
+                Name = vm.BankName,
+                ParentId = 0,
+                SubParentId = -2,
+            });
 
-                    DateTime accountopendate = await DateHelper.GetEnglishDate(vm.AccountOpenDate);
-                    int lid = await LedgerController.NewLedger(new LedgerVm
-                    {
-                        Id = vm.Id,
-                        SubParentId = subparentId,
-                        ParentId = 0,
-                        LedgerName = vm.BankName
-                    });
+            await _bankService.AddBankAsync(new BankDto
+            {
+                BankName = vm.BankName,
+                AccountNumber = vm.AccountNumber,
+                BankContact = vm.BankContact,
+                BankAddress = vm.BankAddress,
+                AccountOpenDate = accountopendate.ToUniversalTime(),
+                LedgerId = lid.Id,
+                RemainingBalance = 0
+            });
 
-                    await _bankService.AddBankAsync(new BankDto
-                    {
-                        BankName = vm.BankName,
-                        AccountNumber = vm.AccountNumber,
-                        BankContact = vm.BankContact,
-                        BankAddress = vm.BankAddress,
-                        AccountOpenDate = accountopendate.ToUniversalTime(),
-                        LedgerId = lid,
-                        RemainingBalance = 0
-                    });
+            _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
 
-                    _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
-
-                    return RedirectToAction("BankReport");
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    _toastNotification.AddErrorToastMessage("Error creating bank." + e.Message);
-                    return View();
-                }
-            }
+            return RedirectToAction("BankReport");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error creating bank." + e.Message);
+            return View();
         }
     }
+
 
     [HttpGet]
     public async Task<IActionResult> EditBank(int id)

@@ -25,6 +25,7 @@ builder.Services.AddScoped<IBankService, BankService>();
 builder.Services.AddScoped<IIncomeService, IncomeService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ILiabilityService, LiabilityService>();
+builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<AccTransactionManager>();
 builder.Services.AddScoped<ReverseTransactionManager>();
 

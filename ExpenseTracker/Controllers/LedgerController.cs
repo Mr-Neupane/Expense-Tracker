@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
@@ -7,18 +8,22 @@ using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NToastNotify;
+using TestApplication.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class LedgerController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly ILedgerService _ledgerService;
     private readonly IToastNotification _toastNotification;
 
-    public LedgerController(ApplicationDbContext context, IToastNotification toastNotification)
+    public LedgerController(ApplicationDbContext context, IToastNotification toastNotification,
+        ILedgerService ledgerService)
     {
         _context = context;
         _toastNotification = toastNotification;
+        _ledgerService = ledgerService;
     }
 
     [HttpGet]
@@ -30,35 +35,32 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateLedger(LedgerVm vm)
     {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        try
         {
-            using (var txn = conn.BeginTransaction())
-            {
-                try
-                {
-                    var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
-                        .AnyAsync();
+            var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
+                .AnyAsync();
 
-                    if (!exists)
-                    {
-                        await NewLedger(vm);
-                        _toastNotification.AddSuccessToastMessage($"{vm.LedgerName} created successfully");
-                        return RedirectToAction("LedgerReport");
-                    }
-                    else
-                    {
-                        _toastNotification.AddErrorToastMessage($"Ledger with name {vm.LedgerName} already exists.");
-                        return View();
-                    }
-                }
-                catch (Exception e)
+            if (!exists)
+            {
+                await _ledgerService.AddLedgerAsync(new LedgerDto
                 {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    _toastNotification.AddErrorToastMessage("Error creating ledger." + e.Message);
-                    return View();
-                }
+                    Name = vm.LedgerName,
+                    ParentId = vm.ParentId,
+                    SubParentId = vm.SubParentId,
+                });
+                _toastNotification.AddSuccessToastMessage($"{vm.LedgerName} created successfully");
+                return RedirectToAction("LedgerReport");
             }
+            else
+            {
+                _toastNotification.AddErrorToastMessage($"Ledger with name {vm.LedgerName} already exists.");
+                return View();
+            }
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error creating ledger." + e.Message);
+            return View();
         }
     }
 
@@ -86,49 +88,34 @@ from accounting.ledger l
     [HttpPost]
     public async Task<IActionResult> CreateParentLedger(ParentledgerVm vm)
     {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
+        var validation = await LedgerCode.ValidateLedgerCode(vm.ParentCode);
+
+        try
         {
-            using (var txn = conn.BeginTransaction())
+            if (validation == 1)
             {
-                var validation = await LedgerCode.ValidateLedgerCode(vm.ParentCode);
-
-                try
-                {
-                    if (validation == 1)
-                    {
-                        TempData["AlertMessage"] = "Ledger code already exists";
-                        return RedirectToAction("CreateParentLedger");
-                    }
-
-                    int? subparentid = null;
-                    var query = @"
-INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)";
-
-                    await conn.ExecuteAsync(query, new
-                    {
-                        parentid = vm.ParentId,
-                        ledgername = vm.ParentLedgerName,
-                        recstatus = vm.RecStatus,
-                        status = vm.Status,
-                        recbyid = -1,
-                        code = vm.ParentCode,
-                        subparentid
-                    });
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                    return RedirectToAction("CreateParentLedger");
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
+                _toastNotification.AddInfoToastMessage("Ledger code already exists");
             }
+            else
+            {
+                await _ledgerService.AddLedgerAsync(new LedgerDto
+                {
+                    Name = vm.ParentLedgerName,
+                    ParentId = vm.ParentId,
+                    SubParentId = vm.SubParentId,
+                    Code = vm.ParentCode
+                });
+            }
+
+            return RedirectToAction("CreateParentLedger");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error creating parent ledger." + e.Message);
+            return View();
         }
     }
+
 
     [HttpGet]
     public async Task<IActionResult> ParentLedgerReport()
@@ -149,39 +136,14 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
     {
-        var report = await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
-        var data = await (from t in _context.AccountingTransaction
-            join td in _context.TransactionDetails.Where(d => d.LedgerId == vm.LedgerId) on t.Id equals td
-                .TransactionId
-            join td2 in _context.TransactionDetails on td.TransactionId equals td2.TransactionId
-            join l in _context.Ledgers on td2.LedgerId equals l.Id
-            where td2.LedgerId != vm.LedgerId && t.Status == 1 && td.Status == 1
-            group new { t, td2,td, l } by td.TransactionId
-            into g
-            select new
-            {
-                TransactionID = g.Key,
-                LedgerId = g.Select(x => x.td2.LedgerId).ToList(),
-                VoucherNo = g.Select(x => x.t.VoucherNo).First(),
-                LedgerNames = g.Select(x => x.l.Ledgername).ToList(),
-                DrAmount = g.Select(x => x.td.DrAmount).First(),
-                CrAmount = g.Select(x => x.td.CrAmount).First(),
-                TxnDate = g.Select(x => x.t.TxnDate).First(),
-            }).ToListAsync();
-        var statement =  data.Select(d => new LedgerStatement
+        var dto = new LedgerStatementDto
         {
-            TransactionID = d.TransactionID,
-            LedgerId = d.LedgerId,
-            LedgerName = string.Join(", ", d.LedgerNames),
-            DrAmount = d.DrAmount,
-            VoucherNo = d.VoucherNo,
-            CrAmount = d.CrAmount,
-            TxnDate = d.TxnDate,
-        }).ToList();
-        vm.LedgerStatements = statement;
-        vm.OpeningBalance = report.OpeningBalance;
-        vm.ClosingBalance = report.ClosingBalance;
-        return View(vm);
+            LedgerId = vm.LedgerId,
+            DateFrom = vm.DateFrom,
+            DateTo = vm.DateTo,
+        };
+        var report = await _ledgerService.GetLedgerStatementsAsync(dto);
+        return View(report);
     }
 
     public IActionResult GetSubParents(int parentId)
@@ -194,42 +156,5 @@ values (@parentid,@ledgername,@recstatus,@status,@recById, @code, @subparentid)"
         var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
 
         return Json(subParents);
-    }
-
-    public static async Task<int> NewLedger(LedgerVm vm)
-    {
-        using (NpgsqlConnection conn = (NpgsqlConnection)DapperConnectionProvider.GetConnection())
-        {
-            using (var txn = conn.BeginTransaction())
-            {
-                try
-                {
-                    var ledgercode = await LedgerCode.GetLedgerCode(vm.SubParentId);
-
-                    var newLedger = @"
-                                INSERT INTO accounting.ledger ( parentid, ledgername, recstatus, status, recbyid, code, subparentid)
-                                 values (@parentId, @ledgerName, @recStatus, @status, @recById, @code, @subparentid)
-                              ON CONFLICT (ledgername, code) DO NOTHING returning id; ";
-                    int? parentid = null;
-                    var ledgerid = await conn.QueryFirstAsync<int>(newLedger,
-                        new
-                        {
-                            parentid = parentid, Ledgername = vm.LedgerName, recstatus = vm.RecStatus,
-                            status = vm.Status,
-                            RecById = -1, subparentid = vm.SubParentId, code = ledgercode
-                        });
-                    await txn.CommitAsync();
-                    await conn.CloseAsync();
-                    return ledgerid;
-                }
-                catch (Exception e)
-                {
-                    await txn.RollbackAsync();
-                    await conn.CloseAsync();
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
     }
 }
