@@ -8,7 +8,7 @@ namespace ExpenseTracker.Providers;
 
 public class LedgerCode : Controller
 {
-    public static async Task<string> GetLedgerCode(int subparentid)
+    public static async Task<string> GetLedgerCode(int? subparentid)
     {
         var con = DapperConnectionProvider.GetConnection();
         var code =
