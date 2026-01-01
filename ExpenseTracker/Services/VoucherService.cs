@@ -68,28 +68,22 @@ public class VoucherService : IVoucherService
 
     public async Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync()
     {
-        var list = await (from l in _dbContext.Ledgers
-            join td in _dbContext.TransactionDetails on l.Id equals td.LedgerId
-            join t in _dbContext.AccountingTransaction on td.TransactionId equals t.Id
-            join l2 in _dbContext.Ledgers on l.SubParentId equals l2.Id
-            join u in _dbContext.Users on t.RecById equals u.Id
-                into rep
-            from user in rep.DefaultIfEmpty()
-            where t.Status == 1 && td.Status == 1
-            select new AccountingTransactionReportDto()
-            {
-                Ledgername = string.Concat(l2.Ledgername, '|', l.Ledgername),
-                TxnDate = t.TxnDate,
-                VoucherNo = t.VoucherNo,
-                Amount = t.Amount,
-                Status = t.Status,
-                Id = t.Id,
-                Type = t.Type,
-                Lcode = l.Code,
-                Username = user.Username,
-                Remarks = t.Remarks,
-            }).ToListAsync();
-        return list;
+        var accTransactionRepo = await (from t in _dbContext.AccountingTransaction
+                join u in _dbContext.Users on t.RecById equals u.Id
+                where t.Status == 1
+                select new AccountingTransactionReportDto
+                {
+                    TransactionId = t.Id,
+                    TxnDate = t.TxnDate,
+                    VoucherNo = t.VoucherNo,
+                    Remarks = t.Remarks,
+                    Type = t.Type,
+                    Username = u.Username,
+                    Amount = t.Amount,
+                    Status = t.Status
+                }
+            ).ToListAsync();
+        return accTransactionRepo;
     }
 
     public async Task ReverseTransactionAsync(int transactionId)

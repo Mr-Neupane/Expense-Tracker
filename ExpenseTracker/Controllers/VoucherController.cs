@@ -4,8 +4,8 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using TestApplication.Interface;
 using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
@@ -16,17 +16,17 @@ public class VoucherController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IVoucherService _voucherService;
-    private readonly IIncomeService _incomeService;
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
 
     public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context, IIncomeService incomeService)
+        IToastNotification toastNotification, ApplicationDbContext context,
+        ReverseTransactionManager reverseTransactionManager)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
-        _incomeService = incomeService;
+        _reverseTransactionManager = reverseTransactionManager;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
@@ -82,14 +82,14 @@ public class VoucherController : Controller
             foreach (var data in vm.Entries)
             {
                 var conn = DapperConnectionProvider.GetConnection();
-                int? query = await conn.QueryFirstOrDefaultAsync<int>(
-                    "select ledgerId from bank.bank where ledgerid = @ledgerid",
-                    new { ledgerid = data.LedgerId });
+                // int? query = await conn.QueryFirstOrDefaultAsync<int>(
+                //     "select ledgerId from bank.bank where ledgerid = @ledgerid",
+                //     new { ledgerid = data.LedgerId });
+                var bankLedger = await (from b in _context.Banks where b.LedgerId == data.LedgerId select b)
+                    .FirstOrDefaultAsync();
 
-                var bankledger = query ?? 0;
-
-                var bankid = await BankService.GetBankIdByLedgerId(bankledger);
-                var banktrans = vm.Entries.Where(e => e.LedgerId == bankledger)
+                var bankid = await BankService.GetBankIdByLedgerId(bankLedger.LedgerId);
+                var banktrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
                     .Select(e => new BankTransaction
                     {
                         BankId = bankid,

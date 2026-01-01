@@ -1,12 +1,10 @@
 ﻿using Dapper;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
-using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using NToastNotify;
 using TestApplication.Interface;
 
@@ -39,7 +37,6 @@ public class LedgerController : Controller
         {
             var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
                 .AnyAsync();
-
             if (!exists)
             {
                 await _ledgerService.AddLedgerAsync(new LedgerDto
@@ -66,18 +63,10 @@ public class LedgerController : Controller
 
     public async Task<IActionResult> LedgerReport()
     {
-        var conn = DapperConnectionProvider.GetConnection();
-        var result =
-            await conn.QueryAsync(
-                @"
-select l.ledgername as subparentname, ls.ledgername,ls.code, c.name, l.status, username
-from accounting.ledger l
-         join accounting.ledger ls on l.id = ls.subparentid
-         join accounting.coa c on c.id = l.parentid
-         join users u on u.id = l.recbyid;
-");
-        return View(result);
+        var res = await _ledgerService.GetLedgerReportAsync();
+        return View(res);
     }
+
 
     [HttpGet]
     public IActionResult CreateParentLedger()
@@ -120,10 +109,7 @@ from accounting.ledger l
     [HttpGet]
     public async Task<IActionResult> ParentLedgerReport()
     {
-        var conn = DapperConnectionProvider.GetConnection();
-        var result =
-            @"select l.*,c.name,username from accounting.ledger l join accounting.coa c on c.id = l.parentid join users u on u.id = l.recbyid order by l.parentid";
-        var res = await conn.QueryAsync(result);
+        var res = await _ledgerService.GetParentLedgerReportAsync();
         return View(res);
     }
 
@@ -134,7 +120,7 @@ from accounting.ledger l
     }
 
     [HttpPost]
-    public async Task<IActionResult> LedgerStatement(LedgerstatementVm vm)
+    public async Task<IActionResult> LedgerStatement(LedgerStatementPageVm vm)
     {
         var dto = new LedgerStatementDto
         {
@@ -143,18 +129,45 @@ from accounting.ledger l
             DateTo = vm.DateTo,
         };
         var report = await _ledgerService.GetLedgerStatementsAsync(dto);
-        return View(report);
-    }
 
-    public IActionResult GetSubParents(int parentId)
-    {
-        var con = DapperConnectionProvider.GetConnection();
+        var res = new LedgerStatementPageVm
+        {
+            DateFrom = vm.DateFrom,
+            DateTo = vm.DateTo,
+            LedgerId = vm.LedgerId,
+            Statements = report.Select(d => new LedgerstatementVm
+            {
+                ReportLedgerId = d.LedgerId,
+                ClosingBalance = d.ClosingBalance,
+                OpeningBalance = d.OpeningBalance,
+                LedgerStatements = new List<LedgerStatement>()
+                {
+                    new()
+                    {
+                        TransactionID = d.TransactionID,
+                        LedgerId = d.LedgerId,
+                        LedgerName = d.LedgerName,
+                        DrAmount = d.DrAmount,
+                        VoucherNo = d.VoucherNo,
+                        CrAmount = d.CrAmount,
+                        TxnDate = d.TxnDate,
+                    }
+                }
+            }).ToList()
+        };
+        return View(res);
+}
 
-        string sql = @"SELECT Id, LedgerName, code
+public IActionResult GetSubParents(int parentId)
+{
+    var con = DapperConnectionProvider.GetConnection();
+
+    string sql = @"SELECT Id, LedgerName, code
                            FROM accounting.ledger  
                            WHERE ParentId = @ParentId and id not in (-2)";
-        var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
+    var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
 
-        return Json(subParents);
-    }
+    return Json(subParents);
+}
+
 }

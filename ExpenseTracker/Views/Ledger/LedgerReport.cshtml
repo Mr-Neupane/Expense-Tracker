@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<ExpenseTracker.Dtos.LedgerReportDto>
 
 @{
     ViewData["Title"] = "Ledger Report";
@@ -9,7 +9,7 @@
 <!-- Reverse button aligned to the right -->
 <div class="d-flex justify-content-end mb-2">
     <form id="reverseForm"  method="post">
-        <input type="hidden" id="selectedIds" name="selectedIds" />
+        <input type="hidden" id="selectedIds" name="selectedIds"/>
         <button type="submit" id="reverseBtn" class="btn btn-danger" disabled>
             Reverse
         </button>
@@ -18,69 +18,66 @@
 
 <table class="table table-bordered table-striped table-hover" id="datatable">
     <thead class="bg-dark text-white text-center">
-        <tr>
-            <th style="width: 40px;">
-                <!-- Optional: Select All checkbox -->
-                <input type="checkbox" id="selectAll" />
-            </th>
-            <th style="width: 50px;">SN</th>
-            <th>COA</th>
-            <th>Parent Name</th>
-            <th>Ledger Code</th>
-            <th>Ledger Name</th>
-            <th>Status</th>
-            <th>Created By</th>
-        </tr>
+    <tr>
+        <th style="width: 40px;">
+            <!-- Optional: Select All checkbox -->
+            <input type="checkbox" id="selectAll"/>
+        </th>
+        <th style="width: 50px;">SN</th>
+        <th>COA</th>
+        <th>Parent Name</th>
+        <th>Ledger Code</th>
+        <th>Ledger Name</th>
+        <th>Status</th>
+        <th>Created By</th>
+    </tr>
     </thead>
 
     <tbody>
-        @{
-            int sn = 1;
-        }
+    @{
+        int sn = 1;
+    }
 
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td class="text-center">
-                    <input type="checkbox" class="rowCheck"
-                           value="@item.id" />
-                </td>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="text-center">
+                <input type="checkbox" class="rowCheck"
+                       value="@item.LedgerId"/>
+            </td>
 
-                <td class="text-center">@sn</td>
+            <td class="text-center">@sn</td>
 
-                <td>@item.name</td>
+            <td>@item.LedgerName</td>
 
-                <td>@item.subparentname</td>
+            <td>@item.SubParentName</td>
 
-                <td>@item.code</td>
+            <td>@item.Code</td>
 
-                <td>@item.ledgername</td>
+            <td>@item.LedgerName</td>
 
-                <td class="@(item.status == 1 ? "text-success" : "text-danger")">
-                    @(item.status == 1 ? "Active" : "Inactive")
-                </td>
+            <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
+                @(item.Status== 1 ? "Active" : "Inactive")
+            </td>
 
-                <td>@item.username</td>
-            </tr>
+            <td>@item.UserName</td>
+        </tr>
 
-            sn++;
-        }
+        sn++;
+    }
     </tbody>
 </table>
 
 
-<!-- JAVASCRIPT SECTION -->
 <script>
     const reverseBtn = document.getElementById("reverseBtn");
     const selectedIdsInput = document.getElementById("selectedIds");
     const selectAll = document.getElementById("selectAll");
 
-    // When any row checkbox is clicked
     document.querySelectorAll(".rowCheck").forEach(cb => {
         cb.addEventListener("change", updateSelection);
     });
 
-    // Handle Select All checkbox
     selectAll.addEventListener("change", function () {
         const isChecked = this.checked;
 
@@ -99,8 +96,6 @@
         });
 
         selectedIdsInput.value = selected.join(",");
-
-        // Enable button only if at least one is selected
         reverseBtn.disabled = selected.length === 0;
     }
 </script>
