@@ -1,4 +1,5 @@
-﻿@model TestApplication.ViewModels.LedgerstatementVm
+﻿@model TestApplication.ViewModels.LedgerStatementPageVm
+
 
 @{
     ViewData["Title"] = "Ledger Statement";
@@ -9,12 +10,12 @@
         </div>
         <div class="card-body">
             <form id="searchForm" method="post" asp-action="LedgerStatement" class="fw-bold">
-                
+
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label for="DateFrom" asp-for="DateFrom" class="form-label">
                             Date From <span class="text-danger">*</span>
-                            
+
                         </label>
                         <input type="text" required="required"
                                value="@await DateHelper.GetNepaliDate(DateTime.Now.AddDays(-30))"
@@ -66,10 +67,10 @@
         <div class="row mb-3">
             <div class="col-md-6 offset-md-6 text-end fw-bold">
                 <strong>Opening Balance:</strong>
-                <span>@Model.OpeningBalance.ToString("N2")</span>
+                <span>@Model.Statements.Select(s => s.OpeningBalance).First().ToString("N2")</span>
                 <br/>
                 <strong>Closing Balance:</strong>
-                <span>@Model.ClosingBalance.ToString("N2")</span>
+                <span>@Model.Statements.Select(s => s.ClosingBalance).First().ToString("N2")</span>
             </div>
         </div>
 
@@ -90,16 +91,22 @@
                 @{
                     int sn = 1;
                 }
-                @foreach (var item in Model.LedgerStatements)
+                @foreach (var statement in Model.Statements)
                 {
-                    <tr>
-                        <td>@sn</td>
-                        <td>@item.LedgerName</td>
-                        <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher" asp-action="VoucherDetail" asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
-                        <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td>
-                        <td class="text-end">@item.DrAmount.ToString("N2")</td>
-                        <td class="text-end">@item.CrAmount.ToString("N2")</td>
-                    </tr>
+                    foreach (var item in statement.LedgerStatements)
+                    {
+                        <tr>
+                            <td>@sn</td>
+                            <td>@item.LedgerName</td>
+                            <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher"
+                                   asp-action="VoucherDetail"
+                                   asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
+                            <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td>
+                            <td class="text-end">@item.DrAmount.ToString("N2")</td>
+                            <td class="text-end">@item.CrAmount.ToString("N2")</td>
+                        </tr>
+                    }
+
                     sn++;
                 }
 
@@ -109,8 +116,8 @@
                     <td>Total Amount</td>
                     <td></td>
                     <td></td>
-                    <td>@Model.LedgerStatements.Sum(e => e.DrAmount).ToString("N2")</td>
-                    <td>@Model.LedgerStatements.Sum(e => e.CrAmount).ToString("N2")</td>
+                    <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.DrAmount).ToString("N2")</td>
+                    <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.CrAmount).ToString("N2")</td>
                 </tr>
                 </tbody>
             </table>

@@ -1,10 +1,20 @@
 ﻿namespace TestApplication.ViewModels;
 
-public class LedgerstatementVm
+public class LedgerStatementPageVm
 {
     public DateTime DateFrom { get; set; }
     public DateTime DateTo { get; set; }
     public int LedgerId { get; set; }
+
+    public List<LedgerstatementVm> Statements { get; set; }
+}
+
+public class LedgerstatementVm
+{
+    // public DateTime DateFrom { get; set; }
+    // public DateTime DateTo { get; set; }
+    // public int LedgerId { get; set; }
+    public List<int> ReportLedgerId { get; set; }
 
     public decimal ClosingBalance { get; set; }
     public decimal OpeningBalance { get; set; }
@@ -21,5 +31,7 @@ public class LedgerStatement
     public string VoucherNo { get; set; }
     public decimal CrAmount { get; set; }
     public DateTime TxnDate { get; set; }
+    public decimal OpeningBalance { get; set; }
+    public decimal ClosingBalance { get; set; }
     public List<LedgerStatementDto> StatementDtos { get; set; }
 }

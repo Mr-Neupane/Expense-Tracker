@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Controllers;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
@@ -35,6 +36,44 @@ public class LedgerService : ILedgerService
         return ledger;
     }
 
+    public async Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync()
+    {
+        var res = await (from l in _context.Ledgers
+                join c in _context.CoaLedger on l.Parentid equals c.Id
+                join u in _context.Users on l.RecById equals u.Id
+                select new ParentLedgerReportDto
+                {
+                    LedgerId = l.Id,
+                    Status = l.Status,
+                    LedgerCode = l.Code,
+                    LedgerName = l.Ledgername,
+                    UserName = u.Username,
+                    ParentLedgerName = c.Name
+                }
+            ).ToListAsync();
+        return res;
+    }
+
+    public async Task<List<LedgerReportDto>> GetLedgerReportAsync()
+    {
+        var res = await (from l in _context.Ledgers
+                join pl in _context.Ledgers on l.SubParentId equals pl.Id
+                join c in _context.CoaLedger on pl.Parentid equals c.Id
+                join u in _context.Users on l.RecById equals u.Id
+                select new LedgerReportDto
+                {
+                    LedgerId = l.Id,
+                    SubParentName = pl.Ledgername,
+                    LedgerName = l.Ledgername,
+                    Code = l.Code,
+                    CoaName = c.Name,
+                    Status = l.Status,
+                    UserName = u.Username,
+                }
+            ).ToListAsync();
+        return res;
+    }
+
     public async Task<List<LedgerStatement>> GetLedgerStatementsAsync(LedgerStatementDto vm)
     {
         var report =
@@ -67,11 +106,13 @@ public class LedgerService : ILedgerService
             VoucherNo = d.VoucherNo,
             CrAmount = d.CrAmount,
             TxnDate = d.TxnDate,
-            StatementDtos = new List<LedgerStatementDto>
-            {
-                new() { ClosingBalance = report.ClosingBalance },
-                new() { OpeningBalance = report.OpeningBalance },
-            },
+            // StatementDtos = new List<LedgerStatementDto>
+            // {
+            //     new() { ClosingBalance = report.ClosingBalance },
+            //     new() { OpeningBalance = report.OpeningBalance },
+            // },
+            OpeningBalance = report.OpeningBalance,
+            ClosingBalance = report.ClosingBalance,
         }).ToList();
         vm.LedgerStatements = statement;
         return statement;

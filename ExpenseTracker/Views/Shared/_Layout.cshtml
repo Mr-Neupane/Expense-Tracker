@@ -6,7 +6,7 @@
     <title>@ViewData["Title"] - ExpenseTracker</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet"
-          href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+          href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/ExpenseTracker.styles.css" asp-append-version="true"/>
@@ -125,14 +125,19 @@
                             <li><a class="dropdown-item" asp-controller="Income" asp-action="IncomeReport">Income
                                     Report</a></li>
                             <li><a class="dropdown-item" asp-controller="Liability" asp-action="AddLiability">Record
-                                Liability</a></li>
+                                    Liability</a></li>
                             <li><a class="dropdown-item" asp-controller="Liability" asp-action="LiabilityReport">Liability
                                     Report</a></li>
                             <li>
                                 <hr class="dropdown-divider"/>
                             </li>
+
+                            <li><a class="dropdown-item" asp-controller="Voucher" asp-action="AddJv">Add Journal</a>
+                            </li>
                             <li><a class="dropdown-item" asp-controller="Voucher" asp-action="AccountingTransaction">Accounting
                                     Transaction</a></li>
+                            <li><a class="dropdown-item" asp-controller="Ledger" asp-action="LedgerStatement">Ledger
+                                    Statement</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">

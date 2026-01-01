@@ -20,5 +20,6 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Transaction> AccountingTransaction { get; set; }
     public DbSet<TransactionDetail> TransactionDetails { get; set; }
     public DbSet<Ledger> Ledgers { get; set; }
+    public DbSet<Coa> CoaLedger { get; set; }
     public DbSet<User> Users { get; set; }
 }

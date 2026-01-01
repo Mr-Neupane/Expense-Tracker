@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<ExpenseTracker.Dtos.ParentLedgerReportDto>
 
 @{
     ViewData["Title"] = "Parent Ledger Report";
@@ -28,17 +28,17 @@
         <tr>
             <td class="text-center">@sn</td>
 
-            <td>@item.name</td>
+            <td>@item.ParentLedgerName</td>
 
-            <td>@item.code</td>
+            <td>@item.LedgerCode</td>
 
-            <td>@item.ledgername</td>
+            <td>@item.LedgerName</td>
 
-            <td class="@(item.status == 1 ? "text-success" : "text-danger")">
-                @(item.status == 1 ? "Active" : "Inactive")
+            <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
+                @(item.Status == 1 ? "Active" : "Inactive")
             </td>
 
-            <td>@item.username</td>
+            <td>@item.UserName</td>
         </tr>
 
         sn++;
