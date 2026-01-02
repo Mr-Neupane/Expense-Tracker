@@ -83,7 +83,9 @@ public class LedgerService : ILedgerService
                 .TransactionId
             join td2 in _context.TransactionDetails on td.TransactionId equals td2.TransactionId
             join l in _context.Ledgers on td2.LedgerId equals l.Id
-            where td2.LedgerId != vm.LedgerId && t.Status == 1 && td.Status == 1
+            where td2.LedgerId != vm.LedgerId && t.Status == 1 && td.Status == 1 &&
+                  t.TxnDate >= vm.DateFrom.ToUniversalTime() &&
+                  t.TxnDate <= vm.DateTo.ToUniversalTime()
             group new { t, td2, td, l } by td.TransactionId
             into g
             select new
@@ -106,11 +108,6 @@ public class LedgerService : ILedgerService
             VoucherNo = d.VoucherNo,
             CrAmount = d.CrAmount,
             TxnDate = d.TxnDate,
-            // StatementDtos = new List<LedgerStatementDto>
-            // {
-            //     new() { ClosingBalance = report.ClosingBalance },
-            //     new() { OpeningBalance = report.OpeningBalance },
-            // },
             OpeningBalance = report.OpeningBalance,
             ClosingBalance = report.ClosingBalance,
         }).ToList();

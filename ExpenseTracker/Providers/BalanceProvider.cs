@@ -42,8 +42,8 @@ select RemBalance from FinalData where ledger_id=@ledgerid";
     public static async Task<LedgerStatementDto> GetLedgerOpeningandCosingBalance(int ledgerid, DateTime datefrom,
         DateTime dateto)
     {
-        var fromdate = await DateHelper.GetEnglishDate(datefrom);
-        var todate = dateto == null ? DateTime.Now : await DateHelper.GetEnglishDate(dateto);
+        var fromdate = datefrom;
+        var todate = dateto == null ? DateTime.Now : dateto;
 
         var conn = DapperConnectionProvider.GetConnection();
         var query = @"

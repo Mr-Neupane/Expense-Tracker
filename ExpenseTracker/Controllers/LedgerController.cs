@@ -122,11 +122,13 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerStatementPageVm vm)
     {
+        var fromdate = await DateHelper.GetEnglishDate(vm.DateFrom);
+        var todate = await DateHelper.GetEnglishDate(vm.DateTo);
         var dto = new LedgerStatementDto
         {
             LedgerId = vm.LedgerId,
-            DateFrom = vm.DateFrom,
-            DateTo = vm.DateTo,
+            DateFrom = fromdate,
+            DateTo = todate,
         };
         var report = await _ledgerService.GetLedgerStatementsAsync(dto);
 
@@ -156,18 +158,17 @@ public class LedgerController : Controller
             }).ToList()
         };
         return View(res);
-}
+    }
 
-public IActionResult GetSubParents(int parentId)
-{
-    var con = DapperConnectionProvider.GetConnection();
+    public IActionResult GetSubParents(int parentId)
+    {
+        var con = DapperConnectionProvider.GetConnection();
 
-    string sql = @"SELECT Id, LedgerName, code
+        string sql = @"SELECT Id, LedgerName, code
                            FROM accounting.ledger  
                            WHERE ParentId = @ParentId and id not in (-2)";
-    var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
+        var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
 
-    return Json(subParents);
-}
-
+        return Json(subParents);
+    }
 }

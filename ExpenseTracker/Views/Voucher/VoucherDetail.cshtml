@@ -85,9 +85,9 @@
                 <div>
                     <a class="btn btn-danger"
                        asp-action="ReverseVoucher"
-                       asp-route-transactionid="@Model.FirstOrDefault().TransactionId"
-                       asp-route-type="@Model.FirstOrDefault()?.Type"
-                       asp-route-typeid="@Model.FirstOrDefault().Typeid"
+                       asp-route-transactionid="@Model.First().TransactionId"
+                       asp-route-type="@Model.First().Type"
+                       asp-route-typeid="@Model.First().Typeid"
                        onclick="return confirm('Are you sure you want to reverse this voucher?');"
                     >Reverse</a></div>
 
