@@ -106,11 +106,6 @@ public class LedgerService : ILedgerService
             VoucherNo = d.VoucherNo,
             CrAmount = d.CrAmount,
             TxnDate = d.TxnDate,
-            // StatementDtos = new List<LedgerStatementDto>
-            // {
-            //     new() { ClosingBalance = report.ClosingBalance },
-            //     new() { OpeningBalance = report.OpeningBalance },
-            // },
             OpeningBalance = report.OpeningBalance,
             ClosingBalance = report.ClosingBalance,
         }).ToList();

@@ -88,16 +88,12 @@ public class VoucherService : IVoucherService
 
     public async Task ReverseTransactionAsync(int transactionId)
     {
-        var txn = await _dbContext.AccountingTransaction.Where(x => x.Id == transactionId && x.Status == 1)
-            .Include(transaction => transaction.TransactionDetails)
-            .ToListAsync();
+        var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToListAsync();
 
+        var transaction = await _dbContext.AccountingTransaction.SingleAsync(x => x.Id == transactionId);
+        transaction.Status = 2;
 
-        foreach (var t in txn)
-        {
-            t.Status = 2;
-            foreach (var i in t.TransactionDetails.Select(td => td.Status = 2)) ;
-        }
+        txn.ForEach(a => a.Status = 2);
 
         await _dbContext.SaveChangesAsync();
     }
@@ -118,6 +114,8 @@ public class VoucherService : IVoucherService
                 DrAmount = td.DrAmount,
                 CrAmount = td.CrAmount,
                 Type = t.Type,
+                TransactionId = td.TransactionId,
+                Typeid = t.TypeId,
                 Remarks = t.Remarks,
                 TxnDate = t.TxnDate,
                 UserName = u.Username

@@ -12,7 +12,8 @@ public class LedgerCode : Controller
     {
         var con = DapperConnectionProvider.GetConnection();
         var code =
-            @"select concat(code, '.', cn) from (select count(1) + 1 cn from accounting.ledger l where subparentid = @subparentid) d cross join lateral ( select code from accounting.ledger a where a.id =@subparentid) c;";
+            @"select concat(code, '.', cn) from (select count(1) + 1 cn from accounting.ledger l where subparentid = @subparentid) d 
+    cross join lateral ( select code from accounting.ledger a where a.id =@subparentid) c;";
 
         var ledgercode = await con.QueryFirstAsync<string>(code, new
         {
@@ -29,16 +30,6 @@ public class LedgerCode : Controller
         con.Close();
         return ledgerid;
     }
-
-    public static async Task<int> GetBankId(int ledgerid)
-    {
-        var con = DapperConnectionProvider.GetConnection();
-        var bankledgerid = @"select ledgerid from bank.bank b where b.ledgerid = @ledgerid";
-        var bankid = await con.QueryFirstAsync<int>(bankledgerid, new { bankId = ledgerid });
-        con.Close();
-        return bankid;
-    }
-
 
     public static async Task<int?> ValidateLedgerCode(string ledgercode)
     {

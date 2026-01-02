@@ -81,10 +81,6 @@ public class VoucherController : Controller
 
             foreach (var data in vm.Entries)
             {
-                var conn = DapperConnectionProvider.GetConnection();
-                // int? query = await conn.QueryFirstOrDefaultAsync<int>(
-                //     "select ledgerId from bank.bank where ledgerid = @ledgerid",
-                //     new { ledgerid = data.LedgerId });
                 var bankLedger = await (from b in _context.Banks where b.LedgerId == data.LedgerId select b)
                     .FirstOrDefaultAsync();
 
@@ -134,6 +130,7 @@ public class VoucherController : Controller
                 break;
         }
 
+        _toastNotification.AddAlertToastMessage("Voucher reversed successfully");
         return RedirectToAction("AccountingTransaction");
     }
 }
