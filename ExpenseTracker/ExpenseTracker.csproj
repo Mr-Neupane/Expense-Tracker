@@ -36,6 +36,8 @@
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
+      <Content Remove="package.json" />
+      <Content Remove="package-lock.json" />
     </ItemGroup>
 
 </Project>
