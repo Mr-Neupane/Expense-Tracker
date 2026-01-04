@@ -40,13 +40,11 @@ public class BankController : Controller
     {
         try
         {
-           
-            DateTime accountopendate = await DateHelper.GetEnglishDate(vm.AccountOpenDate);
 
             var lid = await _ledgerService.AddLedgerAsync(new LedgerDto
             {
                 Name = vm.BankName,
-                ParentId = 0,
+                ParentId = null,
                 SubParentId = -2,
             });
 
@@ -56,7 +54,7 @@ public class BankController : Controller
                 AccountNumber = vm.AccountNumber,
                 BankContact = vm.BankContact,
                 BankAddress = vm.BankAddress,
-                AccountOpenDate = accountopendate.ToUniversalTime(),
+                AccountOpenDate = vm.AccountOpenDate.ToUniversalTime(),
                 LedgerId = lid.Id,
                 RemainingBalance = 0
             });

@@ -5,25 +5,20 @@ using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.Manager;
 using TestApplication.ViewModels;
-using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class IncomeController : Controller
 {
     private readonly IToastNotification _toastNotification;
-    private readonly IVoucherService _voucherService;
     private readonly AccTransactionManager _transactionManager;
     private readonly IIncomeService _incomeService;
-    private readonly IBankService _bankService;
 
-    public IncomeController(IVoucherService voucherService, IToastNotification toastNotification,
-        IIncomeService incomeService, IBankService bankService, AccTransactionManager transactionManager)
+    public IncomeController(IToastNotification toastNotification,
+        IIncomeService incomeService, AccTransactionManager transactionManager)
     {
-        _voucherService = voucherService;
         _toastNotification = toastNotification;
         _incomeService = incomeService;
-        _bankService = bankService;
         _transactionManager = transactionManager;
     }
 
@@ -37,19 +32,19 @@ public class IncomeController : Controller
     {
         try
         {
-            var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
+            // var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
             var income = new IncomeDto
             {
                 Ledgerid = vm.IncomeLedger,
                 FromLedgerid = vm.IncomeFrom,
                 Amount = vm.Amount,
                 Remarks = vm.Remarks,
-                TxnDate = engdate.ToUniversalTime()
+                TxnDate = vm.TxnDate.ToUniversalTime()
             };
 
             var accTransaction = new AccTransactionDto
             {
-                TxnDate = engdate.ToUniversalTime(),
+                TxnDate = vm.TxnDate.ToUniversalTime(),
                 Amount = vm.Amount,
                 Type = vm.Type,
                 TypeId = income.Id,
@@ -66,7 +61,7 @@ public class IncomeController : Controller
 
 
             _toastNotification.AddSuccessToastMessage("Income recorded successfully.");
-            return View();
+            return RedirectToAction("IncomeReport");
         }
         catch (Exception e)
         {
