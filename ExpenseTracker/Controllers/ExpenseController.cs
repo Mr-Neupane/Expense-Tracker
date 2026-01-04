@@ -39,7 +39,7 @@ public class ExpenseController : Controller
     {
         try
         {
-            var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
+            // var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
             decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
             if (vm.Amount > frombalance)
             {
@@ -52,13 +52,13 @@ public class ExpenseController : Controller
                 LedgerId = vm.ExpenseLedger,
                 FromLedgerId = vm.ExpenseFromLedger,
                 Amount = vm.Amount,
-                TxnDate = engdate,
+                TxnDate = vm.TxnDate,
             };
 
             var accTrans =
                 new AccTransactionDto
                 {
-                    TxnDate = engdate,
+                    TxnDate = vm.TxnDate,
                     Amount = vm.Amount,
                     Type = vm.Type,
                     TypeId = expense.Id,

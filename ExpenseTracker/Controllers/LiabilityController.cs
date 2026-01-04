@@ -33,19 +33,19 @@ public class LiabilityController : Controller
     {
         try
         {
-            var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
+            // var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
             var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
             var liability = new LiabilityDto
             {
                 LedgerId = vm.LiabilityLedger,
                 BankId = bankid,
-                TxnDate = engdate,
+                TxnDate = vm.TxnDate,
                 Amount = vm.Amount,
                 Remarks = vm.Remarks,
             };
             var acctxn = new AccTransactionDto
             {
-                TxnDate = engdate,
+                TxnDate = vm.TxnDate,
                 Amount = vm.Amount,
                 Type = "Liability",
                 TypeId = liability.Id,

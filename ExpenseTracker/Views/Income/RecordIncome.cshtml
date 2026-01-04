@@ -15,7 +15,8 @@
         <div class="card-body">
             <div class="mb-3">
                 <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
-                <input asp-for="TxnDate" class="form-control" id="date" type="text" autocomplete="off"/>
+                <input asp-for="TxnDate" hidden="hidden" class="form-control" id="engdate" type="text" autocomplete="off"/>
+                <input  class="form-control" id="date" type="text" autocomplete="off"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 
