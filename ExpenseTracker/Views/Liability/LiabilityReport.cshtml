@@ -33,7 +33,7 @@
             </td>
 
             <td>
-                @await DateHelper.GetNepaliDate(item.TxnDate)
+                @(new NepDate.NepaliDate(item.TxnDate))
             </td>
 
             <td>

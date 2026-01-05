@@ -195,6 +195,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let input = document.getElementById("date");
+        let dateto = document.getElementById("dateto");
         var bsdefault = NepaliFunctions.AD2BS(new Date(), "YYYY-MM-DD", "YYYY/MM/DD");
 
         if (input) {
@@ -205,17 +206,44 @@
                 disableDaysAfter: 1,
                 value: bsdefault
             });
+
             let engdate = document.getElementById("engdate");
+
             input.addEventListener("blur", function () {
                 var bsDate = input.value;
+
 
                 if (bsDate) {
 
                     var adDate = NepaliFunctions.BS2AD(bsDate, "YYYY/MM/DD", "YYYY-MM-DD");
                     engdate.value = adDate == null ? new Date() : adDate;
                 }
+
             });
+
             engdate.value = new Date().toISOString().slice(0, 10);
+        }
+
+        if (dateto) {
+            let datetoengdate = document.getElementById("datetoengdate");
+            dateto.NepaliDatePicker({
+                language: "english",
+                dateFormat: "YYYY/MM/DD",
+                animation: "slide",
+                disableDaysAfter: 1,
+                value: bsdefault
+            });
+            dateto.addEventListener("blur", function () {
+                var dateTobsDate = dateto.value;
+
+                if (dateTobsDate) {
+
+                    var dateToadDate = NepaliFunctions.BS2AD(dateTobsDate, "YYYY/MM/DD", "YYYY-MM-DD");
+                    datetoengdate.value = dateToadDate;
+                    
+                }
+            });
+            datetoengdate.value = new Date().toISOString().slice(0, 10);
         }
     });
 

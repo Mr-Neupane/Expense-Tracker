@@ -122,13 +122,13 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerStatementPageVm vm)
     {
-        var fromdate = await DateHelper.GetEnglishDate(vm.DateFrom);
-        var todate = await DateHelper.GetEnglishDate(vm.DateTo);
+        // var fromdate = await DateHelper.GetEnglishDate(vm.DateFrom);
+        // var todate = await DateHelper.GetEnglishDate(vm.DateTo);
         var dto = new LedgerStatementDto
         {
             LedgerId = vm.LedgerId,
-            DateFrom = fromdate,
-            DateTo = todate,
+            DateFrom = vm.DateFrom,
+            DateTo = vm.DateTo,
         };
         var report = await _ledgerService.GetLedgerStatementsAsync(dto);
 
@@ -157,7 +157,16 @@ public class LedgerController : Controller
                 }
             }).ToList()
         };
-        return View(res);
+        if (res.Statements.Any())
+        {
+            return View(res);
+        }
+        else
+        {
+            _toastNotification.AddAlertToastMessage("No statements found");
+            return View();
+        }
+        
     }
 
     public IActionResult GetSubParents(int parentId)
