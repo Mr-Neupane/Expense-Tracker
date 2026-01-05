@@ -26,9 +26,14 @@
                 <input asp-for="TxnDate"
                        class="form-control"
                        type="text"
-                       value="@DateHelper.GetNepaliDate(DateTime.Now).Result"
+                       id="engdate"
+                       hidden="hidden"
                        data-date-mask
-                       maxlength="10"/>
+                       maxlength="10"/><input 
+                                              class="form-control"
+                                              type="text"
+                                              id="date"
+                                              maxlength="10"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 

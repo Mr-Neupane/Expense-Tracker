@@ -14,7 +14,7 @@
                 <div><strong>Voucher No :</strong> @Model.FirstOrDefault()?.VoucherNo</div>
             </div>
             <div class="text-end">
-                <div><strong>Txn Date :</strong> @await DateHelper.GetNepaliDate(@Model.FirstOrDefault()!.TxnDate)
+                <div><strong>Txn Date :</strong> @(new NepDate.NepaliDate(@Model.First().TxnDate))
                 </div>
             </div>
         </div>
