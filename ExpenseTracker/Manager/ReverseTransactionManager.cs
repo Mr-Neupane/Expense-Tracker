@@ -50,4 +50,9 @@ public class ReverseTransactionManager
         await ReverseAccountingTransaction(transactionid);
         await _expenseService.ReverseRecordedExpenseAsync(id);
     }
+
+    public async Task ReverseJournalTransaction(int transactionid)
+    {
+        await ReverseAccountingTransaction(transactionid);
+    }
 }

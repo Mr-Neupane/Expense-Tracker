@@ -39,7 +39,6 @@ public class BankTransactionController : Controller
         try
         {
             {
-                var engtxndate = await DateHelper.GetEnglishDate(vm.TxnDate);
                 var bankLedgerId = await LedgerCode.GetBankLedgerId(vm.BankId);
                 var ledgerbalance = await BalanceProvider.GetLedgerBalance(bankLedgerId);
                 var banks = await _bankService.BankReportAsync();
@@ -56,7 +55,7 @@ public class BankTransactionController : Controller
                 {
                     var acctransaction = new AccTransactionDto
                     {
-                        TxnDate = engtxndate,
+                        TxnDate = vm.TxnDate,
                         Amount = vm.Amount,
                         Type = vm.Type == "Deposit" ? "Bank Deposit" : "Bank Withdraw",
                         TypeId = 0,
@@ -79,7 +78,7 @@ public class BankTransactionController : Controller
                     {
                         BankId = vm.BankId,
                         LedgerId = bankLedgerId,
-                        TxnDate = engtxndate,
+                        TxnDate = vm.TxnDate,
                         Amount = vm.Amount,
                         Type = vm.Type,
                         Remarks = vm.Remarks,

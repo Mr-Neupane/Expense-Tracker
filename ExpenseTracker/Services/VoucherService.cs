@@ -66,11 +66,12 @@ public class VoucherService : IVoucherService
         return txn;
     }
 
-    public async Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync()
+    public async Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync(TransactionReportDto dto)
     {
         var accTransactionRepo = await (from t in _dbContext.AccountingTransaction
                 join u in _dbContext.Users on t.RecById equals u.Id
-                where t.Status == 1
+                where (dto.Status == 0 || dto.Status == t.Status) && t.TxnDate.Date >= dto.DateFrom.Date &&
+                      t.TxnDate.Date <= dto.DateTo.Date
                 select new AccountingTransactionReportDto
                 {
                     TransactionId = t.Id,
@@ -105,16 +106,19 @@ public class VoucherService : IVoucherService
             join l in _dbContext.Ledgers on td.LedgerId equals l.Id
             join p in _dbContext.Ledgers on l.SubParentId equals p.Id
             join u in _dbContext.Users on t.RecById equals u.Id
-            where t.Status == 1 && td.Status == 1 && td.TransactionId == transactionId
+            where td.TransactionId == transactionId
             select new VoucherDetailDto
             {
-                LedgerName = string.Concat(p.Ledgername, " > ", l.Ledgername),
+                LedgerName = string.Concat(p.Ledgername,
+                    " > ",
+                    l.Ledgername),
                 Code = l.Code,
                 VoucherNo = t.VoucherNo,
                 DrAmount = td.DrAmount,
                 CrAmount = td.CrAmount,
                 Type = t.Type,
                 TransactionId = td.TransactionId,
+                Status = t.Status,
                 Typeid = t.TypeId,
                 Remarks = t.Remarks,
                 TxnDate = t.TxnDate,

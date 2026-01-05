@@ -32,7 +32,7 @@
             <td>@item.bankname</td>
 
             <td>
-                @await DateHelper.GetNepaliDate(@item.txn_date)
+                @(new NepDate.NepaliDate(item.txn_date))
             </td>
 
             <td class="text-right">@String.Format("{0:N2}", item.amount)</td>

@@ -10,8 +10,8 @@ int initialRows = 1;
     <div class="row mb-2">
         <div class="col-md-3">
             <label asp-for="VoucherDate" class="form-label mb-1">Voucher Date <span class="text-danger">*</span></label>
-            <input asp-for="VoucherDate" type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)" required="required" class="form-control form-control-sm" />
-            @* <span asp-validation-for="VoucherDate" class="text-danger"></span> *@
+            <input asp-for="VoucherDate" type="text" id="engdate" hidden="hidden" class="form-control form-control-sm" />
+            <input  type="text" id="date" required="required" class="form-control form-control-sm" />
         </div>
     </div>
 

@@ -35,12 +35,42 @@ public class VoucherController : Controller
         return View(res);
     }
 
-    public async Task<IActionResult> AccountingTransaction()
+    [HttpGet]
+    public IActionResult AccountingTransaction()
     {
-        var finalreport = await _voucherService.AccountingTransactionReportAsync();
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AccountingTransaction(AccountingTxnVm vm)
+    {
+        var filter = new TransactionReportDto
+        {
+            DateFrom = vm.DateFrom.ToUniversalTime(),
+            DateTo = vm.DateTo.ToUniversalTime(),
+            Status = vm.Status,
+        };
+        var finalreport = await _voucherService.AccountingTransactionReportAsync(filter);
+        var res = new AccountingTxnVm
+        {
+            DateFrom = vm.DateFrom.ToUniversalTime(),
+            DateTo = vm.DateTo.ToUniversalTime(),
+            Status = vm.Status,
+            AccountingTransactions = finalreport.Select(r => new AccountingTransactionReportDto
+            {
+                TxnDate = r.TxnDate,
+                VoucherNo = r.VoucherNo,
+                Remarks = r.Remarks,
+                Type = r.Type,
+                Username = r.Username,
+                Amount = r.Amount,
+                Status = r.Status,
+                TransactionId = r.TransactionId,
+            }).ToList()
+        };
         if (finalreport.Count > 0)
         {
-            return View(finalreport);
+            return View(res);
         }
         else
         {
@@ -62,11 +92,11 @@ public class VoucherController : Controller
     {
         try
         {
-            var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
+            // var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
             var transaction = await _voucherService.RecordTransactionAsync(
                 new AccTransactionDto
                 {
-                    TxnDate = txndate.ToUniversalTime(),
+                    TxnDate = vm.VoucherDate.ToUniversalTime(),
                     Amount = vm.Entries.Sum(d => d.DrAmount),
                     Type = vm.Type,
                     TypeId = 0,
@@ -83,24 +113,26 @@ public class VoucherController : Controller
             {
                 var bankLedger = await (from b in _context.Banks where b.LedgerId == data.LedgerId select b)
                     .FirstOrDefaultAsync();
-
-                var bankid = await BankService.GetBankIdByLedgerId(bankLedger.LedgerId);
-                var banktrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
-                    .Select(e => new BankTransaction
-                    {
-                        BankId = bankid,
-                        TxnDate = vm.VoucherDate.ToUniversalTime(),
-                        Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
-                        Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
-                        Remarks = vm.Narration,
-                        RecDate = DateTime.UtcNow,
-                        RecById = vm.RecById,
-                        RecStatus = vm.RecStatus,
-                        Status = vm.Status,
-                        TransactionId = transaction.Id
-                    }).ToList();
-                await _context.BankTransaction.AddRangeAsync(banktrans);
-                await _context.SaveChangesAsync();
+                if (bankLedger != null)
+                {
+                    var bankid = await BankService.GetBankIdByLedgerId(bankLedger.LedgerId);
+                    var banktrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
+                        .Select(e => new BankTransaction
+                        {
+                            BankId = bankid,
+                            TxnDate = vm.VoucherDate.ToUniversalTime(),
+                            Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
+                            Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
+                            Remarks = vm.Narration,
+                            RecDate = DateTime.UtcNow,
+                            RecById = vm.RecById,
+                            RecStatus = vm.RecStatus,
+                            Status = vm.Status,
+                            TransactionId = transaction.Id
+                        }).ToList();
+                    await _context.BankTransaction.AddRangeAsync(banktrans);
+                    await _context.SaveChangesAsync();
+                }
             }
 
             _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
@@ -127,6 +159,9 @@ public class VoucherController : Controller
                 break;
             case "Liability":
                 await _reverseTransactionManager.ReverseLiabilityTransaction(typeid, transactionid);
+                break;
+            case "Journal Voucher":
+                await _reverseTransactionManager.ReverseJournalTransaction(transactionid);
                 break;
         }
 
