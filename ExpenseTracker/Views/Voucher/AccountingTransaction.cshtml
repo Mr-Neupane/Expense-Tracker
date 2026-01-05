@@ -1,15 +1,97 @@
-﻿@model IEnumerable<ExpenseTracker.Dtos.AccountingTransactionReportDto>
+﻿@model TestApplication.ViewModels.AccountingTxnVm
 
 @{
     ViewData["Title"] = "Accounting Transaction Report";
 }
 
 
-@if (Model.Any())
-{
-    <h2 class="mt-3 mb-4 text-center font-weight-bold ">Accounting Transaction Report</h2>
 
-    <table class="table table-bordered table-striped table-hover mt-3" style="border-collapse: collapse;" id="datatable">
+<h2 class="mt-3 mb-4 text-center font-weight-bold ">Accounting Transaction Report</h2>
+<style>
+    .report-filter-card {
+        border: 1px solid #e3e6ea;
+        border-radius: 6px;
+        background-color: #fff;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+        flex-wrap: wrap; /* wraps nicely on smaller screens */
+    }
+
+    .filter-item {
+        display: flex;
+        margin-left: auto;
+        flex-direction: column;
+    }
+
+    .filter-item label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 4px;
+    }
+
+    .form-control {
+        height: 36px;
+        min-width: 160px;
+        padding: 6px 10px;
+        font-size: 14px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    .filter-button {
+        margin-left: auto; /* pushes button to the right */
+        padding-top: 18px
+    }
+
+    .btn-primary {
+        height: 36px;
+        padding: 0 22px;
+    }
+
+</style>
+<div class="report-filter-card fa-bold">
+    <form method="post" asp-action="AccountingTransaction" class="filter-form">
+
+        <div class="filter-item">
+            <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
+            <input id="engdate"  type="text" asp-for="DateFrom" hidden/>
+            <input id="date" name="FromDate" type="text" class="form-control"/>
+        </div>
+
+        <div class="filter-item">
+            <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
+            <input id="datetoengdate"  asp-for="DateTo" type="text" hidden/>
+            <input id="dateto"  type="text" class="form-control"/>
+        </div>
+
+        <div class="filter-item">
+            <label for="status" class="fs-6">Status</label>
+            <select id="status" asp-for="Status" name="Status" class="form-control">
+                <option value="">All</option>
+                <option value="1">Active</option>
+                <option value="2">Inactive</option>
+            </select>
+        </div>
+
+        <div class="filter-item filter-button">
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+
+    </form>
+</div>
+@if (Model!=null)
+{
+    <table class="table table-bordered table-striped table-hover mt-3" style="border-collapse: collapse;"
+           id="datatable">
         <thead class="bg-dark text-white text-center">
         <tr>
             <th style="width: 50px;">SN</th>
@@ -28,8 +110,7 @@
         @{
             int sn = 1;
         }
-
-        @foreach (var item in Model)
+        @foreach (var item in Model.AccountingTransactions)
         {
             <tr>
                 <td class="text-center">@sn</td>
@@ -37,10 +118,8 @@
                 <td>@item.Type</td>
 
                 <td>
-                    @{
-                        DateTime? txnDate = item.TxnDate as DateTime?;
-                    }
-                    @(txnDate.HasValue ? txnDate.Value.ToString("yyyy-MM-dd") : "-")
+                    @(new NepDate.NepaliDate(item.TxnDate))
+
                 </td>
 
                 <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
@@ -59,11 +138,12 @@
 
             sn++;
         }
+
         </tbody>
-        <tfoot >
+        <tfoot>
         <td></td>
-        <td colspan="2" >Total</td>
-        <td>@Model.Sum(m=> m.Amount)</td>
+        <td colspan="2">Total</td>
+        <td>@Model.AccountingTransactions.Sum(d => d.Amount).ToString("N2")</td>
         <td></td>
         <td></td>
         <td></td>

@@ -110,7 +110,6 @@
                             <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher"
                                    asp-action="VoucherDetail"
                                    asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
-                            @* <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td> *@
                             <td>@(new NepDate.NepaliDate(@item.TxnDate))</td>
                             <td class="text-end">@item.DrAmount.ToString("N2")</td>
                             <td class="text-end">@item.CrAmount.ToString("N2")</td>

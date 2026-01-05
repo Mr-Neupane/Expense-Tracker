@@ -32,4 +32,5 @@ public class VoucherDetailDto
 
     public int Typeid { get; set; }
     public int TransactionId { get; set; }
+    public int Status { get; set; }
 }
