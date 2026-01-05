@@ -42,7 +42,7 @@
             <td>@item.BankContactNumber</td>
 
             <td>
-               @await DateHelper.GetNepaliDate(item.AccountOpendate)
+                @(new NepDate.NepaliDate(item.AccountOpendate))
             </td>
 
             <td>@item.BankAddress</td>

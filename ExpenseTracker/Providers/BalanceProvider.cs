@@ -87,9 +87,9 @@ where c.ledger_id=@ledgerid;
 
         var rep = new LedgerStatementDto
         {
-            LedgerId = res.LedgerId,
-            OpeningBalance = res.OpeningBalance,
-            ClosingBalance = res.ClosingBalance,
+            LedgerId = res == null ? ledgerid : res.LedgerId,
+            OpeningBalance = res == null ? 0 : res.OpeningBalance,
+            ClosingBalance = res== null ? 0 : res.ClosingBalance,
         };
         conn.Close();
         return rep;

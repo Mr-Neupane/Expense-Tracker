@@ -21,6 +21,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7" />
+        <PackageReference Include="NepDate" Version="2.0.5" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="Npgsql" Version="8.0.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />

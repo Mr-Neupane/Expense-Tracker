@@ -13,28 +13,37 @@
 
                 <div class="row g-3">
                     <div class="col-md-3">
-                        <label for="DateFrom" asp-for="DateFrom" class="form-label">
+                        <label for="DateFrom" class="form-label">
                             Date From <span class="text-danger">*</span>
 
                         </label>
+                        <input type="text"
+                               hidden="hidden"
+                               asp-for="DateFrom"
+                               id="engdate"
+                               style="width: 40%"
+                               class="form-control"/>
+
                         <input type="text" required="required"
-                               value="@await DateHelper.GetNepaliDate(DateTime.Now.AddDays(-30))"
-                               id="DateFrom"
-                               data-date-mask
+                               id="date"
                                name="DateFrom"
                                style="width: 40%"
                                class="form-control"/>
                     </div>
 
                     <div class="col-md-3">
-                        <label for="DateTo" asp-for="DateTo" class="form-label">
+                        <label for="DateTo" class="form-label">
                             Date To <span class="text-danger">*</span>
+
                         </label>
-                        <input type="text" value="@await DateHelper.GetNepaliDate(DateTime.Now)"
-                               required="required"
-                               id="DateTo"
-                               name="DateTo"
-                               data-date-mask
+                        <input type="text" required="required"
+                               id="dateto"
+                               style="width: 40%"
+                               class="form-control"/>
+                        <input type="text"
+                               hidden="hidden"
+                               id="datetoengdate"
+                               asp-for="DateTo"
                                style="width: 40%"
                                class="form-control"/>
                     </div>
@@ -75,7 +84,7 @@
         </div>
 
 
-        <div class="table-responsive" >
+        <div class="table-responsive">
             <table class="table table-bordered table-striped w-100" id="datatable" style="border-collapse: collapse;">
                 <thead class="table-light">
                 <tr>
@@ -101,7 +110,8 @@
                             <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher"
                                    asp-action="VoucherDetail"
                                    asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
-                            <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td>
+                            @* <td>@await DateHelper.GetNepaliDate(item.TxnDate)</td> *@
+                            <td>@(new NepDate.NepaliDate(@item.TxnDate))</td>
                             <td class="text-end">@item.DrAmount.ToString("N2")</td>
                             <td class="text-end">@item.CrAmount.ToString("N2")</td>
                         </tr>
@@ -111,9 +121,8 @@
                 }
 
 
-               
                 </tbody>
-                <tfoot >
+                <tfoot>
                 <tr class="fw-bold">
                     <td></td>
                     <td>Total Amount</td>
@@ -138,10 +147,11 @@ else
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+    
     $(document).ready(function () {
 
         function loadLedgers() {
-            var selectedLedgerId = localStorage.getItem('selectedLedgerId');
+            var selectedLedgerId = sessionStorage.getItem('selectedLedgerId');
 
             $.ajax({
                 url: '/DropdownProvider/GetLedgers/',
@@ -167,7 +177,7 @@ else
         }
 
         $('#LedgerSelection').on('change', function () {
-            localStorage.setItem('selectedLedgerId', $(this).val());
+            sessionStorage.setItem('selectedLedgerId', $(this).val());
         });
 
         loadLedgers();
