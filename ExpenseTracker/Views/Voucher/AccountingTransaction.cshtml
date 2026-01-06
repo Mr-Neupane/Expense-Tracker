@@ -61,16 +61,32 @@
 
         <div class="filter-item">
             <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
-            <input id="engdate"  type="text" asp-for="DateFrom" hidden/>
+            <input id="engdate" type="text" asp-for="DateFrom" hidden/>
             <input id="date" name="FromDate" type="text" class="form-control"/>
         </div>
 
         <div class="filter-item">
             <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
-            <input id="datetoengdate"  asp-for="DateTo" type="text" hidden/>
-            <input id="dateto"  type="text" class="form-control"/>
+            <input id="datetoengdate" asp-for="DateTo" type="text" hidden/>
+            <input id="dateto" type="text" class="form-control"/>
         </div>
 
+
+        <div class="filter-item">
+            <label for="TxnType" class="fs-6">Transaction Type</label>
+            <select name="TxnType" required="required" id="TransactionType" class="form-control" asp-for="TxnType">
+                <option value="">-- Select --</option>
+                <option value="All">All Types</option>
+                @if (Model.TransactionsSelectList!=null)
+                {
+                    @foreach (var item in Model.TransactionsSelectList)
+                    {
+                        <option value="@item.Text">@item.Text</option>
+                    }
+                }
+
+            </select>
+        </div>
         <div class="filter-item">
             <label for="status" class="fs-6">Status</label>
             <select id="status" asp-for="Status" name="Status" class="form-control">
@@ -88,7 +104,7 @@
 
     </form>
 </div>
-@if (Model!=null)
+@if (Model.AccountingTransactions != null)
 {
     <table class="table table-bordered table-striped table-hover mt-3" style="border-collapse: collapse;"
            id="datatable">
@@ -125,7 +141,7 @@
                 <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
 
                 <td>
-                    <a asp-action="VoucherDetail"
+                    <a asp-action="VoucherDetail" target="_blank"
                        asp-route-transactionid="@item.TransactionId">
                         @item.VoucherNo
                     </a>

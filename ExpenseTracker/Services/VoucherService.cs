@@ -71,7 +71,7 @@ public class VoucherService : IVoucherService
         var accTransactionRepo = await (from t in _dbContext.AccountingTransaction
                 join u in _dbContext.Users on t.RecById equals u.Id
                 where (dto.Status == 0 || dto.Status == t.Status) && t.TxnDate.Date >= dto.DateFrom.Date &&
-                      t.TxnDate.Date <= dto.DateTo.Date
+                      t.TxnDate.Date <= dto.DateTo.Date && (dto.Type == "All" || dto.Type == t.Type)
                 select new AccountingTransactionReportDto
                 {
                     TransactionId = t.Id,

@@ -2,8 +2,10 @@
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
+using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using TestApplication.Manager;
@@ -18,15 +20,17 @@ public class VoucherController : Controller
     private readonly IVoucherService _voucherService;
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
+    private readonly DropdownProvider  _dropdownProvider;
 
     public VoucherController(IVoucherService voucherService,
         IToastNotification toastNotification, ApplicationDbContext context,
-        ReverseTransactionManager reverseTransactionManager)
+        ReverseTransactionManager reverseTransactionManager, DropdownProvider dropdownProvider)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
         _reverseTransactionManager = reverseTransactionManager;
+        _dropdownProvider = dropdownProvider;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
@@ -36,18 +40,31 @@ public class VoucherController : Controller
     }
 
     [HttpGet]
-    public IActionResult AccountingTransaction()
+    public async Task<IActionResult> AccountingTransaction()
     {
-        return View();
+        var type =await _dropdownProvider.GetTransactionTypeAsync();
+        var transactions = _context.AccountingTransaction.ToList();
+
+        var model =
+            new AccountingTxnVm
+            {
+                TransactionsSelectList = new SelectList(
+                    type
+                )
+            };
+
+        return View(model);
     }
 
     [HttpPost]
     public async Task<IActionResult> AccountingTransaction(AccountingTxnVm vm)
     {
+        var type = await _dropdownProvider.GetTransactionTypeAsync();
         var filter = new TransactionReportDto
         {
             DateFrom = vm.DateFrom.ToUniversalTime(),
             DateTo = vm.DateTo.ToUniversalTime(),
+            Type = vm.TxnType,
             Status = vm.Status,
         };
         var finalreport = await _voucherService.AccountingTransactionReportAsync(filter);
@@ -55,28 +72,28 @@ public class VoucherController : Controller
         {
             DateFrom = vm.DateFrom.ToUniversalTime(),
             DateTo = vm.DateTo.ToUniversalTime(),
+            TxnType = vm.TxnType,
             Status = vm.Status,
             AccountingTransactions = finalreport.Select(r => new AccountingTransactionReportDto
-            {
-                TxnDate = r.TxnDate,
-                VoucherNo = r.VoucherNo,
-                Remarks = r.Remarks,
-                Type = r.Type,
-                Username = r.Username,
-                Amount = r.Amount,
-                Status = r.Status,
-                TransactionId = r.TransactionId,
-            }).ToList()
+                {
+                    TxnDate = r.TxnDate,
+                    VoucherNo = r.VoucherNo,
+                    Remarks = r.Remarks,
+                    Type = r.Type,
+                    Username = r.Username,
+                    Amount = r.Amount,
+                    Status = r.Status,
+                    TransactionId = r.TransactionId,
+                })
+                .ToList(),
+            TransactionsSelectList = new  SelectList(type)
         };
-        if (finalreport.Count > 0)
-        {
-            return View(res);
-        }
-        else
+        if (finalreport.Count <= 0)
         {
             _toastNotification.AddAlertToastMessage("No Vouchers found");
-            return RedirectToAction("Index", "Home");
         }
+
+        return View(res);
     }
 
     [HttpGet]
