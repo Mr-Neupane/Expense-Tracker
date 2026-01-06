@@ -28,7 +28,6 @@
             <table class="table table-bordered table-striped">
                 <thead class="table-light">
                 <tr>
-                    <th>Sn</th>
                     <th>Code</th>
                     <th>Ledger</th>
                     <th class="text-end">Total DR</th>
@@ -37,22 +36,18 @@
                 </thead>
                 <tbody>
 
-                @{
-                    int sn = 1;
 
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@sn</td>
-                            <td>@item.Code</td>
-                            <td>
-                                @item.LedgerName
-                            </td>
-                            <td class="text-end">@item.DrAmount.ToString("N2")</td>
-                            <td class="text-end">@item.CrAmount.ToString("N2")</td>
-                        </tr>
-                        sn++;
-                    }
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>@item.Code</td>
+                        <td>
+                            @item.LedgerName
+                        </td>
+                        <td class="text-end">@item.DrAmount.ToString("N2")</td>
+                        <td class="text-end">@item.CrAmount.ToString("N2")</td>
+                    </tr>
                 }
                 </tbody>
                 <tfoot>
@@ -70,7 +65,7 @@
                             totalDrAmount = Model.Sum(item => (decimal)(item.DrAmount));
                         }
                     }
-                    <th colspan="3" class="text-end">Total</th>
+                    <th colspan="2" class="text-end">Total</th>
                     <th class="text-end">@totalDrAmount.ToString("N2")</th>
                     <th class="text-end">@totalCrAmount.ToString("N2")</th>
                 </tr>
@@ -87,7 +82,7 @@
             <div class="text-start">
 
                 <div>
-                    @if (Model.First().Status == 1)
+                    @if (Model.First().Status == 1 && Model.First().Type != "Bank Deposit" && Model.First().Type != "Bank Withdraw")
                     {
                         <a class="btn btn-danger"
                            asp-action="ReverseVoucher"
@@ -96,7 +91,7 @@
                            asp-route-typeid="@Model.First().Typeid"
                            onclick="return confirm('Are you sure you want to reverse this voucher?');">Reverse</a>
                     }
-                   
+
                 </div>
 
             </div>

@@ -1,11 +1,21 @@
 ﻿using Dapper;
+using ExpenseTracker.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ExpenseTracker.Providers;
 
 public class DropdownProvider : Controller
 {
+    private readonly ApplicationDbContext _context;
+
+    public DropdownProvider(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     public JsonResult GetBanks()
     {
@@ -85,5 +95,13 @@ FROM accounting.ledger l
             var list = conn.Query(sql).ToList();
             return Json(list);
         }
+    }
+
+    public async Task<List<string>> GetTransactionTypeAsync()
+    {
+        var transactions = await _context.AccountingTransaction.ToListAsync();
+
+        var txntype = transactions.Select(t => t.Type).Distinct().ToList();
+        return txntype;
     }
 }

@@ -4,6 +4,7 @@ public class TransactionReportDto
 {
     public DateTime DateFrom { get; set; }
     public DateTime DateTo { get; set; }
+    public string Type { get; set; }
     public int Status { get; set; }
     public List<AccountingTransactionReportDto> AccountingTransactionReport { get; set; }
 }

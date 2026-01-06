@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
+using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
 using NToastNotify;
 using TestApplication.Interface;
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ILiabilityService, LiabilityService>();
 builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<AccTransactionManager>();
+builder.Services.AddScoped<DropdownProvider>();
 builder.Services.AddScoped<ReverseTransactionManager>();
 
 
