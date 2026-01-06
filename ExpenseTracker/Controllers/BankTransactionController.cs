@@ -45,7 +45,7 @@ public class BankTransactionController : Controller
 
                 var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
 
-                if (res.RemainingBalance < vm.Amount)
+                if (res.RemainingBalance < vm.Amount && vm.Type=="Withdraw")
                 {
                     _toastNotification.AddAlertToastMessage(
                         "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
