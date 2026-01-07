@@ -92,7 +92,7 @@
             <select id="status" asp-for="Status" name="Status" class="form-control">
                 <option value="">All</option>
                 <option value="1">Active</option>
-                <option value="2">Inactive</option>
+                <option value="2">Reversed</option>
             </select>
         </div>
 
@@ -148,7 +148,7 @@
                 </td>
 
                 <td>@item.Username</td>
-                <td class="@(item.Status == 1 ? "text-success" : "text-danger")">@(item.Status == 1 ? "Active" : "Inactive")</td>
+                <td class="@(item.Status == 1 ? "text-success" : "text-danger")">@(item.Status == 1 ? "Active" : "Reversed")</td>
                 <td>@item.Remarks</td>
             </tr>
 
