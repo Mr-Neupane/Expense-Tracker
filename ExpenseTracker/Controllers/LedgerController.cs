@@ -30,6 +30,46 @@ public class LedgerController : Controller
         return View();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> EditLedger(int ledgerId)
+    {
+        var res = await (from l in _context.Ledgers
+            join pl in _context.Ledgers on l.SubParentId equals pl.Id
+            join c in _context.CoaLedger on pl.Parentid equals c.Id
+            where l.Id == ledgerId
+            select new EditLedgerVM
+            {
+                LedgerId = l.Id,
+                Code = l.Code,
+                LedgerName = l.Ledgername,
+                ParentName = c.Name,
+                SubParentName = pl.Ledgername
+            }).FirstAsync();
+        return View(res);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditLedger(EditLedgerVM vm)
+    {
+        var existing = await _context.Ledgers.Where(x => x.Ledgername == vm.LedgerName).FirstOrDefaultAsync();
+        if (existing != null)
+        {
+            _toastNotification.AddErrorToastMessage($"{vm.LedgerName} ledger already exists");
+            return View(vm);
+        }
+        else
+        {
+            var edit = new EditLedgerDto
+            {
+                LedgerId = vm.LedgerId,
+                LedgerName = vm.LedgerName,
+            };
+            await _ledgerService.EditLedgerAsync(edit);
+            _toastNotification.AddSuccessToastMessage("Ledger edited successfully");
+            return RedirectToAction("LedgerReport");
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateLedger(LedgerVm vm)
     {
@@ -122,8 +162,6 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> LedgerStatement(LedgerStatementPageVm vm)
     {
-        // var fromdate = await DateHelper.GetEnglishDate(vm.DateFrom);
-        // var todate = await DateHelper.GetEnglishDate(vm.DateTo);
         var dto = new LedgerStatementDto
         {
             LedgerId = vm.LedgerId,
@@ -166,7 +204,6 @@ public class LedgerController : Controller
             _toastNotification.AddAlertToastMessage("No statements found");
             return View();
         }
-        
     }
 
     public IActionResult GetSubParents(int parentId)

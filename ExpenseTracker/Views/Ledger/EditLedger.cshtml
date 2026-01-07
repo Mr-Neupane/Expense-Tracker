@@ -1,0 +1,41 @@
+﻿@model TestApplication.ViewModels.EditLedgerVM
+
+@{
+    ViewData["Title"] = "Edit Ledger";
+}
+
+<form asp-action="EditLedger" method="post" class="container mt-4" style="max-width:500px;margin:auto;">
+    <div class="card">
+        <div class="card-header">
+            <h6>Edit Ledger</h6>
+        </div>
+        <div class="card-body">
+
+            <!-- Parent Ledger -->
+            <div class="mb-3">
+                <label class="form-label">Parent Ledger Name</label>
+                <input asp-for="ParentName" value="@Model.ParentName" class="form-control"
+                       readonly="readonly"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sub Parent Ledger Name</label>
+                <input asp-for="SubParentName" value="@Model.SubParentName" class="form-control" 
+                       readonly="readonly"/>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ledger Code</label>
+                <input asp-for="Code" value="@Model.Code" class="form-control" readonly="readonly"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ledger Name</label>
+                <input asp-for="LedgerName" value="@Model.LedgerName" class="form-control" required
+                       />
+            </div>
+
+            <button type="submit" asp-route-LedgerId="@Model.LedgerId" class="btn btn-primary">Save</button>
+
+        </div>
+    </div>
+</form>
