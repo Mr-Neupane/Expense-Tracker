@@ -23,6 +23,7 @@ public class LedgerReportDto
 {
     public int LedgerId { get; set; }
     public string SubParentName { get; set; }
+    public int SubParentId { get; set; }
     public string LedgerName { get; set; }
     public string Code { get; set; }
     public string CoaName { get; set; }

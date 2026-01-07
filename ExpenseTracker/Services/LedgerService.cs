@@ -36,6 +36,17 @@ public class LedgerService : ILedgerService
         return ledger;
     }
 
+    public async Task EditLedgerAsync(EditLedgerDto dto)
+    {
+        var ledger = await _context.Ledgers.FindAsync(dto.LedgerId);
+        if (dto.LedgerName != ledger?.Ledgername)
+        {
+            ledger.Ledgername = dto.LedgerName;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync()
     {
         var res = await (from l in _context.Ledgers
@@ -63,7 +74,8 @@ public class LedgerService : ILedgerService
                 select new LedgerReportDto
                 {
                     LedgerId = l.Id,
-                    SubParentName = pl.Ledgername,
+                    SubParentName = string.Concat(pl.Ledgername," [",pl.Code,"]"),
+                    SubParentId = pl.Id,
                     LedgerName = l.Ledgername,
                     Code = l.Code,
                     CoaName = c.Name,
