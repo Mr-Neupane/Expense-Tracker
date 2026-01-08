@@ -10,7 +10,7 @@
         pointer-events: none;
         opacity: 0.6;
         cursor: not-allowed;
-        
+
     }
 
 </style>
@@ -71,16 +71,37 @@
 
             <td>@item.UserName</td>
             <td>
-               @if (item.SubParentId != -2)
-               {
-                   <a asp-route-ledgerId="@item.LedgerId" asp-action="EditLedger"
-                      class="btn btn-primary btn-sm">Edit</a> 
-               }
-               else
-               {
-                   <a asp-route-ledgerId="@item.LedgerId"  asp-action="EditLedger"
-                      class="btn btn-primary btn-sm disabled-link">Edit</a>
-               }
+                @if (item.SubParentId != -2 && item.Status == 1)
+                {
+                    <a asp-route-ledgerId="@item.LedgerId" asp-action="EditLedger"
+                       class="btn btn-primary btn-sm">Edit</a>
+                }
+                else
+                {
+                    <a asp-route-ledgerId="@item.LedgerId" asp-action="EditLedger"
+                       class="btn btn-primary btn-sm disabled-link">Edit</a>
+                }
+                @if (item.SubParentId != -2)
+                {
+                    if (item.Status != 1)
+                    {
+                        <a asp-route-LedgerId="@item.LedgerId" asp-action="ActivateLedger"
+                           class="btn btn-primary btn-sm"
+                           onclick="return confirm('Do you want to activate this ledger')">Activate</a>
+                    }
+                    else
+                    {
+                        <a asp-route-LedgerId="@item.LedgerId" asp-action="DeactivateLedger"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Do you want to deactivate this ledger')">Deactivate</a>
+                    }
+                }
+                else
+                {
+                    <a class="disabled-link btn-sm btn btn-secondary">No Action</a>
+                }
+
+
             </td>
         </tr>
 

@@ -74,7 +74,7 @@ public class LedgerService : ILedgerService
                 select new LedgerReportDto
                 {
                     LedgerId = l.Id,
-                    SubParentName = string.Concat(pl.Ledgername," [",pl.Code,"]"),
+                    SubParentName = string.Concat(pl.Ledgername, " [", pl.Code, "]"),
                     SubParentId = pl.Id,
                     LedgerName = l.Ledgername,
                     Code = l.Code,
@@ -125,5 +125,42 @@ public class LedgerService : ILedgerService
         }).ToList();
         vm.LedgerStatements = statement;
         return statement;
+    }
+
+    public async Task<bool> DeactivateLedgerAsync(int ledgerId)
+    {
+        var ledger = await _context.Ledgers.FindAsync(ledgerId);
+        var validation =
+            await (from l in _context.Ledgers
+                    join t in _context.TransactionDetails on l.Id equals t.LedgerId
+                    where t.LedgerId == ledgerId && t.Status == 1 && l.SubParentId != -2
+                    select t)
+                .ToListAsync();
+        if (validation.Count == 0)
+        {
+            ledger.Status = 2;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        else
+        {
+            var drAmount = validation.Sum(x => x.DrAmount);
+            var crAmount = validation.Sum(x => x.CrAmount);
+            if (drAmount - crAmount == 0)
+            {
+                ledger.Status = 2;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public async Task ActivateLedgerAsync(int ledgerId)
+    {
+        var ledger = await _context.Ledgers.FindAsync(ledgerId);
+        ledger.Status = 1;
+        await _context.SaveChangesAsync();
     }
 }

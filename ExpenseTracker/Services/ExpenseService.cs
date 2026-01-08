@@ -58,7 +58,7 @@ public class ExpenseService : IExpenseService
         var expense = await _context.Expenses.FindAsync(id);
         if (expense is { Status: 1 })
         {
-            expense.Status = 1;
+            expense.Status = 2;
             await _context.SaveChangesAsync();
         }
     }

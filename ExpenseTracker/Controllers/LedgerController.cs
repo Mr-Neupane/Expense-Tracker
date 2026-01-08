@@ -36,7 +36,7 @@ public class LedgerController : Controller
         var res = await (from l in _context.Ledgers
             join pl in _context.Ledgers on l.SubParentId equals pl.Id
             join c in _context.CoaLedger on pl.Parentid equals c.Id
-            where l.Id == ledgerId
+            where l.Id == ledgerId && l.Status == 1 && l.SubParentId != -2
             select new EditLedgerVM
             {
                 LedgerId = l.Id,
@@ -204,6 +204,29 @@ public class LedgerController : Controller
             _toastNotification.AddAlertToastMessage("No statements found");
             return View();
         }
+    }
+
+    [HttpGet]
+    public async Task<RedirectToActionResult> DeactivateLedger(int ledgerId)
+    {
+        bool res = await _ledgerService.DeactivateLedgerAsync(ledgerId);
+        if (res)
+        {
+            _toastNotification.AddSuccessToastMessage("Ledger deactivated successfully");
+        }
+        else
+        {
+            _toastNotification.AddErrorToastMessage("Error deactivating ledger. Ledger may have balance.");
+        }
+
+        return RedirectToAction("LedgerReport");
+    }
+
+    public async Task<RedirectToActionResult> ActivateLedger(int ledgerId)
+    {
+        await _ledgerService.ActivateLedgerAsync(ledgerId);
+        _toastNotification.AddSuccessToastMessage("Ledger activated successfully");
+        return RedirectToAction("LedgerReport");
     }
 
     public IActionResult GetSubParents(int parentId)
