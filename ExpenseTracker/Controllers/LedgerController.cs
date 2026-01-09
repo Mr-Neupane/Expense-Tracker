@@ -24,12 +24,46 @@ public class LedgerController : Controller
         _ledgerService = ledgerService;
     }
 
+
+
     [HttpGet]
     public async Task<IActionResult> CreateLedger()
     {
         return View();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> CreateLedger(LedgerVm vm)
+    {
+        try
+        {
+            var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
+                .AnyAsync();
+            if (!exists)
+            {
+                await _ledgerService.AddLedgerAsync(new LedgerDto
+                {
+                    Name = vm.LedgerName,
+                    ParentId = vm.ParentId,
+                    SubParentId = vm.SubParentId,
+                });
+                _toastNotification.AddSuccessToastMessage($"{vm.LedgerName} created successfully");
+                return RedirectToAction("LedgerReport");
+            }
+            else
+            {
+                _toastNotification.AddErrorToastMessage($"Ledger with name {vm.LedgerName} already exists.");
+                return View();
+            }
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error creating ledger." + e.Message);
+            return View();
+        }
+    }
+    
+    
     [HttpGet]
     public async Task<IActionResult> EditLedger(int ledgerId)
     {
@@ -78,37 +112,6 @@ public class LedgerController : Controller
             await _ledgerService.EditLedgerAsync(edit);
             _toastNotification.AddSuccessToastMessage("Ledger edited successfully");
             return RedirectToAction("LedgerReport");
-        }
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateLedger(LedgerVm vm)
-    {
-        try
-        {
-            var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
-                .AnyAsync();
-            if (!exists)
-            {
-                await _ledgerService.AddLedgerAsync(new LedgerDto
-                {
-                    Name = vm.LedgerName,
-                    ParentId = vm.ParentId,
-                    SubParentId = vm.SubParentId,
-                });
-                _toastNotification.AddSuccessToastMessage($"{vm.LedgerName} created successfully");
-                return RedirectToAction("LedgerReport");
-            }
-            else
-            {
-                _toastNotification.AddErrorToastMessage($"Ledger with name {vm.LedgerName} already exists.");
-                return View();
-            }
-        }
-        catch (Exception e)
-        {
-            _toastNotification.AddErrorToastMessage("Error creating ledger." + e.Message);
-            return View();
         }
     }
 

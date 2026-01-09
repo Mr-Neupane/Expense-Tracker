@@ -62,13 +62,13 @@
         <div class="filter-item">
             <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
             <input id="engdate" type="text" asp-for="DateFrom" hidden/>
-            <input id="date" name="FromDate" type="text" class="form-control"/>
+            <input id="date" value="@Model.DateFrom" name="FromDate" type="text" class="form-control"/>
         </div>
 
         <div class="filter-item">
             <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
             <input id="datetoengdate" asp-for="DateTo" type="text" hidden/>
-            <input id="dateto" type="text" class="form-control"/>
+            <input id="dateto"  type="text" class="form-control"/>
         </div>
 
 
@@ -77,7 +77,7 @@
             <select name="TxnType" required="required" id="TransactionType" class="form-control" asp-for="TxnType">
                 <option value="">-- Select --</option>
                 <option value="All">All Types</option>
-                @if (Model.TransactionsSelectList!=null)
+                @if (Model.TransactionsSelectList != null)
                 {
                     @foreach (var item in Model.TransactionsSelectList)
                     {
