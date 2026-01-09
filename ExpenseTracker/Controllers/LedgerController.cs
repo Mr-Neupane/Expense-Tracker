@@ -44,14 +44,25 @@ public class LedgerController : Controller
                 LedgerName = l.Ledgername,
                 ParentName = c.Name,
                 SubParentName = pl.Ledgername
-            }).FirstAsync();
-        return View(res);
+            }).FirstOrDefaultAsync();
+
+        if (res != null)
+        {
+            return View(res);
+        }
+
+        else
+        {
+            _toastNotification.AddAlertToastMessage("Ledger not found");
+            return RedirectToAction("LedgerReport");
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> EditLedger(EditLedgerVM vm)
     {
-        var existing = await _context.Ledgers.Where(x => x.Ledgername == vm.LedgerName).FirstOrDefaultAsync();
+        var existing = await _context.Ledgers.Where(x => x.Ledgername.Trim() == vm.LedgerName.Trim())
+            .FirstOrDefaultAsync();
         if (existing != null)
         {
             _toastNotification.AddErrorToastMessage($"{vm.LedgerName} ledger already exists");
