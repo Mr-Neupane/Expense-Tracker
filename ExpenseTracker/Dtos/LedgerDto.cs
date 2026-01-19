@@ -6,6 +6,7 @@ public class LedgerDto
     public string Name { get; set; }
     public int? ParentId { get; set; }
     public int? SubParentId { get; set; }
+    public bool IsParent { get; set; }
     public string Code { get; set; }
 }
 

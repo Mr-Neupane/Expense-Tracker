@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Microsoft.Extensions.Configuration;
 
 namespace ExpenseTracker
 {

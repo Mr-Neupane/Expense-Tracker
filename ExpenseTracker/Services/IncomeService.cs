@@ -2,6 +2,7 @@
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 using TestApplication.Interface;
 
 namespace ExpenseTracker.Services;
@@ -24,7 +25,7 @@ public class IncomeService : IIncomeService
             CrAmount = dto.Amount,
             TxnDate = dto.TxnDate,
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = 1,
+            Status = Status.Active.ToInt(),
             RecStatus = 'A',
             RecById = -1
         };
@@ -36,8 +37,12 @@ public class IncomeService : IIncomeService
     public async Task ReverseIncomeAsync(int id)
     {
         var income = await _context.Incomes.FindAsync(id);
+        if (income == null)
+        {
+            throw new Exception("Income not found");
+        }
 
-        if (income is { Status: 1 }) income.Status = 2;
+        if (income is { Status: (int)Status.Active }) income.Status = Status.Reversed.ToInt();
         await _context.SaveChangesAsync();
     }
 
@@ -46,7 +51,7 @@ public class IncomeService : IIncomeService
         var report = await (from i in _context.Incomes
             join t in _context.AccountingTransaction on i.Id equals t.TypeId
             join u in _context.Users on i.RecById equals u.Id
-            where t.Type == "Income" && i.Status == 1 && t.Status == 1
+            where t.Type == "Income" && i.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt()
             select new IncomeReportDto
             {
                 Id = i.Id,

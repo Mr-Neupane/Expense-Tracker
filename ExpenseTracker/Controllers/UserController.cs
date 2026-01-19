@@ -18,7 +18,7 @@ public class UserController : Controller
         try
         {
             using var conn = DapperConnectionProvider.GetConnection();
-            
+
 
             var insertQuery = @"
 INSERT INTO users (username, password)
@@ -32,8 +32,6 @@ ON CONFLICT (username) DO NOTHING;
                 Username = vm.Username,
                 Password = vm.Password
             });
-            conn.Close();
-
             return View(vm);
         }
         catch (Exception e)
