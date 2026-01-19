@@ -7,6 +7,7 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using TestApplication.Enums;
 using TestApplication.ViewModels.Interface;
 
 public class BankService : IBankService
@@ -43,7 +44,7 @@ public class BankService : IBankService
 
     public async Task<List<Bank>> BankReportAsync()
     {
-        var report = await _context.Banks.Where(b => b.Status == 1).ToListAsync();
+        var report = await _context.Banks.Where(b => b.Status == Status.Active.ToInt()).ToListAsync();
         return report;
     }
 
@@ -85,7 +86,7 @@ public class BankService : IBankService
             RecDate = DateTime.Now.ToUniversalTime(),
             RecById = -1,
             RecStatus = 'A',
-            Status = 1,
+            Status = Status.Active.ToInt(),
             TransactionId = 0
         };
         await _context.BankTransaction.AddAsync(banktransaction);
@@ -117,7 +118,7 @@ public class BankService : IBankService
             AccountOpendate = dto.AccountOpenDate,
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = 1,
+            Status = Status.Active.ToInt(),
             RecbyId = -1
         };
 
@@ -128,9 +129,9 @@ public class BankService : IBankService
 
     public async Task UpdateRemainingBalanceInBankAsync(int bid)
     {
-        var deposit = _context.BankTransaction.Where(t => t.Status == 1 && t.Type == "Deposit" && t.BankId == bid)
+        var deposit = _context.BankTransaction.Where(t => t.Status == Status.Active.ToInt() && t.Type == "Deposit" && t.BankId == bid)
             .Sum(t => t.Amount);
-        var withdraw = _context.BankTransaction.Where(t => t.Status == 1 && t.Type == "Withdraw" && t.BankId == bid)
+        var withdraw = _context.BankTransaction.Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
             .Sum(t => t.Amount);
         var rembal = deposit - withdraw;
         var banks = await _context.Banks.Where(b => b.Id == bid).ToListAsync();
@@ -148,7 +149,7 @@ public class BankService : IBankService
             .ToListAsync();
         foreach (var t in txn)
         {
-            t.Status = 2;
+            t.Status = Status.Reversed.ToInt();
         }
 
         await _context.SaveChangesAsync();

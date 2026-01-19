@@ -25,7 +25,6 @@ public class LedgerController : Controller
     }
 
 
-
     [HttpGet]
     public async Task<IActionResult> CreateLedger()
     {
@@ -62,8 +61,8 @@ public class LedgerController : Controller
             return View();
         }
     }
-    
-    
+
+
     [HttpGet]
     public async Task<IActionResult> EditLedger(int ledgerId)
     {
@@ -131,13 +130,14 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateParentLedger(ParentledgerVm vm)
     {
-        var validation = await LedgerCode.ValidateLedgerCode(vm.ParentCode);
+        var validateLedgerCode = await LedgerCode.ValidateLedgerCode(vm.ParentCode);
 
         try
         {
-            if (validation == 1)
+            if (validateLedgerCode)
             {
                 _toastNotification.AddInfoToastMessage("Ledger code already exists");
+                return View(vm);
             }
             else
             {
@@ -146,11 +146,12 @@ public class LedgerController : Controller
                     Name = vm.ParentLedgerName,
                     ParentId = vm.ParentId,
                     SubParentId = vm.SubParentId,
+                    IsParent = true,
                     Code = vm.ParentCode
                 });
+                _toastNotification.AddSuccessToastMessage("Parent ledger added successfully");
+                return RedirectToAction("ParentLedgerReport");
             }
-
-            return RedirectToAction("CreateParentLedger");
         }
         catch (Exception e)
         {

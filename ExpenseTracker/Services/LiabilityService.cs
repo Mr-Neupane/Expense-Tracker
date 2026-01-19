@@ -2,6 +2,7 @@
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 using TestApplication.Interface;
 
 namespace ExpenseTracker.Services;
@@ -25,7 +26,7 @@ public class LiabilityService : ILiabilityService
             TxnDate = dto.TxnDate.ToUniversalTime(),
             RecDate = DateTime.Now.ToUniversalTime(),
             RecStatus = 'A',
-            Status = 1,
+            Status = Status.Active.ToInt(),
             RecById = -1
         };
         await _context.Liabilities.AddRangeAsync(liability);
@@ -39,7 +40,7 @@ public class LiabilityService : ILiabilityService
             // join td in _context.TransactionDetails on t.Id equals td.TransactionId
             join e in _context.Liabilities on t.TypeId equals e.Id
             join u in _context.Users on e.RecById equals u.Id
-            where e.Status == 1 && t.Status == 1 && t.Type == "Liability"
+            where e.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt() && t.Type == "Liability"
             select new LiabilityReportDto
             {
                 Id = e.Id,
@@ -58,9 +59,9 @@ public class LiabilityService : ILiabilityService
     public async Task ReverseLiabilityTransactionAsync(int id)
     {
         var liability = await _context.Liabilities.FindAsync(id);
-        if (liability is { Status: 1 })
+        if (liability is { Status: (int)Status.Active })
         {
-            liability.Status = 2;
+            liability.Status = Status.Reversed.ToInt();
             await _context.SaveChangesAsync();
         }
     }

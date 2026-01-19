@@ -31,14 +31,14 @@ public class LedgerCode : Controller
         return ledgerid;
     }
 
-    public static async Task<int?> ValidateLedgerCode(string ledgercode)
+    public static async Task<bool> ValidateLedgerCode(string ledgercode)
     {
         var conn = DapperConnectionProvider.GetConnection();
         var query = @"select 1 from accounting.ledger where code = @code";
-        int? res = await conn.QueryFirstOrDefaultAsync<int?>(query, new
+        bool res = await conn.QueryFirstOrDefaultAsync<bool>(query, new
         {
             code = ledgercode
         });
-        return res ?? 0;
+        return res;
     }
 }

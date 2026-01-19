@@ -4,6 +4,7 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
 
@@ -20,13 +21,13 @@ public class LedgerService : ILedgerService
 
     public async Task<Ledger> AddLedgerAsync(LedgerDto dto)
     {
-        var ledgercode = await LedgerCode.GetLedgerCode(dto.SubParentId);
+        var ledgercode = dto.IsParent ? dto.Code : await LedgerCode.GetLedgerCode(dto.SubParentId);
         var ledger = new Ledger
         {
             Parentid = dto.ParentId,
             Ledgername = dto.Name,
             RecStatus = 'A',
-            Status = 1,
+            Status = Status.Active.ToInt(),
             RecById = -1,
             Code = ledgercode,
             SubParentId = dto.SubParentId,
@@ -71,6 +72,7 @@ public class LedgerService : ILedgerService
                 join pl in _context.Ledgers on l.SubParentId equals pl.Id
                 join c in _context.CoaLedger on pl.Parentid equals c.Id
                 join u in _context.Users on l.RecById equals u.Id
+                where l.Status == Status.Active.ToInt() 
                 select new LedgerReportDto
                 {
                     LedgerId = l.Id,
@@ -95,7 +97,8 @@ public class LedgerService : ILedgerService
                 .TransactionId
             join td2 in _context.TransactionDetails on td.TransactionId equals td2.TransactionId
             join l in _context.Ledgers on td2.LedgerId equals l.Id
-            where td2.LedgerId != vm.LedgerId && t.Status == 1 && td.Status == 1 &&
+            where td2.LedgerId != vm.LedgerId && t.Status == Status.Active.ToInt() &&
+                  td.Status == Status.Active.ToInt() &&
                   t.TxnDate >= vm.DateFrom.ToUniversalTime() &&
                   t.TxnDate <= vm.DateTo.ToUniversalTime()
             group new { t, td2, td, l } by td.TransactionId
@@ -133,12 +136,12 @@ public class LedgerService : ILedgerService
         var validation =
             await (from l in _context.Ledgers
                     join t in _context.TransactionDetails on l.Id equals t.LedgerId
-                    where t.LedgerId == ledgerId && t.Status == 1 && l.SubParentId != -2
+                    where t.LedgerId == ledgerId && t.Status == Status.Active.ToInt() && l.SubParentId != -2
                     select t)
                 .ToListAsync();
         if (validation.Count == 0)
         {
-            ledger.Status = 2;
+            ledger.Status = Status.Reversed.ToInt();
             await _context.SaveChangesAsync();
             return true;
         }
@@ -148,7 +151,7 @@ public class LedgerService : ILedgerService
             var crAmount = validation.Sum(x => x.CrAmount);
             if (drAmount - crAmount == 0)
             {
-                ledger.Status = 2;
+                ledger.Status = Status.Active.ToInt();
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -160,7 +163,7 @@ public class LedgerService : ILedgerService
     public async Task ActivateLedgerAsync(int ledgerId)
     {
         var ledger = await _context.Ledgers.FindAsync(ledgerId);
-        ledger.Status = 1;
+        ledger.Status = Status.Active.ToInt();
         await _context.SaveChangesAsync();
     }
 }

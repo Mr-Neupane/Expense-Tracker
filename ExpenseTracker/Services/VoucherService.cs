@@ -3,6 +3,7 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 using TestApplication.ViewModels.Interface;
 using static ExpenseTracker.Providers.VoucherNumberProvider;
 using Transaction = ExpenseTracker.Models.Transaction;
@@ -48,7 +49,7 @@ public class VoucherService : IVoucherService
             Remarks = dto.Remarks,
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = 1,
+            Status = Status.Active.ToInt(),
             RecById = -1,
             TransactionDetails = dto.Details.Select(d => new TransactionDetail
             {
@@ -57,7 +58,7 @@ public class VoucherService : IVoucherService
                 CrAmount = !d.IsDr ? d.Amount : 0,
                 DrCr = d.IsDr ? 'D' : 'C',
                 RecStatus = 'A',
-                Status = 1,
+                Status = Status.Active.ToInt(),
                 RecById = -1
             }).ToList()
         };
@@ -92,9 +93,9 @@ public class VoucherService : IVoucherService
         var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToListAsync();
 
         var transaction = await _dbContext.AccountingTransaction.SingleAsync(x => x.Id == transactionId);
-        transaction.Status = 2;
+        transaction.Status = Status.Reversed.ToInt();
 
-        txn.ForEach(a => a.Status = 2);
+        txn.ForEach(a => a.Status = Status.Reversed.ToInt());
 
         await _dbContext.SaveChangesAsync();
     }
