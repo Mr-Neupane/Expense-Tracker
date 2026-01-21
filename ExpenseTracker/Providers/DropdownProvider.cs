@@ -1,7 +1,5 @@
-﻿using Dapper;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -19,89 +17,94 @@ public class DropdownProvider : Controller
     [HttpGet]
     public JsonResult GetBanks()
     {
-        var dbConnection = DapperConnectionProvider.GetConnection();
-        string query = "SELECT id, bankname FROM bank.bank where status=1";
-        var banks = dbConnection.Query(query).Select(b => new
+        var banks = _context.Banks.ToList().Select(b => new
         {
-            Id = b.id,
-            bankname = b.bankname
+            id = b.Id,
+            bankname = b.BankName
         }).ToList();
         return Json(banks);
     }
 
     public JsonResult GetExpenseLedgers()
     {
-        using (var conn = DapperConnectionProvider.GetConnection())
-        {
-            string sql = @"SELECT ls.ledgername,ls.id 
-FROM accounting.ledger l
-         join accounting.ledger ls on ls.subparentid = l.id
-         join accounting.coa c on l.parentid = c.id where c.name='Expenses' ";
-
-            var list = conn.Query(sql).ToList();
-            return Json(list);
-        }
+        var expLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.Parentid
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where c.Name == "Expenses"
+                select new
+                {
+                    ledgername = ls.Ledgername,
+                    id = ls.Id
+                }
+            ).ToList();
+        return Json(expLedger);
     }
 
     public JsonResult GetLiabilityLedgers()
     {
-        using (var conn = DapperConnectionProvider.GetConnection())
-        {
-            string sql = @"SELECT ls.ledgername,ls.id 
-FROM accounting.ledger l
-         join accounting.ledger ls on ls.subparentid = l.id
-         join accounting.coa c on l.parentid = c.id where c.name='Liabilities' ";
-
-            var list = conn.Query(sql).ToList();
-            return Json(list);
-        }
+        var liabilityLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.Parentid
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where c.Name == "Liabilities"
+                select new
+                {
+                    ledgername = ls.Ledgername,
+                    id = ls.Id
+                }
+            ).ToList();
+        return Json(liabilityLedger);
     }
 
     public JsonResult GetCashBankLedgers()
     {
-        using (var conn = DapperConnectionProvider.GetConnection())
-        {
-            string sql = @"SELECT ls.ledgername,ls.id 
-FROM accounting.ledger ls where ls.subparentid in (-1,-2)";
-
-            var list = conn.Query(sql).ToList();
-            return Json(list);
-        }
+        var cashAndBankLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.Parentid
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where (ls.SubParentId == -1 || ls.SubParentId == -2)
+                select new
+                {
+                    ledgername = ls.Ledgername,
+                    id = ls.Id
+                }
+            ).ToList();
+        return Json(cashAndBankLedger);
     }
 
     public JsonResult GetIncomeLedgers()
     {
-        using (var conn = DapperConnectionProvider.GetConnection())
-        {
-            string sql = @"SELECT ls.ledgername,ls.id 
-FROM accounting.ledger l
-         join accounting.ledger ls on ls.subparentid = l.id
-         join accounting.coa c on l.parentid = c.id where c.name='Income' ";
-
-            var list = conn.Query(sql).ToList();
-            return Json(list);
-        }
+        var incomeLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.Parentid
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where c.Name == "Income"
+                select new
+                {
+                    ledgername = ls.Ledgername,
+                    id = ls.Id
+                }
+            ).ToList();
+        return Json(incomeLedger);
     }
 
     public JsonResult GetLedgers()
     {
-        using (var conn = DapperConnectionProvider.GetConnection())
-        {
-            string sql = @"SELECT l.ledgername coaname,ls.ledgername,ls.id ,ls.code
-FROM accounting.ledger l
-         join accounting.ledger ls on ls.subparentid = l.id
-         join accounting.coa c on l.parentid = c.id";
-
-            var list = conn.Query(sql).ToList();
-            return Json(list);
-        }
+        var ledgers = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.Parentid
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                select new
+                {
+                    coaname = l.Ledgername,
+                    ledgername = ls.Ledgername,
+                    id = ls.Id
+                }
+            ).ToList();
+        return Json(ledgers);
     }
 
     public async Task<List<string>> GetTransactionTypeAsync()
     {
         var transactions = await _context.AccountingTransaction.ToListAsync();
 
-        var txntype = transactions.Select(t => t.Type).Distinct().ToList();
-        return txntype;
+        var txnType = transactions.Select(t => t.Type).Distinct().ToList();
+        return txnType;
     }
 }

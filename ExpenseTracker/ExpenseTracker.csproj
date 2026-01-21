@@ -4,8 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>aspnet-TestApplication-5665B016-88E1-4711-BA6B-2926DC9CD326</UserSecretsId>
-        <RootNamespace>TestApplication</RootNamespace>
+        <UserSecretsId>aspnet-ExpenseTracker-5665B016-88E1-4711-BA6B-2926DC9CD326</UserSecretsId>
+        <RootNamespace>ExpenseTracker</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

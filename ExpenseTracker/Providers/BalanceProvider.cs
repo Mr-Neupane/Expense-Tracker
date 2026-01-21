@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using Dapper;
+﻿using Dapper;
 
 namespace ExpenseTracker.Providers;
 
