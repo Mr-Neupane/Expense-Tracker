@@ -94,6 +94,7 @@ public class DropdownProvider : Controller
                 {
                     coaname = l.Ledgername,
                     ledgername = ls.Ledgername,
+                    code = ls.Code,
                     id = ls.Id
                 }
             ).ToList();
