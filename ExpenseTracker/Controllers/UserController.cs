@@ -1,11 +1,23 @@
 using Dapper;
+using ExpenseTracker.Data;
+using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.ViewModels;
+using NToastNotify;
 
 namespace ExpenseTracker.Controllers;
 
 public class UserController : Controller
 {
+    private readonly ApplicationDbContext _context;
+    private readonly IToastNotification _toastNotification;
+
+    public UserController(ApplicationDbContext context, IToastNotification toastNotification)
+    {
+        _context = context;
+        _toastNotification = toastNotification;
+    }
+
     [HttpGet]
     public async Task<IActionResult> AddUser()
     {
@@ -17,27 +29,30 @@ public class UserController : Controller
     {
         try
         {
-            using var conn = DapperConnectionProvider.GetConnection();
-
-
-            var insertQuery = @"
-INSERT INTO users (username, password)
-VALUES (@Username, @Password)
-ON CONFLICT (username) DO NOTHING;
-";
-
-
-            await conn.ExecuteAsync(insertQuery, new
+            var existingUser = _context.Users.FirstOrDefault(u => u.Username == vm.Username);
+            if (existingUser == null)
             {
-                Username = vm.Username,
-                Password = vm.Password
-            });
+                var addUser = new User()
+                {
+                    Username = vm.Username,
+                    Password = vm.Password
+                };
+                await _context.Users.AddAsync(addUser);
+                await _context.SaveChangesAsync();
+                _toastNotification.AddSuccessToastMessage("User created successfully");
+            }
+
+            else
+            {
+                _toastNotification.AddErrorToastMessage($"User with {vm.Username} username already exists");
+            }
+
             return View(vm);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return View(vm);
         }
     }
 
