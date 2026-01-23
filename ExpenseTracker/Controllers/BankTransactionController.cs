@@ -15,16 +15,18 @@ public class BankTransactionController : Controller
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IBankService _bankService;
     private readonly AccTransactionManager _accTransactionManager;
+    private readonly IProvider _provider;
 
 
     public BankTransactionController(IToastNotification toastNotification,
         ReverseTransactionManager reverseTransactionManager, IBankService bankService,
-        AccTransactionManager accTransactionManager)
+        AccTransactionManager accTransactionManager, IProvider provider)
     {
         _toastNotification = toastNotification;
         _reverseTransactionManager = reverseTransactionManager;
         _bankService = bankService;
         _accTransactionManager = accTransactionManager;
+        _provider = provider;
     }
 
     [HttpGet]
@@ -39,7 +41,7 @@ public class BankTransactionController : Controller
         try
         {
             {
-                var bankLedgerId = await LedgerCode.GetBankLedgerId(vm.BankId);
+                var bankLedgerId = await _provider.GetBankLedgerId(vm.BankId);
                 var ledgerbalance = await BalanceProvider.GetLedgerBalance(bankLedgerId);
                 var banks = await _bankService.BankReportAsync();
 

@@ -29,6 +29,7 @@ builder.Services.AddScoped<ILiabilityService, LiabilityService>();
 builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<AccTransactionManager>();
 builder.Services.AddScoped<DropdownProvider>();
+builder.Services.AddScoped<IProvider>();
 builder.Services.AddScoped<ReverseTransactionManager>();
 
 

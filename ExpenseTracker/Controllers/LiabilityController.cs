@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
@@ -12,13 +13,15 @@ public class LiabilityController : Controller
     private readonly AccTransactionManager _accTransactionManager;
     private readonly ILiabilityService _liabilityService;
     private readonly IToastNotification _toastNotification;
+    private readonly IProvider _provider;
 
     public LiabilityController(AccTransactionManager accTransactionManager, IToastNotification toastNotification,
-        ILiabilityService liabilityService)
+        ILiabilityService liabilityService, IProvider provider)
     {
         _accTransactionManager = accTransactionManager;
         _toastNotification = toastNotification;
         _liabilityService = liabilityService;
+        _provider = provider;
     }
 
 
@@ -34,7 +37,7 @@ public class LiabilityController : Controller
         try
         {
             // var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
-            var bankid = await BankService.GetBankIdByLedgerId(vm.LiabilityFromLedger);
+            var bankid = await _provider.GetBankLedgerId(vm.LiabilityFromLedger);
             var liability = new LiabilityDto
             {
                 LedgerId = vm.LiabilityLedger,

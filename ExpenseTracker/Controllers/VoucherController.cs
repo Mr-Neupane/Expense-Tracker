@@ -21,16 +21,18 @@ public class VoucherController : Controller
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
     private readonly DropdownProvider  _dropdownProvider;
+    private readonly IProvider  _provider;
 
     public VoucherController(IVoucherService voucherService,
         IToastNotification toastNotification, ApplicationDbContext context,
-        ReverseTransactionManager reverseTransactionManager, DropdownProvider dropdownProvider)
+        ReverseTransactionManager reverseTransactionManager, DropdownProvider dropdownProvider, IProvider provider)
     {
         _voucherService = voucherService;
         _toastNotification = toastNotification;
         _context = context;
         _reverseTransactionManager = reverseTransactionManager;
         _dropdownProvider = dropdownProvider;
+        _provider = provider;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionid)
@@ -132,7 +134,7 @@ public class VoucherController : Controller
                     .FirstOrDefaultAsync();
                 if (bankLedger != null)
                 {
-                    var bankid = await BankService.GetBankIdByLedgerId(bankLedger.LedgerId);
+                    var bankid = await _provider.GetBankIdByLedgerId(bankLedger.LedgerId);
                     var banktrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
                         .Select(e => new BankTransaction
                         {
