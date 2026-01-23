@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
+using ExpenseTracker.Providers;
 using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
 
@@ -12,15 +13,17 @@ public class AccTransactionManager
     private readonly IIncomeService _incomeService;
     private readonly IExpenseService _expenseService;
     private readonly ILiabilityService _liabilityService;
+    private readonly IProvider _provider;
 
     public AccTransactionManager(IVoucherService voucherService, IBankService bankService, IIncomeService incomeService,
-        IExpenseService expenseService, ILiabilityService liabilityService)
+        IExpenseService expenseService, ILiabilityService liabilityService, IProvider provider)
     {
         _voucherService = voucherService;
         _bankService = bankService;
         _incomeService = incomeService;
         _expenseService = expenseService;
         _liabilityService = liabilityService;
+        _provider = provider;
     }
 
     private async Task<Transaction> RecordVoucher(AccTransactionDto accTransaction, int typeId)
@@ -60,7 +63,7 @@ public class AccTransactionManager
         var expense = await _expenseService.RecordExpenseAsync(dto);
 
         var accTrans = await RecordVoucher(txndto, expense.Id);
-        var bankid = await BankService.GetBankIdByLedgerId(dto.FromLedgerId);
+        var bankid = await _provider.GetBankIdByLedgerId(dto.FromLedgerId);
         if (bankid != 0)
         {
             var bankTransaction = await _bankService.RecordBankTransactionAsync(new BankTransactionDto
@@ -80,10 +83,10 @@ public class AccTransactionManager
     public async Task RecordIncomeTransaction(IncomeDto idto, AccTransactionDto dto)
     {
         var income = await _incomeService.RecordIncomeAsync(idto);
-        var transaction =await RecordVoucher(dto, income.Id);
+        var transaction = await RecordVoucher(dto, income.Id);
 
 
-        int bankid = await BankService.GetBankIdByLedgerId(idto.FromLedgerid);
+        int bankid = await _provider.GetBankIdByLedgerId(idto.FromLedgerid);
         if (bankid != 0)
         {
             var bankTransaction = new BankTransactionDto
@@ -103,7 +106,7 @@ public class AccTransactionManager
     public async Task RecordLiabilityTransaction(LiabilityDto lidto, AccTransactionDto txndto)
     {
         var liability = await _liabilityService.RecordLiabilityAsync(lidto);
-        var accTransaction =await RecordVoucher(txndto, liability.Id);
+        var accTransaction = await RecordVoucher(txndto, liability.Id);
 
         if (lidto.BankId != 0)
         {

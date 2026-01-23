@@ -15,13 +15,15 @@ public class LedgerController : Controller
     private readonly ApplicationDbContext _context;
     private readonly ILedgerService _ledgerService;
     private readonly IToastNotification _toastNotification;
+    private readonly IProvider _provider;
 
     public LedgerController(ApplicationDbContext context, IToastNotification toastNotification,
-        ILedgerService ledgerService)
+        ILedgerService ledgerService, IProvider provider)
     {
         _context = context;
         _toastNotification = toastNotification;
         _ledgerService = ledgerService;
+        _provider = provider;
     }
 
 
@@ -130,7 +132,7 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateParentLedger(ParentledgerVm vm)
     {
-        var validateLedgerCode = await LedgerCode.ValidateLedgerCode(vm.ParentCode);
+        var validateLedgerCode = await _provider.ValidateLedgerCode(vm.ParentCode);
 
         try
         {
@@ -246,13 +248,7 @@ public class LedgerController : Controller
 
     public IActionResult GetSubParents(int parentId)
     {
-        var con = DapperConnectionProvider.GetConnection();
-
-        string sql = @"SELECT Id, LedgerName, code
-                           FROM accounting.ledger  
-                           WHERE ParentId = @ParentId and id not in (-2)";
-        var subParents = con.Query(sql, new { ParentId = parentId }).ToList();
-
-        return Json(subParents);
+        var res = _context.Ledgers.Where(x => x.Id != -2 && x.Parentid == parentId).ToList();
+        return Json(res);
     }
 }

@@ -13,15 +13,17 @@ namespace ExpenseTracker.Services;
 public class LedgerService : ILedgerService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IProvider _provider;
 
-    public LedgerService(ApplicationDbContext context)
+    public LedgerService(ApplicationDbContext context, IProvider provider)
     {
         _context = context;
+        _provider = provider;
     }
 
     public async Task<Ledger> AddLedgerAsync(LedgerDto dto)
     {
-        var ledgercode = dto.IsParent ? dto.Code : await LedgerCode.GetLedgerCode(dto.SubParentId);
+        var ledgerCode = dto.IsParent ? dto.Code : await _provider.GetLedgerCode(dto.SubParentId);
         var ledger = new Ledger
         {
             Parentid = dto.ParentId,
@@ -29,7 +31,7 @@ public class LedgerService : ILedgerService
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
             RecById = -1,
-            Code = ledgercode,
+            Code = ledgerCode,
             SubParentId = dto.SubParentId,
         };
         await _context.Ledgers.AddAsync(ledger);
@@ -72,7 +74,7 @@ public class LedgerService : ILedgerService
                 join pl in _context.Ledgers on l.SubParentId equals pl.Id
                 join c in _context.CoaLedger on pl.Parentid equals c.Id
                 join u in _context.Users on l.RecById equals u.Id
-                where l.Status == Status.Active.ToInt() 
+                where l.Status == Status.Active.ToInt()
                 select new LedgerReportDto
                 {
                     LedgerId = l.Id,

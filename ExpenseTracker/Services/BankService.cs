@@ -20,8 +20,6 @@ public class BankService : IBankService
     }
 
 
-    
-
     public static async Task<List<dynamic>> GetBankTransactionReport()
     {
         var conn = DapperConnectionProvider.GetConnection();
@@ -33,14 +31,6 @@ public class BankService : IBankService
         return txnreport.ToList();
     }
 
-
-    public static async Task<int> GetBankIdByLedgerId(int ledgerid)
-    {
-        var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select id from bank.bank where ledgerid=@ledgerid";
-        int? bankid = await conn.QueryFirstOrDefaultAsync<int?>(query, new { ledgerid });
-        return bankid ?? 0;
-    }
 
     public async Task<List<Bank>> BankReportAsync()
     {
@@ -129,9 +119,11 @@ public class BankService : IBankService
 
     public async Task UpdateRemainingBalanceInBankAsync(int bid)
     {
-        var deposit = _context.BankTransaction.Where(t => t.Status == Status.Active.ToInt() && t.Type == "Deposit" && t.BankId == bid)
+        var deposit = _context.BankTransaction
+            .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Deposit" && t.BankId == bid)
             .Sum(t => t.Amount);
-        var withdraw = _context.BankTransaction.Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
+        var withdraw = _context.BankTransaction
+            .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
             .Sum(t => t.Amount);
         var rembal = deposit - withdraw;
         var banks = await _context.Banks.Where(b => b.Id == bid).ToListAsync();

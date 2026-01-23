@@ -1,14 +1,23 @@
 ﻿using Dapper;
 using ExpenseTracker.Controllers;
+using ExpenseTracker.Data;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Providers;
 
-public class LedgerCode : Controller
+public class IProvider : Controller
 {
-    public static async Task<string> GetLedgerCode(int? subparentid)
+    private readonly ApplicationDbContext _context;
+
+    public IProvider(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<string> GetLedgerCode(int? subparentid)
     {
         var con = DapperConnectionProvider.GetConnection();
         var code =
@@ -22,23 +31,26 @@ public class LedgerCode : Controller
         return ledgercode;
     }
 
-    public static async Task<int> GetBankLedgerId(int bankid)
+    public async Task<int> GetBankLedgerId(int bankid)
     {
-        var con = DapperConnectionProvider.GetConnection();
-        var bankledgerid = @"select ledgerid from bank.bank b where b.id = @bankId";
-        var ledgerid = await con.QueryFirstAsync<int>(bankledgerid, new { bankId = bankid });
-        con.Close();
-        return ledgerid;
+        var bank = await _context.Banks.Where(x => x.Id == bankid).SingleOrDefaultAsync();
+        return bank.LedgerId;
     }
 
-    public static async Task<bool> ValidateLedgerCode(string ledgercode)
+    public async Task<bool> ValidateLedgerCode(string ledgercode)
     {
-        var conn = DapperConnectionProvider.GetConnection();
-        var query = @"select 1 from accounting.ledger where code = @code";
-        bool res = await conn.QueryFirstOrDefaultAsync<bool>(query, new
+        var existing = await _context.Ledgers.Select(x => x.Code == ledgercode).FirstOrDefaultAsync();
+        return existing;
+    }
+
+    public async Task<int> GetBankIdByLedgerId(int ledgerid)
+    {
+        var bankId = await _context.Banks.Where(x => x.LedgerId == ledgerid).SingleOrDefaultAsync();
+        if (bankId.Id == null)
         {
-            code = ledgercode
-        });
-        return res;
+            bankId.Id = 0;
+        }
+
+        return bankId.Id;
     }
 }
