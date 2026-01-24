@@ -2,6 +2,7 @@ using System.Diagnostics;
 using ExpenseTracker.Data;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Models;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace ExpenseTracker.Controllers;
@@ -19,15 +20,16 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Migration()
+    {
         var cn = _context.CoaLedger.Count();
         bool isMigration = false || cn == 0;
 
         return View(isMigration);
-    }
-
-    public IActionResult Privacy()
-    {
-       return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

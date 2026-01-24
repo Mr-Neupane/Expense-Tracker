@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Migration";
+}
+
+@if (Model == true)
+{
+    <form method="post">
+        <a asp-controller="Migration" type="submit" asp-action="SeededMigration" class="btn btn-danger"> Apply Migration</a>
+    </form>
+}
