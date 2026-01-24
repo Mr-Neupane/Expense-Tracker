@@ -1,17 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExpenseTracker.Models
 {
     [Table("ledger", Schema = "accounting")]
-    public class Ledger
+    public class Ledger : BaseModel
     {
-        [Column("id")]    public int Id { get; set; }
-        [Column("parentid")]    public int? Parentid { get; set; }
-        [Column("ledgername")]  public string Ledgername { get; set; }
-        [Column("recstatus")]   public char RecStatus { get; set; }
-        [Column("status")]public int Status { get; set; }
-        [Column("recbyid")] public int RecById { get; set; }
-        [Column("code")]   public string Code { get; set; }
-        [Column("subparentid")] public int? SubParentId { get; set; }
+        public int? ParentId { get; set; }
+        [Required] public string LedgerName { get; set; }
+        [Required] public string Code { get; set; }
+        public int? SubParentId { get; set; }
     }
 }

@@ -16,17 +16,19 @@ public class BankTransactionController : Controller
     private readonly IBankService _bankService;
     private readonly AccTransactionManager _accTransactionManager;
     private readonly IProvider _provider;
+    public required IBalanceProvider _balanceProvider;
 
 
     public BankTransactionController(IToastNotification toastNotification,
         ReverseTransactionManager reverseTransactionManager, IBankService bankService,
-        AccTransactionManager accTransactionManager, IProvider provider)
+        AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider)
     {
         _toastNotification = toastNotification;
         _reverseTransactionManager = reverseTransactionManager;
         _bankService = bankService;
         _accTransactionManager = accTransactionManager;
         _provider = provider;
+        _balanceProvider = balanceProvider;
     }
 
     [HttpGet]
@@ -42,15 +44,15 @@ public class BankTransactionController : Controller
         {
             {
                 var bankLedgerId = await _provider.GetBankLedgerId(vm.BankId);
-                var ledgerbalance = await BalanceProvider.GetLedgerBalance(bankLedgerId);
+                var ledgerBalance = await _balanceProvider.GetLedgerBalance(bankLedgerId);
                 var banks = await _bankService.BankReportAsync();
 
                 var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
 
-                if (res.RemainingBalance < vm.Amount && vm.Type=="Withdraw")
+                if (res.RemainingBalance < vm.Amount && vm.Type == "Withdraw")
                 {
                     _toastNotification.AddAlertToastMessage(
-                        "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerbalance +
+                        "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerBalance +
                         ".");
                 }
                 else
@@ -106,7 +108,7 @@ public class BankTransactionController : Controller
     [HttpGet]
     public async Task<IActionResult?> BankTransactionReport()
     {
-        var report = await BankService.GetBankTransactionReport();
+        var report = await _bankService.BankTransactionReportAsync();
         if (report != null || report.Any())
         {
             return View(report.ToList());

@@ -1,5 +1,4 @@
 using ExpenseTracker;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
@@ -19,6 +18,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+builder.Services.AddRazorPages();
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
@@ -30,12 +31,9 @@ builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<AccTransactionManager>();
 builder.Services.AddScoped<DropdownProvider>();
 builder.Services.AddScoped<IProvider>();
+builder.Services.AddScoped<IBalanceProvider>();
 builder.Services.AddScoped<ReverseTransactionManager>();
 
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
 builder.Services.AddControllersWithViews()
     .AddNToastNotifyToastr(new ToastrOptions
     {
@@ -48,8 +46,12 @@ builder.Services.AddControllersWithViews()
 DapperConnectionProvider.Initialize(builder.Configuration);
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -69,14 +71,14 @@ app.UseCookiePolicy(new CookiePolicyOptions
 app.UseNToastNotify();
 
 // Run Seeded Query During Build
-await SeededData.SeededQuery();
+// await SeededData.SeededQuery();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+// app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

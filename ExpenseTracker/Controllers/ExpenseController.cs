@@ -13,18 +13,17 @@ namespace ExpenseTracker.Controllers;
 public class ExpenseController : Controller
 {
     private readonly IExpenseService _expenseService;
-    private readonly IVoucherService _voucherService;
     private readonly IToastNotification _toastNotification;
-    private readonly IBankService _bankService;
+    private readonly IBalanceProvider _balanceProvider;
     private readonly AccTransactionManager _accTransactionManager;
 
-    public ExpenseController(IVoucherService voucherService, IToastNotification toastNotification,
-        IBankService bankService, IExpenseService expenseService, AccTransactionManager accTransactionManager)
+
+    public ExpenseController(IExpenseService expenseService, IToastNotification toastNotification,
+        IBalanceProvider balanceProvider, AccTransactionManager accTransactionManager)
     {
-        _voucherService = voucherService;
-        _toastNotification = toastNotification;
-        _bankService = bankService;
         _expenseService = expenseService;
+        _toastNotification = toastNotification;
+        _balanceProvider = balanceProvider;
         _accTransactionManager = accTransactionManager;
     }
 
@@ -40,7 +39,7 @@ public class ExpenseController : Controller
         try
         {
             // var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
-            decimal frombalance = await BalanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
+            decimal frombalance = await _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
             if (vm.Amount > frombalance)
             {
                 _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");

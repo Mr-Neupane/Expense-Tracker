@@ -38,7 +38,7 @@ public class LedgerController : Controller
     {
         try
         {
-            var exists = await (from l in _context.Ledgers where l.Ledgername == vm.LedgerName select l)
+            var exists = await (from l in _context.Ledgers where l.LedgerName == vm.LedgerName select l)
                 .AnyAsync();
             if (!exists)
             {
@@ -70,15 +70,15 @@ public class LedgerController : Controller
     {
         var res = await (from l in _context.Ledgers
             join pl in _context.Ledgers on l.SubParentId equals pl.Id
-            join c in _context.CoaLedger on pl.Parentid equals c.Id
+            join c in _context.CoaLedger on pl.ParentId equals c.Id
             where l.Id == ledgerId && l.Status == 1 && l.SubParentId != -2
             select new EditLedgerVM
             {
                 LedgerId = l.Id,
                 Code = l.Code,
-                LedgerName = l.Ledgername,
+                LedgerName = l.LedgerName,
                 ParentName = c.Name,
-                SubParentName = pl.Ledgername
+                SubParentName = pl.LedgerName
             }).FirstOrDefaultAsync();
 
         if (res != null)
@@ -96,7 +96,7 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> EditLedger(EditLedgerVM vm)
     {
-        var existing = await _context.Ledgers.Where(x => x.Ledgername.Trim() == vm.LedgerName.Trim())
+        var existing = await _context.Ledgers.Where(x => x.LedgerName.Trim() == vm.LedgerName.Trim())
             .FirstOrDefaultAsync();
         if (existing != null)
         {
@@ -248,7 +248,10 @@ public class LedgerController : Controller
 
     public IActionResult GetSubParents(int parentId)
     {
-        var res = _context.Ledgers.Where(x => x.Id != -2 && x.Parentid == parentId).ToList();
-        return Json(res);
+        var res = _context.Ledgers.Where(x => x.Id != -2 && x.ParentId == parentId
+        ).ToList();
+        var jsonRes = res.Select(x => new
+            { ledgername = x.LedgerName, id = x.Id });
+        return Json(jsonRes);
     }
 }

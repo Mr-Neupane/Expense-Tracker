@@ -20,18 +20,6 @@ public class BankService : IBankService
     }
 
 
-    public static async Task<List<dynamic>> GetBankTransactionReport()
-    {
-        var conn = DapperConnectionProvider.GetConnection();
-        var txnreport =
-            await conn.QueryAsync(@"select b.id bankid,b.bankname,t.*,u.username
-            from bank.banktransactions t
-                join users u on u.id = t.rec_by_id
-            join bank.bank b on b.id = bank_id where t.status=1");
-        return txnreport.ToList();
-    }
-
-
     public async Task<List<Bank>> BankReportAsync()
     {
         var report = await _context.Banks.Where(b => b.Status == Status.Active.ToInt()).ToListAsync();
@@ -105,11 +93,11 @@ public class BankService : IBankService
             LedgerId = dto.LedgerId,
             RemainingBalance = dto.RemainingBalance,
             BankAddress = dto.BankAddress,
-            AccountOpendate = dto.AccountOpenDate,
+            AccountOpenDate = dto.AccountOpenDate,
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
-            RecbyId = -1
+            RecById = -1
         };
 
         await _context.Banks.AddAsync(bank);
@@ -145,5 +133,34 @@ public class BankService : IBankService
         }
 
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<BankTransactionReportDto>> BankTransactionReportAsync()
+    {
+        var res = await (from bt in _context.BankTransaction
+                join u in _context.Users on bt.RecById equals u.Id
+                join b in _context.Banks on bt.BankId equals b.Id
+                where bt.Status == Status.Active.ToInt()
+                select new BankTransactionReportDto
+                {
+                    BankTransactionId = bt.Id,
+                    TransactionId = bt.TransactionId,
+                    BankId = bt.BankId,
+                    BankName = b.BankName,
+                    Username = u.Username,
+                }
+            ).ToListAsync();
+        return res;
+    }
+
+    public async Task<List<dynamic>> GetBankTransactionReport()
+    {
+        var conn = DapperConnectionProvider.GetConnection();
+        var txnreport =
+            await conn.QueryAsync(@"select b.id bankid,b.bankname,t.*,u.username
+            from bank.banktransactions t
+                join users u on u.id = t.rec_by_id
+            join bank.bank b on b.id = bank_id where t.status=1");
+        return txnreport.ToList();
     }
 }
