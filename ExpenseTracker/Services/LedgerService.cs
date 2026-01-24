@@ -14,11 +14,13 @@ public class LedgerService : ILedgerService
 {
     private readonly ApplicationDbContext _context;
     private readonly IProvider _provider;
+    private readonly IBalanceProvider _balanceProvider;
 
-    public LedgerService(ApplicationDbContext context, IProvider provider)
+    public LedgerService(ApplicationDbContext context, IProvider provider, IBalanceProvider balanceProvider)
     {
         _context = context;
         _provider = provider;
+        _balanceProvider = balanceProvider;
     }
 
     public async Task<Ledger> AddLedgerAsync(LedgerDto dto)
@@ -26,8 +28,8 @@ public class LedgerService : ILedgerService
         var ledgerCode = dto.IsParent ? dto.Code : await _provider.GetLedgerCode(dto.SubParentId);
         var ledger = new Ledger
         {
-            Parentid = dto.ParentId,
-            Ledgername = dto.Name,
+            ParentId = dto.ParentId,
+            LedgerName = dto.Name,
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
             RecById = -1,
@@ -42,9 +44,9 @@ public class LedgerService : ILedgerService
     public async Task EditLedgerAsync(EditLedgerDto dto)
     {
         var ledger = await _context.Ledgers.FindAsync(dto.LedgerId);
-        if (dto.LedgerName != ledger?.Ledgername)
+        if (dto.LedgerName != ledger?.LedgerName)
         {
-            ledger.Ledgername = dto.LedgerName;
+            ledger.LedgerName = dto.LedgerName;
         }
 
         await _context.SaveChangesAsync();
@@ -53,14 +55,14 @@ public class LedgerService : ILedgerService
     public async Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync()
     {
         var res = await (from l in _context.Ledgers
-                join c in _context.CoaLedger on l.Parentid equals c.Id
+                join c in _context.CoaLedger on l.ParentId equals c.Id
                 join u in _context.Users on l.RecById equals u.Id
                 select new ParentLedgerReportDto
                 {
                     LedgerId = l.Id,
                     Status = l.Status,
                     LedgerCode = l.Code,
-                    LedgerName = l.Ledgername,
+                    LedgerName = l.LedgerName,
                     UserName = u.Username,
                     ParentLedgerName = c.Name
                 }
@@ -72,15 +74,15 @@ public class LedgerService : ILedgerService
     {
         var res = await (from l in _context.Ledgers
                 join pl in _context.Ledgers on l.SubParentId equals pl.Id
-                join c in _context.CoaLedger on pl.Parentid equals c.Id
+                join c in _context.CoaLedger on pl.ParentId equals c.Id
                 join u in _context.Users on l.RecById equals u.Id
                 where l.Status == Status.Active.ToInt()
                 select new LedgerReportDto
                 {
                     LedgerId = l.Id,
-                    SubParentName = string.Concat(pl.Ledgername, " [", pl.Code, "]"),
+                    SubParentName = string.Concat(pl.LedgerName, " [", pl.Code, "]"),
                     SubParentId = pl.Id,
-                    LedgerName = l.Ledgername,
+                    LedgerName = l.LedgerName,
                     Code = l.Code,
                     CoaName = c.Name,
                     Status = l.Status,
@@ -93,7 +95,7 @@ public class LedgerService : ILedgerService
     public async Task<List<LedgerStatement>> GetLedgerStatementsAsync(LedgerStatementDto vm)
     {
         var report =
-            await BalanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
+            await _balanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
         var data = await (from t in _context.AccountingTransaction
             join td in _context.TransactionDetails.Where(d => d.LedgerId == vm.LedgerId) on t.Id equals td
                 .TransactionId
@@ -110,7 +112,7 @@ public class LedgerService : ILedgerService
                 TransactionID = g.Key,
                 LedgerId = g.Select(x => x.td2.LedgerId).ToList(),
                 VoucherNo = g.Select(x => x.t.VoucherNo).First(),
-                LedgerNames = g.Select(x => x.l.Ledgername).ToList(),
+                LedgerNames = g.Select(x => x.l.LedgerName).ToList(),
                 DrAmount = g.Select(x => x.td.DrAmount).First(),
                 CrAmount = g.Select(x => x.td.CrAmount).First(),
                 TxnDate = g.Select(x => x.t.TxnDate).First(),
@@ -165,7 +167,14 @@ public class LedgerService : ILedgerService
     public async Task ActivateLedgerAsync(int ledgerId)
     {
         var ledger = await _context.Ledgers.FindAsync(ledgerId);
-        ledger.Status = Status.Active.ToInt();
-        await _context.SaveChangesAsync();
+        if (ledger != null)
+        {
+            ledger.Status = Status.Active.ToInt();
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("Ledger not found");
+        }
     }
 }

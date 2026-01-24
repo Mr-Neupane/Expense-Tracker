@@ -4,6 +4,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Providers;
@@ -19,16 +20,18 @@ public class IProvider : Controller
 
     public async Task<string> GetLedgerCode(int? subparentid)
     {
-        var con = DapperConnectionProvider.GetConnection();
-        var code =
-            @"select concat(code, '.', cn) from (select count(1) + 1 cn from accounting.ledger l where subparentid = @subparentid) d 
-    cross join lateral ( select code from accounting.ledger a where a.id =@subparentid) c;";
-
-        var ledgercode = await con.QueryFirstAsync<string>(code, new
+        var parentLedger = await _context.Ledgers.Where(x => x.Id == subparentid).SingleOrDefaultAsync();
+        if (parentLedger == null)
         {
-            subparentid = subparentid
-        });
-        return ledgercode;
+            throw new Exception("Ledger code not found");
+        }
+        else
+        {
+            var newCode = await _context.Ledgers
+                .Where(x => x.SubParentId == subparentid).CountAsync() + 1;
+            var ledgerCode = string.Concat(parentLedger.Code, '.', newCode);
+            return ledgerCode;
+        }
     }
 
     public async Task<int> GetBankLedgerId(int bankid)

@@ -28,12 +28,12 @@ public class DropdownProvider : Controller
     public JsonResult GetExpenseLedgers()
     {
         var expLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.Parentid
+                join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where c.Name == "Expenses"
                 select new
                 {
-                    ledgername = ls.Ledgername,
+                    ledgername = ls.LedgerName,
                     id = ls.Id
                 }
             ).ToList();
@@ -43,12 +43,12 @@ public class DropdownProvider : Controller
     public JsonResult GetLiabilityLedgers()
     {
         var liabilityLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.Parentid
+                join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where c.Name == "Liabilities"
                 select new
                 {
-                    ledgername = ls.Ledgername,
+                    ledgername = ls.LedgerName,
                     id = ls.Id
                 }
             ).ToList();
@@ -58,12 +58,12 @@ public class DropdownProvider : Controller
     public JsonResult GetCashBankLedgers()
     {
         var cashAndBankLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.Parentid
+                join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where (ls.SubParentId == -1 || ls.SubParentId == -2)
                 select new
                 {
-                    ledgername = ls.Ledgername,
+                    ledgername = ls.LedgerName,
                     id = ls.Id
                 }
             ).ToList();
@@ -73,12 +73,12 @@ public class DropdownProvider : Controller
     public JsonResult GetIncomeLedgers()
     {
         var incomeLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.Parentid
+                join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where c.Name == "Income"
                 select new
                 {
-                    ledgername = ls.Ledgername,
+                    ledgername = ls.LedgerName,
                     id = ls.Id
                 }
             ).ToList();
@@ -88,12 +88,12 @@ public class DropdownProvider : Controller
     public JsonResult GetLedgers()
     {
         var ledgers = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.Parentid
+                join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 select new
                 {
-                    coaname = l.Ledgername,
-                    ledgername = ls.Ledgername,
+                    coaname = l.LedgerName,
+                    ledgername = ls.LedgerName,
                     code = ls.Code,
                     id = ls.Id
                 }

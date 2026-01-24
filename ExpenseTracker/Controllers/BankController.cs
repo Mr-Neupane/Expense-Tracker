@@ -83,7 +83,7 @@ public class BankController : Controller
             AccountNumber = res.AccountNumber,
             BankContact = res.BankContactNumber,
             BankAddress = res.BankAddress,
-            AccountOpenDate = res.AccountOpendate,
+            AccountOpenDate = res.AccountOpenDate,
             LedgerId = res.LedgerId,
             RemainingBalance = res.RemainingBalance
         };

@@ -1,11 +1,10 @@
 ﻿using ExpenseTracker.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace ExpenseTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -22,4 +21,23 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<Ledger> Ledgers { get; set; }
     public DbSet<Coa> CoaLedger { get; set; }
     public DbSet<User> Users { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entity.GetProperties())
+            {
+                var propertyName = property.Name;
+                property.SetColumnName(ToSnakeCase(propertyName)); 
+            }
+        }
+    }
+    private string ToSnakeCase(string input)
+    {
+        var regex = new System.Text.RegularExpressions.Regex(@"([a-z])([A-Z])");
+        return regex.Replace(input, "$1_$2").ToLower();
+    }
 }

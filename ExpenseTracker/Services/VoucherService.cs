@@ -110,9 +110,9 @@ public class VoucherService : IVoucherService
             where td.TransactionId == transactionId
             select new VoucherDetailDto
             {
-                LedgerName = string.Concat(p.Ledgername,
+                LedgerName = string.Concat(p.LedgerName,
                     " > ",
-                    l.Ledgername),
+                    l.LedgerName),
                 Code = l.Code,
                 VoucherNo = t.VoucherNo,
                 DrAmount = td.DrAmount,
