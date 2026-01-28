@@ -42,9 +42,6 @@ builder.Services.AddControllersWithViews()
         TimeOut = 5000
     });
 
-
-DapperConnectionProvider.Initialize(builder.Configuration);
-
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {

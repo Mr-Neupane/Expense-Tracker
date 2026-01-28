@@ -1,11 +1,9 @@
 ﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
-using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
 using TestApplication.ViewModels.Interface;
-using static ExpenseTracker.Providers.VoucherNumberProvider;
 using Transaction = ExpenseTracker.Models.Transaction;
 
 namespace ExpenseTracker.Services;
@@ -19,29 +17,13 @@ public class VoucherService : IVoucherService
         _dbContext = dbContext;
     }
 
-    public async Task<string> GetNextJvVoucherNoAsync()
-    {
-        var numbers = await _dbContext.AccountingTransaction
-            .AsNoTracking()
-            .Where(x => x.VoucherNo.StartsWith("JV"))
-            .Select(x => x.VoucherNo.Substring(2))
-            .ToListAsync();
-
-        var max = numbers
-            .Select(int.Parse)
-            .DefaultIfEmpty(0)
-            .Max();
-
-        return $"JV{(max + 1):D4}";
-    }
-
-
     public async Task<Transaction> RecordTransactionAsync(AccTransactionDto dto)
     {
-        string voucherNo = dto.IsJv ? await GetNextJvVoucherNoAsync() : await GetVoucherNumber();
-        var txn = new Transaction()
+        var voucherNo = GetVoucherNo(dto.IsJv);
+        var txn = new Transaction
         {
             TxnDate = dto.TxnDate.ToUniversalTime(),
+            VoucherType = dto.IsJv ? (int)VoucherType.Journal : (int)VoucherType.Automatic,
             VoucherNo = voucherNo,
             Amount = dto.Amount,
             Type = dto.Type,
@@ -126,5 +108,21 @@ public class VoucherService : IVoucherService
                 UserName = u.Username
             }).ToListAsync();
         return report;
+    }
+
+    private string GetVoucherNo(bool isJv)
+    {
+        if (isJv)
+        {
+            var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Journal);
+            var voucherNo = string.Concat("JV00000", (cn + 1));
+            return voucherNo;
+        }
+        else
+        {
+            var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Automatic);
+            var voucherNo = string.Concat("AV00000", (cn + 1));
+            return voucherNo;
+        }
     }
 }

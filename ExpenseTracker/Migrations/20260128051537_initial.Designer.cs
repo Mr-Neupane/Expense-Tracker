@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseTracker.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260124131515_ Initial")]
-    partial class Initial
+    [Migration("20260128051537_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,6 +83,8 @@ namespace ExpenseTracker.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RecById");
+
                     b.ToTable("bank", "bank");
                 });
 
@@ -138,6 +140,8 @@ namespace ExpenseTracker.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RecById");
+
                     b.ToTable("bank_transactions", "bank");
                 });
 
@@ -172,6 +176,8 @@ namespace ExpenseTracker.Migrations
                         .HasColumnName("status");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecById");
 
                     b.ToTable("coa", "accounting");
                 });
@@ -221,6 +227,8 @@ namespace ExpenseTracker.Migrations
 
                     b.HasIndex("LedgerId");
 
+                    b.HasIndex("RecById");
+
                     b.ToTable("expenses", "accounting");
                 });
 
@@ -266,6 +274,8 @@ namespace ExpenseTracker.Migrations
                         .HasColumnName("txn_date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecById");
 
                     b.ToTable("income", "accounting");
                 });
@@ -315,6 +325,8 @@ namespace ExpenseTracker.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RecById");
+
                     b.ToTable("ledger", "accounting");
                 });
 
@@ -360,6 +372,8 @@ namespace ExpenseTracker.Migrations
                         .HasColumnName("txn_date");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RecById");
 
                     b.ToTable("liability", "accounting");
                 });
@@ -415,7 +429,13 @@ namespace ExpenseTracker.Migrations
                         .HasColumnType("text")
                         .HasColumnName("voucher_no");
 
+                    b.Property<int>("VoucherType")
+                        .HasColumnType("integer")
+                        .HasColumnName("voucher_type");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RecById");
 
                     b.ToTable("transactions", "accounting");
                 });
@@ -467,6 +487,8 @@ namespace ExpenseTracker.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RecById");
+
                     b.HasIndex("TransactionId");
 
                     b.ToTable("transaction_details", "accounting");
@@ -496,6 +518,39 @@ namespace ExpenseTracker.Migrations
                     b.ToTable("users", "public");
                 });
 
+            modelBuilder.Entity("ExpenseTracker.Models.Bank", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.BankTransaction", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.Coa", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
             modelBuilder.Entity("ExpenseTracker.Models.Expense", b =>
                 {
                     b.HasOne("ExpenseTracker.Models.Ledger", "Ledger")
@@ -504,16 +559,76 @@ namespace ExpenseTracker.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Ledger");
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.Income", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.Ledger", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.Liability", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
+                });
+
+            modelBuilder.Entity("ExpenseTracker.Models.Transaction", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RecBy");
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.TransactionDetail", b =>
                 {
+                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                        .WithMany()
+                        .HasForeignKey("RecById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ExpenseTracker.Models.Transaction", "Transaction")
                         .WithMany("TransactionDetails")
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("RecBy");
 
                     b.Navigation("Transaction");
                 });

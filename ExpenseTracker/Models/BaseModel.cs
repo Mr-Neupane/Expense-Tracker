@@ -8,5 +8,6 @@ public class BaseModel
     public char RecStatus { get; set; } = 'A';
     public int Status { get; set; } = 1;
     public int RecById { get; set; } = -1;
+    public virtual User RecBy { get; set; }
     public DateTime RecDate { get; set; } = DateTime.Now.ToUniversalTime();
 }

@@ -152,15 +152,4 @@ public class BankService : IBankService
             ).ToListAsync();
         return res;
     }
-
-    public async Task<List<dynamic>> GetBankTransactionReport()
-    {
-        var conn = DapperConnectionProvider.GetConnection();
-        var txnreport =
-            await conn.QueryAsync(@"select b.id bankid,b.bankname,t.*,u.username
-            from bank.banktransactions t
-                join users u on u.id = t.rec_by_id
-            join bank.bank b on b.id = bank_id where t.status=1");
-        return txnreport.ToList();
-    }
 }

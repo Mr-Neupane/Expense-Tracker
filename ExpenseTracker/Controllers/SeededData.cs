@@ -14,6 +14,19 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
     {
         try
         {
+            var existingUser = await context.Users.Where(x => x.Id == -1).SingleOrDefaultAsync();
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    Id = -1,
+                    Username = "Admin User",
+                    Password = "Admin@123"
+                };
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
+            }
+
             var existingCoaLedger =
                 await context.CoaLedger.Select(x => x.RecStatus == Status.Active.ToInt()).CountAsync();
             if (existingCoaLedger == 0)
@@ -45,18 +58,6 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
                 await context.SaveChangesAsync();
             }
 
-            var existingUser = await context.Users.Where(x => x.Id == -1).SingleOrDefaultAsync();
-            if (existingUser == null)
-            {
-                var user = new User
-                {
-                    Id = -1,
-                    Username = "Admin User",
-                    Password = "Admin@123"
-                };
-                await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
-            }
 
             var defaultParentLedger = await context.Ledgers.Where(x => x.Id == -1).SingleOrDefaultAsync();
             if (defaultParentLedger == null)
@@ -146,7 +147,7 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
         catch (Exception e)
         {
             toastNotification.AddErrorToastMessage(e.Message);
-            return Redirect("/");
+            return Redirect($"Home/Migration/");
         }
     }
 }

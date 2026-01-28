@@ -9,7 +9,7 @@ namespace ExpenseTracker.Models
     public class Transaction : BaseModel
     {
         public DateTime TxnDate { get; set; }
-
+        public int VoucherType { get; set; }
         public string VoucherNo { get; set; }
 
         public decimal Amount { get; set; }
@@ -20,6 +20,5 @@ namespace ExpenseTracker.Models
 
         public string? Remarks { get; set; }
         public List<TransactionDetail> TransactionDetails { get; set; }
-       
     }
 }
