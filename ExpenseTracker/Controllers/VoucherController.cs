@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Manager;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 

@@ -7,7 +7,6 @@ using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
 using NToastNotify;
 using TestApplication.Interface;
-using TestApplication.Manager;
 using TestApplication.ViewModels.Interface;
 
 var builder = WebApplication.CreateBuilder(args);

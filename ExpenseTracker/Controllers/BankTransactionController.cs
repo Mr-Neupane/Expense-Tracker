@@ -5,7 +5,6 @@ using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using NToastNotify;
-using TestApplication.Manager;
 using TestApplication.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;

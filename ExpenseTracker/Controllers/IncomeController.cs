@@ -3,7 +3,6 @@ using ExpenseTracker.Manager;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
-using TestApplication.Manager;
 using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Controllers;

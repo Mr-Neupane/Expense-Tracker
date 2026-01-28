@@ -5,7 +5,6 @@ using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
-using TestApplication.Manager;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
 
