@@ -1,14 +1,11 @@
-﻿using Dapper;
-using ExpenseTracker;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
-using ExpenseTracker.ViewModels;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using TestApplication.Enums;
 using TestApplication.ViewModels.Interface;
+
+namespace ExpenseTracker.Services;
 
 public class BankService : IBankService
 {

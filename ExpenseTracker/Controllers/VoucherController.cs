@@ -20,8 +20,8 @@ public class VoucherController : Controller
     private readonly IVoucherService _voucherService;
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
-    private readonly DropdownProvider  _dropdownProvider;
-    private readonly IProvider  _provider;
+    private readonly DropdownProvider _dropdownProvider;
+    private readonly IProvider _provider;
 
     public VoucherController(IVoucherService voucherService,
         IToastNotification toastNotification, ApplicationDbContext context,
@@ -44,7 +44,7 @@ public class VoucherController : Controller
     [HttpGet]
     public async Task<IActionResult> AccountingTransaction()
     {
-        var type =await _dropdownProvider.GetTransactionTypeAsync();
+        var type = await _dropdownProvider.GetTransactionTypeAsync();
         var transactions = _context.AccountingTransaction.ToList();
 
         var model =
@@ -88,7 +88,7 @@ public class VoucherController : Controller
                     TransactionId = r.TransactionId,
                 })
                 .ToList(),
-            TransactionsSelectList = new  SelectList(type)
+            TransactionsSelectList = new SelectList(type)
         };
         if (finalreport.Count <= 0)
         {
@@ -111,7 +111,6 @@ public class VoucherController : Controller
     {
         try
         {
-            // var txndate = await DateHelper.GetEnglishDate(vm.VoucherDate);
             var transaction = await _voucherService.RecordTransactionAsync(
                 new AccTransactionDto
                 {
@@ -134,11 +133,10 @@ public class VoucherController : Controller
                     .FirstOrDefaultAsync();
                 if (bankLedger != null)
                 {
-                    var bankid = await _provider.GetBankIdByLedgerId(bankLedger.LedgerId);
-                    var banktrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
+                    var bankTrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
                         .Select(e => new BankTransaction
                         {
-                            BankId = bankid,
+                            BankId = bankLedger.Id,
                             TxnDate = vm.VoucherDate.ToUniversalTime(),
                             Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
                             Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
@@ -149,7 +147,7 @@ public class VoucherController : Controller
                             Status = vm.Status,
                             TransactionId = transaction.Id
                         }).ToList();
-                    await _context.BankTransaction.AddRangeAsync(banktrans);
+                    await _context.BankTransaction.AddRangeAsync(bankTrans);
                     await _context.SaveChangesAsync();
                 }
             }

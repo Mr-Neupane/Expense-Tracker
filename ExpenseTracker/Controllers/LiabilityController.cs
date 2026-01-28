@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
@@ -36,7 +37,6 @@ public class LiabilityController : Controller
     {
         try
         {
-            // var engdate = DateTime.SpecifyKind(await DateHelper.GetEnglishDate(vm.TxnDate), DateTimeKind.Utc);
             var bankid = await _provider.GetBankLedgerId(vm.LiabilityFromLedger);
             var liability = new LiabilityDto
             {

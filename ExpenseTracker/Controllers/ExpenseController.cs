@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
@@ -38,9 +39,8 @@ public class ExpenseController : Controller
     {
         try
         {
-            // var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
-            decimal frombalance = await _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
-            if (vm.Amount > frombalance)
+            var fromBalance = await _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
+            if (vm.Amount > fromBalance)
             {
                 _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
                 return View();

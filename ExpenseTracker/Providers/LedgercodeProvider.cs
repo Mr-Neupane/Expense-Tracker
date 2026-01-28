@@ -46,14 +46,10 @@ public class IProvider : Controller
         return existing;
     }
 
-    public async Task<int> GetBankIdByLedgerId(int ledgerid)
+    public async Task<int?> GetBankIdByLedgerId(int ledgerId)
     {
-        var bankId = await _context.Banks.Where(x => x.LedgerId == ledgerid).SingleOrDefaultAsync();
-        if (bankId.Id == null)
-        {
-            bankId.Id = 0;
-        }
+        var bankId = await _context.Banks.Where(x => x.LedgerId == ledgerId).Select(x => x.Id).SingleOrDefaultAsync();
 
-        return bankId.Id;
+        return bankId;
     }
 }

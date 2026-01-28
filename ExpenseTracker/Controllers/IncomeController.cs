@@ -1,5 +1,5 @@
-﻿using System.Transactions;
-using ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Manager;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 using TestApplication.Interface;
@@ -32,7 +32,6 @@ public class IncomeController : Controller
     {
         try
         {
-            // var engdate = await DateHelper.GetEnglishDate(vm.TxnDate);
             var income = new IncomeDto
             {
                 Ledgerid = vm.IncomeLedger,

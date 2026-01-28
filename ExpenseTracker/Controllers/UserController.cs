@@ -1,4 +1,3 @@
-using Dapper;
 using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +43,7 @@ public class UserController : Controller
 
             else
             {
-                _toastNotification.AddErrorToastMessage($"User with {vm.Username} username already exists");
+                _toastNotification.AddErrorToastMessage($"User with {vm.Username.Trim()} username already exists");
             }
 
             return View(vm);

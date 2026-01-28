@@ -45,14 +45,14 @@ public class ReverseTransactionManager
         await _liabilityService.ReverseLiabilityTransactionAsync(id);
     }
 
-    public async Task ReverseExpenseTransaction(int id, int transactionid)
+    public async Task ReverseExpenseTransaction(int id, int transactionId)
     {
-        await ReverseAccountingTransaction(transactionid);
+        await ReverseAccountingTransaction(transactionId);
         await _expenseService.ReverseRecordedExpenseAsync(id);
     }
 
-    public async Task ReverseJournalTransaction(int transactionid)
+    public async Task ReverseJournalTransaction(int transactionId)
     {
-        await ReverseAccountingTransaction(transactionid);
+        await ReverseAccountingTransaction(transactionId);
     }
 }

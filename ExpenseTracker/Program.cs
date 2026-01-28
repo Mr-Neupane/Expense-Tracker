@@ -2,6 +2,7 @@ using ExpenseTracker;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
+using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
 using NToastNotify;
