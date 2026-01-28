@@ -56,15 +56,14 @@ public class ExpenseService : IExpenseService
     public async Task ReverseRecordedExpenseAsync(int id)
     {
         var expense = await _context.Expenses.FindAsync(id);
-        if (expense == null)
-        {
-            throw new Exception("Expense not found");
-        }
-
         if (expense is { Status: 1 })
         {
             expense.Status = 2;
             await _context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("Expense not found");
         }
     }
 }

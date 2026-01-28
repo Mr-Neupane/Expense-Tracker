@@ -110,26 +110,35 @@ public class BankService : IBankService
         var withdraw = _context.BankTransaction
             .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
             .Sum(t => t.Amount);
-        var rembal = deposit - withdraw;
-        var banks = await _context.Banks.Where(b => b.Id == bid).ToListAsync();
-        foreach (var b in banks)
+        var remBal = deposit - withdraw;
+        var bank = await _context.Banks.Where(b => b.Id == bid).SingleOrDefaultAsync();
+        if (bank != null)
         {
-            b.RemainingBalance = rembal;
+            throw new Exception("Cannot update remaining balance");
         }
-
-        await _context.SaveChangesAsync();
+        else
+        {
+            bank.RemainingBalance = remBal;
+            await _context.SaveChangesAsync();
+        }
+          
     }
 
     public async Task ReverseBankTransactionAsync(int id, int transactionId)
     {
         var txn = await _context.BankTransaction.Where(t => t.Id == id || t.TransactionId == transactionId)
-            .ToListAsync();
-        foreach (var t in txn)
-        {
-            t.Status = Status.Reversed.ToInt();
-        }
+            .FirstOrDefaultAsync();
 
-        await _context.SaveChangesAsync();
+        if (txn == null)
+        {
+            throw new Exception("Transaction not found");
+        }
+        else
+        {
+            txn.Status = Status.Reversed.ToInt();
+
+            await _context.SaveChangesAsync();
+        }
     }
 
     public async Task<List<BankTransactionReportDto>> BankTransactionReportAsync()

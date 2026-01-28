@@ -64,5 +64,9 @@ public class LiabilityService : ILiabilityService
             liability.Status = Status.Reversed.ToInt();
             await _context.SaveChangesAsync();
         }
+        else
+        {
+            throw new Exception("Liability not found");
+        }
     }
 }

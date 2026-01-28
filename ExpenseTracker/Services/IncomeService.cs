@@ -37,13 +37,15 @@ public class IncomeService : IIncomeService
     public async Task ReverseIncomeAsync(int id)
     {
         var income = await _context.Incomes.FindAsync(id);
-        if (income == null)
+        if (income is { Status: (int)Status.Active })
+        {
+            income.Status = Status.Reversed.ToInt();
+            await _context.SaveChangesAsync();
+        }
+        else
         {
             throw new Exception("Income not found");
         }
-
-        if (income is { Status: (int)Status.Active }) income.Status = Status.Reversed.ToInt();
-        await _context.SaveChangesAsync();
     }
 
     public async Task<List<IncomeReportDto>> GetIncomeReportAsync()
