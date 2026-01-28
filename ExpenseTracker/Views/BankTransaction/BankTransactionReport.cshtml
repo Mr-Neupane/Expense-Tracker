@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model List<ExpenseTracker.Dtos.BankTransactionReportDto>
 
 @{
     ViewData["Title"] = "Bank Transaction Report";
@@ -29,25 +29,25 @@
         <tr>
             <td class="text-center">@sn</td>
 
-            <td>@item.bankname</td>
+            <td>@item.BankName</td>
 
             <td>
-                @(new NepDate.NepaliDate(item.txn_date))
+                @(new NepDate.NepaliDate(item.TxnDate))
             </td>
 
-            <td class="text-right">@String.Format("{0:N2}", item.amount)</td>
+            <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
 
-            <td>@item.type</td>
+            <td>@item.Type</td>
 
-            <td>@item.username</td>
+            <td>@item.Username</td>
 
             <td class="text-center">
                 <a asp-action="ReverseBankTransaction"
                    asp-route-transactionid="@item.TransactionId"
-                   asp-route-id="@item.id"
-                   asp-route-type="@item.type"
-                   asp-route-bankid="@item.bankid"
-                   asp-route-amount="@item.amount"
+                   asp-route-id="@item.Id"
+                   asp-route-type="@item.Type"
+                   asp-route-bankid="@item.BankId"
+                   asp-route-amount="@item.Amount"
                    class="btn btn-sm btn-danger"
                    onclick="return confirm('Are you sure you want to reverse this transaction?')">
                     Reverse
@@ -60,16 +60,4 @@
     </tbody>
 </table>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
 
-@if (TempData["AlertMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["AlertMessage"]
-    </div>
-}

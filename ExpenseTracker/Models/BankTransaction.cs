@@ -7,7 +7,7 @@ namespace ExpenseTracker.Models
     {
         public int BankId { get; set; }
 
-        public DateTime? TxnDate { get; set; }
+        public DateTime TxnDate { get; set; }
 
         public decimal Amount { get; set; }
 

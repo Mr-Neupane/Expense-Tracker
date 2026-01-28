@@ -141,9 +141,13 @@ public class BankService : IBankService
                 select new BankTransactionReportDto
                 {
                     BankTransactionId = bt.Id,
+                    Id = bt.Id,
                     TransactionId = bt.TransactionId,
                     BankId = bt.BankId,
                     BankName = b.BankName,
+                    Type = bt.Type,
+                    Amount = bt.Amount,
+                    TxnDate = bt.TxnDate,
                     Username = u.Username,
                 }
             ).ToListAsync();
