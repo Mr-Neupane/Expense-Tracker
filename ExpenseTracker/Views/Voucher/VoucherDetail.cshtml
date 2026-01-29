@@ -82,7 +82,7 @@
             <div class="text-start">
 
                 <div>
-                    @if (Model.First().Status == 1 && Model.First().Type != "Bank Deposit" && Model.First().Type != "Bank Withdraw")
+                    @if (Model.First().Status == 1 && Model.First().Type != "Bank Deposit" && Model.First().Type != "Bank Withdraw" && !Model.First().IsReverseVoucher)
                     {
                         <a class="btn btn-danger"
                            asp-action="ReverseVoucher"

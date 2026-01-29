@@ -35,9 +35,9 @@ public class VoucherController : Controller
         _provider = provider;
     }
 
-    public async Task<IActionResult> VoucherDetail(int transactionid)
+    public async Task<IActionResult> VoucherDetail(int transactionId)
     {
-        var res = await _voucherService.VoucherDetailAsync(transactionid);
+        var res = await _voucherService.VoucherDetailAsync(transactionId);
         return View(res);
     }
 
@@ -163,26 +163,36 @@ public class VoucherController : Controller
         }
     }
 
-    public async Task<IActionResult> ReverseVoucher(int transactionid, int typeid, string type)
+    public async Task<IActionResult> ReverseVoucher(int transactionId, int typeId, string type)
     {
-        switch (type)
+        try
         {
-            case "Expense":
-                await _reverseTransactionManager.ReverseExpenseTransaction(typeid, transactionid);
+            {
+                switch (type)
+                {
+                    case "Expense":
+                        await _reverseTransactionManager.ReverseExpenseTransaction(typeId, transactionId);
 
-                break;
-            case "Income":
-                await _reverseTransactionManager.ReverseIncomeTransaction(typeid, transactionid);
-                break;
-            case "Liability":
-                await _reverseTransactionManager.ReverseLiabilityTransaction(typeid, transactionid);
-                break;
-            case "Journal Voucher":
-                await _reverseTransactionManager.ReverseJournalTransaction(transactionid);
-                break;
+                        break;
+                    case "Income":
+                        await _reverseTransactionManager.ReverseIncomeTransaction(typeId, transactionId);
+                        break;
+                    case "Liability":
+                        await _reverseTransactionManager.ReverseLiabilityTransaction(typeId, transactionId);
+                        break;
+                    case "Journal Voucher":
+                        await _reverseTransactionManager.ReverseJournalTransaction(transactionId);
+                        break;
+                }
+
+                _toastNotification.AddAlertToastMessage("Voucher reversed successfully");
+                return RedirectToAction("AccountingTransaction");
+            }
         }
-
-        _toastNotification.AddAlertToastMessage("Voucher reversed successfully");
-        return RedirectToAction("AccountingTransaction");
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage(e.Message);
+            return RedirectToAction("AccountingTransaction");
+        }
     }
 }

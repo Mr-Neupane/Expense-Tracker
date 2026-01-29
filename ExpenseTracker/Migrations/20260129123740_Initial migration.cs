@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseTracker.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,7 +75,7 @@ namespace ExpenseTracker.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     bank_id = table.Column<int>(type: "integer", nullable: false),
-                    txn_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    txn_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     amount = table.Column<decimal>(type: "numeric", nullable: false),
                     type = table.Column<string>(type: "text", nullable: false),
                     remarks = table.Column<string>(type: "text", nullable: true),
@@ -220,6 +220,8 @@ namespace ExpenseTracker.Migrations
                     type = table.Column<string>(type: "text", nullable: false),
                     type_id = table.Column<int>(type: "integer", nullable: false),
                     remarks = table.Column<string>(type: "text", nullable: true),
+                    is_reversed = table.Column<bool>(type: "boolean", nullable: false),
+                    reversed_id = table.Column<int>(type: "integer", nullable: true),
                     rec_status = table.Column<char>(type: "character(1)", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
                     rec_by_id = table.Column<int>(type: "integer", nullable: false),

@@ -29,6 +29,7 @@ public class VoucherDetailDto
     public string Remarks { get; set; }
     public DateTime TxnDate { get; set; }
     public string UserName { get; set; }
+    public bool IsReverseVoucher { get; set; }
 
     public int Typeid { get; set; }
     public int TransactionId { get; set; }

@@ -19,6 +19,8 @@ namespace ExpenseTracker.Models
         public int TypeId { get; set; }
 
         public string? Remarks { get; set; }
+        public bool IsReversed { get; set; } = false;
+        public int? ReversedId { get; set; }
         public List<TransactionDetail> TransactionDetails { get; set; }
     }
 }

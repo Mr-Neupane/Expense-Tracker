@@ -73,6 +73,7 @@ public class VoucherService : IVoucherService
     public async Task ReverseTransactionAsync(int transactionId)
     {
         var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToListAsync();
+        await RecordReverseTransactionAsync(transactionId);
 
         var transaction = await _dbContext.AccountingTransaction.SingleAsync(x => x.Id == transactionId);
         transaction.Status = Status.Reversed.ToInt();
@@ -80,6 +81,55 @@ public class VoucherService : IVoucherService
         txn.ForEach(a => a.Status = Status.Reversed.ToInt());
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task RecordReverseTransactionAsync(int transactionId)
+    {
+        var existingTransaction =
+            await _dbContext.AccountingTransaction.Where(x => x.Id == transactionId).Select(x => x.Id)
+                .SingleOrDefaultAsync();
+        if (existingTransaction == null || transactionId == 0)
+        {
+            throw new Exception("Transaction not found");
+        }
+        else
+        {
+            var voucherNo = GetVoucherNo(null, transactionId, true);
+            var txn = (from t in _dbContext.AccountingTransaction
+                where t.Id == transactionId
+                select new AccTransactionDto
+                {
+                    TxnDate = DateTime.Now.ToUniversalTime(),
+                    Amount = t.Amount,
+                    Type = t.Type,
+                    TypeId = t.TypeId,
+                    Remarks = "Reverse transaction",
+                    IsJv = t.VoucherType == (int)VoucherType.Journal,
+                }).Single();
+
+            var txnDetail = _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToList();
+            var newTxn = new Transaction
+            {
+                TxnDate = txn.TxnDate,
+                VoucherType = txn.IsJv ? (int)VoucherType.Automatic : (int)VoucherType.Journal,
+                VoucherNo = voucherNo,
+                Amount = txn.Amount,
+                Type = txn.Type,
+                TypeId = txn.TypeId,
+                Remarks = txn.Remarks,
+                IsReversed = true,
+                ReversedId = transactionId,
+                TransactionDetails = txnDetail.Select(x => new TransactionDetail
+                {
+                    LedgerId = x.LedgerId,
+                    DrAmount = x.CrAmount,
+                    CrAmount = x.DrAmount,
+                    DrCr = x.DrCr != 'D' ? 'D' : 'C',
+                }).ToList()
+            };
+            await _dbContext.AccountingTransaction.AddRangeAsync(newTxn);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     public async Task<List<VoucherDetailDto>> VoucherDetailAsync(int transactionId)
@@ -105,24 +155,49 @@ public class VoucherService : IVoucherService
                 Typeid = t.TypeId,
                 Remarks = t.Remarks,
                 TxnDate = t.TxnDate,
-                UserName = u.Username
+                UserName = u.Username,
+                IsReverseVoucher = t.IsReversed
             }).ToListAsync();
         return report;
     }
 
-    private string GetVoucherNo(bool isJv)
+    private string GetVoucherNo(bool? isJv = null, int? transactionId = null, bool? isReverse = null)
     {
-        if (isJv)
+        if (isReverse.HasValue.Equals(true))
         {
-            var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Journal);
-            var voucherNo = string.Concat("JV00000", (cn + 1));
-            return voucherNo;
+            var txn = _dbContext.AccountingTransaction.Where(x => x.Id == transactionId).Select(x => x.VoucherNo)
+                .SingleOrDefault();
+            const string revPref = "Rev-";
+
+            if (txn == null)
+            {
+                throw new Exception("Transaction with supplied parm not found");
+            }
+            else
+            {
+                var voucherNo = string.Concat(revPref, txn);
+                return voucherNo;
+            }
+        }
+
+        if (isJv.HasValue)
+        {
+            if (isJv.Equals(true))
+            {
+                var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Journal);
+                var voucherNo = string.Concat("JV00000", (cn + 1));
+                return voucherNo;
+            }
+            else
+            {
+                var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Automatic);
+                var voucherNo = string.Concat("AV00000", (cn + 1));
+                return voucherNo;
+            }
         }
         else
         {
-            var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Automatic);
-            var voucherNo = string.Concat("AV00000", (cn + 1));
-            return voucherNo;
+            throw new Exception("Transaction with supplied parm not found");
         }
     }
 }

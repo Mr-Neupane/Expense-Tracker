@@ -388,6 +388,10 @@ namespace ExpenseTracker.Migrations
                         .HasColumnType("numeric")
                         .HasColumnName("amount");
 
+                    b.Property<bool>("IsReversed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_reversed");
+
                     b.Property<int>("RecById")
                         .HasColumnType("integer")
                         .HasColumnName("rec_by_id");
@@ -403,6 +407,10 @@ namespace ExpenseTracker.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("text")
                         .HasColumnName("remarks");
+
+                    b.Property<int?>("ReversedId")
+                        .HasColumnType("integer")
+                        .HasColumnName("reversed_id");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")

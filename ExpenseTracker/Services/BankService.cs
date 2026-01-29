@@ -112,7 +112,7 @@ public class BankService : IBankService
             .Sum(t => t.Amount);
         var remBal = deposit - withdraw;
         var bank = await _context.Banks.Where(b => b.Id == bid).SingleOrDefaultAsync();
-        if (bank != null)
+        if (bank == null )
         {
             throw new Exception("Cannot update remaining balance");
         }
@@ -121,7 +121,6 @@ public class BankService : IBankService
             bank.RemainingBalance = remBal;
             await _context.SaveChangesAsync();
         }
-          
     }
 
     public async Task ReverseBankTransactionAsync(int id, int transactionId)
