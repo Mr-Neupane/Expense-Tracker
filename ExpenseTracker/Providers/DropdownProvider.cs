@@ -1,4 +1,5 @@
 ﻿using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,14 +16,14 @@ public class DropdownProvider : Controller
     }
 
     [HttpGet]
-    public JsonResult GetBanks()
+    public List<DropdownListDto> GetAllBanks()
     {
-        var banks = _context.Banks.ToList().Select(b => new
+        var banks = _context.Banks.Select(x => new DropdownListDto
         {
-            id = b.Id,
-            bankname = b.BankName
+            Id = x.Id,
+            Name = x.BankName
         }).ToList();
-        return Json(banks);
+        return banks;
     }
 
     public JsonResult GetExpenseLedgers()

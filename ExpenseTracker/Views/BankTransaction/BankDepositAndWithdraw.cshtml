@@ -17,6 +17,13 @@
                 <label asp-for="BankId">Bank Name<span class="text-danger">*</span></label>
                 <select asp-for="BankId" id="BankName" class="form-control" required="required">
                     <option value="">Select a Bank</option>
+                    @if (Model.BankList != null)
+                    {
+                        foreach (var b in Model.BankList)
+                        {
+                            <option value="@b.Value">@b.Text</option>
+                        }
+                    }
                 </select>
                 <span asp-validation-for="BankId" class="text-danger"></span>
             </div>
@@ -29,11 +36,11 @@
                        id="engdate"
                        hidden="hidden"
                        data-date-mask
-                       maxlength="10"/><input 
-                                              class="form-control"
-                                              type="text"
-                                              id="date"
-                                              maxlength="10"/>
+                       maxlength="10"/><input
+                    class="form-control"
+                    type="text"
+                    id="date"
+                    maxlength="10"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 
@@ -63,31 +70,6 @@
         </div>
     </div>
 </form>
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-@section Scripts {
-
-    <script>
-        $(document).ready(function () {
-            $.ajax({
-                url: '@Url.Action("GetBanks", "DropdownProvider")',
-                type: 'GET',
-                success: function (data) {
-                    $('#BankName').empty();
-                    $('#BankName').append('<option value="">Select a Bank</option>');
-                    $.each(data, function (index, bank) {
-                        $('#BankName').append('<option value="' + bank.id + '">' + bank.bankname + '</option>');
-                    });
-                },
-                error: function () {
-                    alert("Error loading bank data.");
-                }
-            });
-        });
-    </script>
-}
 
 
 

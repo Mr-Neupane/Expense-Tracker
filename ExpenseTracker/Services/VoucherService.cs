@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using System.Transactions;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
@@ -72,18 +73,33 @@ public class VoucherService : IVoucherService
 
     public async Task ReverseTransactionAsync(int transactionId)
     {
-        var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToListAsync();
-        await RecordReverseTransactionAsync(transactionId);
+        var transaction = await _dbContext.AccountingTransaction.SingleOrDefaultAsync(x => x.Id == transactionId);
+        if (transaction != null)
+        {
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId)
+                    .ToListAsync();
+                var revTxn = await RecordReverseTransactionAsync(transactionId);
+                {
+                    transaction.Status = Status.Reversed.ToInt();
+                    transaction.IsReversed = true;
+                    transaction.ReversedId = revTxn.Id;
+                    txn.ForEach(a => a.Status = Status.Reversed.ToInt());
+                    await _dbContext.SaveChangesAsync();
+                }
 
-        var transaction = await _dbContext.AccountingTransaction.SingleAsync(x => x.Id == transactionId);
-        transaction.Status = Status.Reversed.ToInt();
 
-        txn.ForEach(a => a.Status = Status.Reversed.ToInt());
-
-        await _dbContext.SaveChangesAsync();
+                scope.Complete();
+            }
+        }
+        else
+        {
+            throw new Exception("Transaction not found");
+        }
     }
 
-    private async Task RecordReverseTransactionAsync(int transactionId)
+    private async Task<Transaction> RecordReverseTransactionAsync(int transactionId)
     {
         var existingTransaction =
             await _dbContext.AccountingTransaction.Where(x => x.Id == transactionId).Select(x => x.Id)
@@ -129,6 +145,7 @@ public class VoucherService : IVoucherService
             };
             await _dbContext.AccountingTransaction.AddRangeAsync(newTxn);
             await _dbContext.SaveChangesAsync();
+            return newTxn;
         }
     }
 

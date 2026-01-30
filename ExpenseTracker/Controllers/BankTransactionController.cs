@@ -3,7 +3,7 @@ using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
 using TestApplication.ViewModels.Interface;
 
@@ -16,12 +16,14 @@ public class BankTransactionController : Controller
     private readonly IBankService _bankService;
     private readonly AccTransactionManager _accTransactionManager;
     private readonly IProvider _provider;
+    private readonly DropdownProvider _dropdownProvider;
     public required IBalanceProvider _balanceProvider;
 
 
     public BankTransactionController(IToastNotification toastNotification,
         ReverseTransactionManager reverseTransactionManager, IBankService bankService,
-        AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider)
+        AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider,
+        DropdownProvider dropdownProvider)
     {
         _toastNotification = toastNotification;
         _reverseTransactionManager = reverseTransactionManager;
@@ -29,12 +31,18 @@ public class BankTransactionController : Controller
         _accTransactionManager = accTransactionManager;
         _provider = provider;
         _balanceProvider = balanceProvider;
+        _dropdownProvider = dropdownProvider;
     }
 
     [HttpGet]
     public IActionResult BankDepositandWithdraw()
     {
-        return View();
+        var banks = _dropdownProvider.GetAllBanks();
+        var vm = new BankTransactionVm
+        {
+            BankList = new SelectList(banks, "Id", "Name"),
+        };
+        return View(vm);
     }
 
     [HttpPost]

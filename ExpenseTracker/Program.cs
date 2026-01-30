@@ -1,6 +1,5 @@
 using ExpenseTracker;
 using Microsoft.EntityFrameworkCore;
-using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
@@ -10,8 +9,6 @@ using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -45,6 +42,10 @@ builder.Services.AddControllersWithViews()
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    DatabaseInitializer.EnsureDatabaseAndMigrations(config);
+
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate();
 }
