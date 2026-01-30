@@ -103,7 +103,7 @@ public class BankTransactionController : Controller
                                                               " completed with amount Rs. " + vm.Amount);
                 }
 
-                return View();
+                return RedirectToAction("BankTransactionReport");
             }
         }
         catch (Exception e)

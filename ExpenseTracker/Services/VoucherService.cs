@@ -134,7 +134,7 @@ public class VoucherService : IVoucherService
                 TypeId = txn.TypeId,
                 Remarks = txn.Remarks,
                 IsReversed = true,
-                ReversedId = transactionId,
+                ReversedId = null,
                 TransactionDetails = txnDetail.Select(x => new TransactionDetail
                 {
                     LedgerId = x.LedgerId,
