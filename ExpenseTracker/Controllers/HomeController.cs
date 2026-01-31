@@ -23,14 +23,7 @@ public class HomeController : Controller
         return View();
     }
 
-    [HttpGet]
-    public IActionResult Migration()
-    {
-        var cn = _context.CoaLedger.Count();
-        bool isMigration = false || cn == 0;
-
-        return View(isMigration);
-    }
+   
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

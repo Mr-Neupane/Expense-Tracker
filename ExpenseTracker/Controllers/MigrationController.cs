@@ -10,7 +10,13 @@ namespace ExpenseTracker.Controllers;
 public class MigrationController(ApplicationDbContext context, IToastNotification toastNotification)
     : Controller
 {
-    public async Task<RedirectResult> SeededMigration()
+    [HttpGet]
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    public async Task<RedirectResult> ApplyMigration()
     {
         try
         {
