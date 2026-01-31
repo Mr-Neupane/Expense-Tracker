@@ -19,8 +19,8 @@
             </div>
             <div class="mb-2">
                 <label asp-for="AccountOpenDate" class="form-label">Open Date <span class="text-danger">*</span></label>
-                <input  class="form-control" type="text" id="date" autocomplete="off" required="required"/>
-                <input asp-for="AccountOpenDate" hidden="hidden" class="form-control" type="text" id="engdate" 
+                <input class="form-control" type="text" id="date" autocomplete="off" required="required"/>
+                <input asp-for="AccountOpenDate" hidden="hidden" class="form-control" type="text" id="engdate"
                        autocomplete="off"/>
                 <span asp-validation-for="AccountOpenDate" class="text-danger"></span>
             </div>
@@ -48,7 +48,9 @@
             </div>
 
 
-            <button type="submit" class="btn btn-primary mt-2">Save</button>
+            <button type="submit" class="btn btn-primary mt-2" onclick="return confirm('Are you sure you want save!')">
+                Save
+            </button>
         </div>
     </div>
 </form>
