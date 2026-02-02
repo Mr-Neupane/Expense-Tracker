@@ -21,18 +21,19 @@ public class VoucherController : Controller
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
     private readonly DropdownProvider _dropdownProvider;
-    private readonly IProvider _provider;
+    private readonly IBankService _bankService;
 
-    public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context,
-        ReverseTransactionManager reverseTransactionManager, DropdownProvider dropdownProvider, IProvider provider)
+
+    public VoucherController(ApplicationDbContext context, IVoucherService voucherService,
+        ReverseTransactionManager reverseTransactionManager, IToastNotification toastNotification,
+        DropdownProvider dropdownProvider, IBankService bankService)
     {
-        _voucherService = voucherService;
-        _toastNotification = toastNotification;
         _context = context;
+        _voucherService = voucherService;
         _reverseTransactionManager = reverseTransactionManager;
+        _toastNotification = toastNotification;
         _dropdownProvider = dropdownProvider;
-        _provider = provider;
+        _bankService = bankService;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionId)
@@ -134,21 +135,21 @@ public class VoucherController : Controller
                 if (bankLedger != null)
                 {
                     var bankTrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
-                        .Select(e => new BankTransaction
+                        .Select(e => new BankTransactionDto()
                         {
                             BankId = bankLedger.Id,
                             TxnDate = vm.VoucherDate.ToUniversalTime(),
                             Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
                             Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
                             Remarks = vm.Narration,
-                            RecDate = DateTime.UtcNow,
-                            RecById = vm.RecById,
-                            RecStatus = vm.RecStatus,
-                            Status = vm.Status,
-                            TransactionId = transaction.Id
                         }).ToList();
-                    await _context.BankTransaction.AddRangeAsync(bankTrans);
-                    await _context.SaveChangesAsync();
+
+                    foreach (var t in bankTrans)
+                    {
+                        var bankTxn = await _bankService.RecordBankTransactionAsync(t);
+                        await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTxn.Id,
+                            transaction.Id);
+                    }
                 }
             }
 

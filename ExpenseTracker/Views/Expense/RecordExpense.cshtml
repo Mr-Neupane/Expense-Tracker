@@ -24,6 +24,13 @@
                 <label class="form-label">Expense Ledger <span class="text-danger">*</span></label>
                 <select id="ExpenseLedger" asp-for="ExpenseLedger" class="form-select" required="required">
                     <option value="">-- Select Expense Ledger --</option>
+                    @if (Model.ExpenseLedgers != null)
+                    {
+                        foreach (var e in Model.ExpenseLedgers)
+                        {
+                            <option value="@e.Value">@e.Text</option>
+                        }
+                    }
                 </select>
             </div>
             <div class="mb-3">
@@ -34,6 +41,13 @@
                 <label class="form-label">Expense From Ledger <span class="text-danger">*</span></label>
                 <select id="ExpenseFromLedger" asp-for="ExpenseFromLedger" class="form-select" required="required">
                     <option value="">-- Select Cash/Bank Ledger --</option>
+                    @if (Model.CashAndBankLedgers != null)
+                    {
+                        foreach (var l in Model.CashAndBankLedgers)
+                        {
+                            <option value="@l.Value">@l.Text</option>
+                        }
+                    }
                 </select>
             </div>
 
@@ -48,35 +62,3 @@
         </div>
     </div>
 </form>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-@section Scripts{
-    <script>
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/DropdownProvider/GetExpenseLedgers',
-                type: 'GET',
-                success: function (data) {
-                    fillDropdown('#ExpenseLedger', data);
-                }
-            });
-
-            $.ajax({
-                url: '/DropdownProvider/GetCashBankLedgers',
-                type: 'GET',
-                success: function (data) {
-                    fillDropdown('#ExpenseFromLedger', data);
-                }
-            });
-
-            function fillDropdown(selector, data) {
-                $.each(data, function (i, item) {
-                    $(selector).append(
-                        $('<option>', {value: item.id, text: item.ledgername})
-                    );
-                });
-            }
-        });
-    </script>
-}
