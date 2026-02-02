@@ -1,6 +1,8 @@
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Manager;
+using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
@@ -12,18 +14,27 @@ public class IncomeController : Controller
     private readonly IToastNotification _toastNotification;
     private readonly AccTransactionManager _transactionManager;
     private readonly IIncomeService _incomeService;
+    private readonly DropdownProvider _dropdownProvider;
 
     public IncomeController(IToastNotification toastNotification,
-        IIncomeService incomeService, AccTransactionManager transactionManager)
+        IIncomeService incomeService, AccTransactionManager transactionManager, DropdownProvider dropdownProvider)
     {
         _toastNotification = toastNotification;
         _incomeService = incomeService;
         _transactionManager = transactionManager;
+        _dropdownProvider = dropdownProvider;
     }
 
     public IActionResult RecordIncome()
     {
-        return View();
+        var incomeLedger = _dropdownProvider.GetIncomeLedgers();
+        var cashAndBank = _dropdownProvider.GetCashBankLedgers();
+        var vm = new IncomeVm
+        {
+            IncomeLedgerList = new SelectList(incomeLedger, "Id", "Name"),
+            CashAndBankLedger = new SelectList(cashAndBank, "Id", "Name"),
+        };
+        return View(vm);
     }
 
     [HttpPost]
@@ -64,7 +75,23 @@ public class IncomeController : Controller
         catch (Exception e)
         {
             _toastNotification.AddErrorToastMessage(e.Message);
-            return View();
+            var incomeLedger = _dropdownProvider.GetIncomeLedgers();
+            var cashAndBank = _dropdownProvider.GetCashBankLedgers();
+            var rvm = new IncomeVm
+            {
+                IncomeLedger = vm.IncomeLedger,
+                Amount = vm.Amount,
+                Type = vm.Type,
+                TxnDate = vm.TxnDate,
+                IncomeFrom = vm.IncomeFrom,
+                IncomeLedgerList = new SelectList(incomeLedger,
+                    "Id",
+                    "Name"),
+                CashAndBankLedger = new SelectList(cashAndBank,
+                    "Id",
+                    "Name"),
+            };
+            return View(rvm);
         }
     }
 

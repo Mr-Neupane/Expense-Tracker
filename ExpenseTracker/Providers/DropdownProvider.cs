@@ -2,6 +2,7 @@
 using ExpenseTracker.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TestApplication.Enums;
 
 
 namespace ExpenseTracker.Providers;
@@ -26,19 +27,19 @@ public class DropdownProvider : Controller
         return banks;
     }
 
-    public JsonResult GetExpenseLedgers()
+    public List<DropdownListDto> GetExpenseLedgers()
     {
         var expLedger = (from c in _context.CoaLedger
                 join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where c.Name == "Expenses"
-                select new
+                where c.Name == "Expenses" && ls.Status == Status.Active.ToInt()
+                select new DropdownListDto()
                 {
-                    ledgername = ls.LedgerName,
-                    id = ls.Id
+                    Name = ls.LedgerName,
+                    Id = ls.Id
                 }
             ).ToList();
-        return Json(expLedger);
+        return expLedger;
     }
 
     public JsonResult GetLiabilityLedgers()
@@ -56,34 +57,34 @@ public class DropdownProvider : Controller
         return Json(liabilityLedger);
     }
 
-    public JsonResult GetCashBankLedgers()
+    public List<DropdownListDto> GetCashBankLedgers()
     {
         var cashAndBankLedger = (from c in _context.CoaLedger
                 join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where (ls.SubParentId == -1 || ls.SubParentId == -2)
-                select new
+                select new DropdownListDto
                 {
-                    ledgername = ls.LedgerName,
-                    id = ls.Id
+                    Name = ls.LedgerName,
+                    Id = ls.Id
                 }
             ).ToList();
-        return Json(cashAndBankLedger);
+        return cashAndBankLedger;
     }
 
-    public JsonResult GetIncomeLedgers()
+    public List<DropdownListDto> GetIncomeLedgers()
     {
         var incomeLedger = (from c in _context.CoaLedger
                 join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
                 where c.Name == "Income"
-                select new
+                select new DropdownListDto()
                 {
-                    ledgername = ls.LedgerName,
-                    id = ls.Id
+                    Name = ls.LedgerName,
+                    Id = ls.Id
                 }
             ).ToList();
-        return Json(incomeLedger);
+        return incomeLedger;
     }
 
     public JsonResult GetLedgers()

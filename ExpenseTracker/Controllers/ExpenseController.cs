@@ -3,6 +3,7 @@ using ExpenseTracker.Dtos;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
 using TestApplication.Interface;
 using TestApplication.ViewModels;
@@ -16,21 +17,31 @@ public class ExpenseController : Controller
     private readonly IToastNotification _toastNotification;
     private readonly IBalanceProvider _balanceProvider;
     private readonly AccTransactionManager _accTransactionManager;
+    private readonly DropdownProvider _dropdownProvider;
 
 
     public ExpenseController(IExpenseService expenseService, IToastNotification toastNotification,
-        IBalanceProvider balanceProvider, AccTransactionManager accTransactionManager)
+        IBalanceProvider balanceProvider, AccTransactionManager accTransactionManager,
+        DropdownProvider dropdownProvider)
     {
         _expenseService = expenseService;
         _toastNotification = toastNotification;
         _balanceProvider = balanceProvider;
         _accTransactionManager = accTransactionManager;
+        _dropdownProvider = dropdownProvider;
     }
 
     [HttpGet]
     public IActionResult RecordExpense()
     {
-        return View();
+        var expLedger = _dropdownProvider.GetExpenseLedgers();
+        var cashAndBankLedger = _dropdownProvider.GetCashBankLedgers();
+        var vm = new ExpenseVm()
+        {
+            ExpenseLedgers = new SelectList(expLedger, "Id", "Name"),
+            CashAndBankLedgers = new SelectList(cashAndBankLedger, "Id", "Name")
+        };
+        return View(vm);
     }
 
     [HttpPost]

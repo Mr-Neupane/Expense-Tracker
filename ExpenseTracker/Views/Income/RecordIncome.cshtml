@@ -15,8 +15,9 @@
         <div class="card-body">
             <div class="mb-3">
                 <label asp-for="TxnDate">Date <span class="text-danger">*</span></label>
-                <input asp-for="TxnDate" hidden="hidden" class="form-control" id="engdate" type="text" autocomplete="off"/>
-                <input  class="form-control" id="date" type="text" autocomplete="off"/>
+                <input asp-for="TxnDate" hidden="hidden" class="form-control" id="engdate" type="text"
+                       autocomplete="off"/>
+                <input class="form-control" id="date" type="text" autocomplete="off"/>
                 <span asp-validation-for="TxnDate" class="text-danger"></span>
             </div>
 
@@ -24,6 +25,13 @@
                 <label class="form-label">Income Ledger <span class="text-danger">*</span></label>
                 <select id="IncomeLedger" asp-for="IncomeLedger" class="form-select" required="required">
                     <option value="">-- Select Income Ledger --</option>
+                    @if (Model.IncomeLedgerList != null)
+                    {
+                        foreach (var i in Model.IncomeLedgerList)
+                        {
+                            <option value="@i.Value">@i.Text</option>
+                        }
+                    }
                 </select>
             </div>
             <div class="mb-3">
@@ -34,6 +42,13 @@
                 <label class="form-label">Cash/Bank<span class="text-danger">*</span></label>
                 <select id="IncomeFrom" asp-for="IncomeFrom" class="form-select" required="required">
                     <option value="">-- Select Cash/Bank Ledger --</option>
+                    @if (Model.CashAndBankLedger != null)
+                    {
+                        foreach (var cb in Model.CashAndBankLedger)
+                        {
+                            <option value="@cb.Value">@cb.Text</option>
+                        }
+                    }
                 </select>
             </div>
 
@@ -48,55 +63,4 @@
         </div>
     </div>
 </form>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-@section Scripts{
-    <script>
-        $(document).ready(function () {
-
-            $.ajax({
-                url: '/DropdownProvider/GetIncomeLedgers',
-                type: 'GET',
-                success: function (data) {
-                    fillDropdown('#IncomeLedger', data);
-                }
-            });
-
-            $.ajax({
-                url: '/DropdownProvider/GetCashBankLedgers',
-                type: 'GET',
-                success: function (data) {
-                    fillDropdown('#IncomeFrom', data);
-                }
-            });
-
-            function fillDropdown(selector, data) {
-                $.each(data, function (i, item) {
-                    $(selector).append(
-                        $('<option>', {value: item.id, text: item.ledgername})
-                    );
-                });
-            }
-        });
-    </script>
-}
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-@if (TempData["AlertMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["AlertMessage"]
-    </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-} 

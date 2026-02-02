@@ -1,13 +1,10 @@
-﻿using Dapper;
+﻿using System.Transactions;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Manager;
-using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
-using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using TestApplication.ViewModels;
 using TestApplication.ViewModels.Interface;
@@ -21,18 +18,19 @@ public class VoucherController : Controller
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
     private readonly DropdownProvider _dropdownProvider;
-    private readonly IProvider _provider;
+    private readonly IBankService _bankService;
 
-    public VoucherController(IVoucherService voucherService,
-        IToastNotification toastNotification, ApplicationDbContext context,
-        ReverseTransactionManager reverseTransactionManager, DropdownProvider dropdownProvider, IProvider provider)
+
+    public VoucherController(ApplicationDbContext context, IVoucherService voucherService,
+        ReverseTransactionManager reverseTransactionManager, IToastNotification toastNotification,
+        DropdownProvider dropdownProvider, IBankService bankService)
     {
-        _voucherService = voucherService;
-        _toastNotification = toastNotification;
         _context = context;
+        _voucherService = voucherService;
         _reverseTransactionManager = reverseTransactionManager;
+        _toastNotification = toastNotification;
         _dropdownProvider = dropdownProvider;
-        _provider = provider;
+        _bankService = bankService;
     }
 
     public async Task<IActionResult> VoucherDetail(int transactionId)
@@ -111,49 +109,50 @@ public class VoucherController : Controller
     {
         try
         {
-            var transaction = await _voucherService.RecordTransactionAsync(
-                new AccTransactionDto
-                {
-                    TxnDate = vm.VoucherDate.ToUniversalTime(),
-                    Amount = vm.Entries.Sum(d => d.DrAmount),
-                    Type = vm.Type,
-                    TypeId = 0,
-                    Remarks = vm.Remarks,
-                    IsJv = true,
-                    Details = vm.Entries.Select(e => new TransactionDetailDto
-                    {
-                        LedgerID = e.LedgerId, IsDr = e.DrAmount != 0,
-                        Amount = e.CrAmount != 0 ? e.CrAmount : e.DrAmount,
-                    }).ToList()
-                });
-
-            foreach (var data in vm.Entries)
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var bankLedger = await (from b in _context.Banks where b.LedgerId == data.LedgerId select b)
-                    .FirstOrDefaultAsync();
-                if (bankLedger != null)
-                {
-                    var bankTrans = vm.Entries.Where(e => e.LedgerId == bankLedger.LedgerId)
-                        .Select(e => new BankTransaction
+                var transaction = await _voucherService.RecordTransactionAsync(
+                    new AccTransactionDto
+                    {
+                        TxnDate = vm.VoucherDate.ToUniversalTime(),
+                        Amount = vm.Entries.Sum(d => d.DrAmount),
+                        Type = vm.Type,
+                        TypeId = 0,
+                        Remarks = vm.Remarks,
+                        IsJv = true,
+                        Details = vm.Entries.Select(e => new TransactionDetailDto
                         {
-                            BankId = bankLedger.Id,
-                            TxnDate = vm.VoucherDate.ToUniversalTime(),
-                            Amount = e.DrAmount == 0 ? e.CrAmount : e.DrAmount,
-                            Type = e.DrAmount != 0 ? "Deposit" : "Withdraw",
-                            Remarks = vm.Narration,
-                            RecDate = DateTime.UtcNow,
-                            RecById = vm.RecById,
-                            RecStatus = vm.RecStatus,
-                            Status = vm.Status,
-                            TransactionId = transaction.Id
-                        }).ToList();
-                    await _context.BankTransaction.AddRangeAsync(bankTrans);
-                    await _context.SaveChangesAsync();
-                }
-            }
+                            LedgerID = e.LedgerId, IsDr = e.DrAmount != 0,
+                            Amount = e.CrAmount != 0 ? e.CrAmount : e.DrAmount,
+                        }).ToList()
+                    });
 
-            _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
-            return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
+                foreach (var d in vm.Entries)
+                {
+                    var bank = _context.Banks.SingleOrDefault(x => x.LedgerId == d.LedgerId);
+
+                    if (bank != null)
+                    {
+                        var bankTransDto =
+                            new BankTransactionDto
+                            {
+                                BankId = bank.Id,
+                                TxnDate = vm.VoucherDate.ToUniversalTime(),
+                                Amount = d.DrAmount == 0 ? d.CrAmount : d.DrAmount,
+                                Type = d.DrAmount != 0 ? "Deposit" : "Withdraw",
+                                Remarks = vm.Narration,
+                            };
+                        var bankTxn = await _bankService.RecordBankTransactionAsync(bankTransDto);
+                        await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTxn.Id,
+                            transaction.Id);
+                    }
+                }
+
+                scope.Complete();
+
+                _toastNotification.AddSuccessToastMessage("Journal voucher added successfully");
+                return RedirectToAction("VoucherDetail", new { transactionid = transaction.Id });
+            }
         }
         catch (Exception e)
         {
