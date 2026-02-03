@@ -14,10 +14,10 @@ public class IBalanceProvider
         _context = context;
     }
 
-    public async Task<decimal> GetLedgerBalance(int ledgerId)
+    public decimal GetLedgerBalance(int ledgerId)
     {
         var ledgerTransaction =
-            await (from l in _context.Ledgers
+             (from l in _context.Ledgers
                     join pl in _context.Ledgers on l.SubParentId equals pl.Id
                     join c in _context.CoaLedger on pl.ParentId equals c.Id
                     join td in _context.TransactionDetails on l.Id equals td.LedgerId
@@ -31,7 +31,7 @@ public class IBalanceProvider
                         td.CrAmount,
                         td.DrAmount,
                     }
-                ).ToListAsync();
+                ).ToList();
         if (ledgerTransaction.Count > 0)
         {
             var closingBalance = ledgerTransaction.Select(x => new

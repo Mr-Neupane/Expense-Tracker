@@ -49,7 +49,7 @@ public class ExpenseController : Controller
     {
         try
         {
-            var fromBalance = await _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
+            var fromBalance = _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
             if (vm.Amount > fromBalance)
             {
                 _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
@@ -87,8 +87,21 @@ public class ExpenseController : Controller
         }
         catch (Exception e)
         {
+            var cashAndBankLedger = _dropdownProvider.GetCashBankLedgers();
+            var expenseLedger = _dropdownProvider.GetExpenseLedgers();
+            var nvm = new ExpenseVm
+            {
+                ExpenseLedger = vm.ExpenseLedger,
+                TxnDate = vm.TxnDate,
+                ExpenseFromLedger = vm.ExpenseFromLedger,
+                Type = vm.Type,
+                Remarks = vm.Remarks,
+                Amount = vm.Amount,
+                ExpenseLedgers = new SelectList(expenseLedger, "Id", "Name"),
+                CashAndBankLedgers = new SelectList(cashAndBankLedger, "Id", "Name")
+            };
             _toastNotification.AddErrorToastMessage("Expense could not be recorded." + e.Message);
-            return View();
+            return View(nvm);
         }
     }
 

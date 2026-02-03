@@ -4,58 +4,66 @@
     ViewData["Title"] = "Bank Report";
 }
 
-<h2 class="mt-3 mb-4 text-center font-weight-bold" >Bank Report</h2>
+<div class="container-fluid report-wrapper ">
+    <h2 class="mt-3 mb-4 text-center font-weight-bold">Bank Report</h2>
 
-<table class="table table-bordered table-striped table-hover" style="border-collapse: collapse" id="datatable">
-    <thead class="bg-dark text-white text-center">
-    <tr>
-        <th style="width: 50px;">SN</th>
-        <th>Bank Name</th>
-        <th>Account Number</th>
-        <th class="text-right">Remaining Balance</th>
-        <th>Bank Contact</th>
-        <th>Account Open Date</th>
-        <th>Bank Address</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-    <tbody>
-    @{
-        int sn = 1;
-    }
+            <table class="table table-bordered table-striped table-hover" style="border-collapse: collapse"
+                   id="datatable">
+                <thead class="bg-dark text-white text-center">
+                <tr>
+                    <th style="width: 50px;">SN</th>
+                    <th>Bank Name</th>
+                    <th>Account Number</th>
+                    <th class="text-right">Remaining Balance</th>
+                    <th>Bank Contact</th>
+                    <th>Account Open Date</th>
+                    <th>Bank Address</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td class="text-center">@sn</td>
+                <tbody>
+                @{
+                    int sn = 1;
+                }
 
-            <td>@item.BankName</td>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-center">@sn</td>
 
-            <td>@item.AccountNumber</td>
+                        <td>@item.BankName</td>
 
-            <td class="text-right">
-                @String.Format("{0:N2}", item.RemainingBalance)
-            </td>
+                        <td>@item.AccountNumber</td>
 
-            <td>@item.BankContactNumber</td>
+                        <td class="text-right">
+                            @String.Format("{0:N2}", item.RemainingBalance)
+                        </td>
 
-            <td>
-                @(new NepDate.NepaliDate(item.AccountOpenDate))
-            </td>
+                        <td>@item.BankContactNumber</td>
 
-            <td>@item.BankAddress</td>
+                        <td>
+                            @(new NepDate.NepaliDate(item.AccountOpenDate))
+                        </td>
 
-            <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
-                @(item.Status == 1 ? "Active" : "Inactive")
-            </td>
-            <td>
-                <a asp-action="EditBank" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-            </td>
-        </tr>
+                        <td>@item.BankAddress</td>
 
-        sn++;
-    }
-    </tbody>
-</table>
+                        <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
+                            @(item.Status == 1 ? "Active" : "Inactive")
+                        </td>
+                        <td>
+                            <a asp-action="EditBank" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                        </td>
+                    </tr>
+
+                    sn++;
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

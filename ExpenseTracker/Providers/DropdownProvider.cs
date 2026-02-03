@@ -10,10 +10,12 @@ namespace ExpenseTracker.Providers;
 public class DropdownProvider : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IBalanceProvider _balanceProvider;
 
-    public DropdownProvider(ApplicationDbContext context)
+    public DropdownProvider(ApplicationDbContext context, IBalanceProvider balanceProvider)
     {
         _context = context;
+        _balanceProvider = balanceProvider;
     }
 
     [HttpGet]
@@ -92,14 +94,20 @@ public class DropdownProvider : Controller
         var ledgers = (from c in _context.CoaLedger
                 join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                select new
+                select new LedgerInfoForJvDto()
                 {
-                    coaname = l.LedgerName,
-                    ledgername = ls.LedgerName,
-                    code = ls.Code,
-                    id = ls.Id
+                    LedgerBalance = 0,
+                    LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),
+                    Code = ls.Code,
+                    LedgerId = ls.Id
                 }
             ).ToList();
+        foreach (var l in ledgers)
+        {
+            var bs = _balanceProvider.GetLedgerBalance(l.LedgerId);
+            l.LedgerBalance = bs;
+        }
+
         return Json(ledgers);
     }
 
