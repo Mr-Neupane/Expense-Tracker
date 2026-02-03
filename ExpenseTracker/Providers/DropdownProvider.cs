@@ -97,7 +97,7 @@ public class DropdownProvider : Controller
                 select new LedgerInfoForJvDto()
                 {
                     LedgerBalance = 0,
-                    LedgerName = string.Concat(c.Name, " > ", ls.LedgerName),
+                    LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),
                     Code = ls.Code,
                     LedgerId = ls.Id
                 }
