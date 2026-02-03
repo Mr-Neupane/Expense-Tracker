@@ -2,7 +2,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>@ViewData["Title"] - ExpenseTracker</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
   <link rel="stylesheet"
         href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
 
@@ -17,33 +17,6 @@
     href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/css/adminlte.min.css"
     crossorigin="anonymous"
   />
-
-
-
-  @* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"> *@
-  @*     <div class="container-fluid"> *@
-  @*         <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ExpenseTracker</a> *@
-  @*         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" *@
-  @*                 aria-controls="navbarSupportedContent" *@
-  @*                 aria-expanded="false" aria-label="Toggle navigation"> *@
-  @*             <span class="navbar-toggler-icon"></span> *@
-  @*         </button> *@
-  @*         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"> *@
-  @*             <ul class="navbar-nav flex-grow-1"> *@
-  @*                 <li class="nav-item"> *@
-  @*                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a> *@
-  @*                 </li> *@
-  @*                 <li class="nav-item"> *@
-  @*                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
-  @*                 </li><li class="nav-item"> *@
-  @*                     <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="AddUser" >Create User</a> *@
-  @*                 </li> *@
-  @*             </ul> *@
-  @*             <partial name="_LoginPartial"/> *@
-  @*         </div> *@
-  @*     </div> *@
-  @* </nav> *@
-
 
   <!--begin::Accessibility Meta Tags-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
@@ -131,7 +104,7 @@
           </li>
           <!--end::Fullscreen Toggle-->
 
-          
+
           <!--begin::User Menu Dropdown-->
           <li class="nav-item dropdown user-menu">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -267,11 +240,11 @@
                 </li>
               </ul>
             </li>
-           
+
 
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-table"></i>
+                <i class="nav-icon bi bi-diagram-3"></i>
                 @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
                 <p>
                   COA
@@ -330,7 +303,66 @@
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-table"></i>
+                <i class="nav-icon bi bi-bank"></i>
+                @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
+                <p>
+                  Bank
+                  <i class="nav-arrow bi bi-chevron-right"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    @* <i class="nav-icon bi bi-table"></i> *@
+                    @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
+                    <p>
+                      Setup/Transaction
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a asp-controller="Bank" asp-action="CreateBank" class="nav-link">
+                        @* <i class="nav-icon bi bi-circle"></i> *@
+                        <p>Create Bank</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a asp-controller="BankTransaction" asp-action="BankDepositandWithdraw" class="nav-link">
+                        @* <i class="nav-icon bi bi-circle"></i> *@
+                        <p>Bank Transaction Report</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
+                    <p>
+                      Reports
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a asp-action="BankReport" asp-controller="Bank" class="nav-link">
+                        @* <i class="nav-icon bi bi-circle"></i> *@
+                        <p>Bank Report</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a asp-action="BankTransactionReport" asp-controller="BankTransaction" class="nav-link">
+                        @* <i class="nav-icon bi bi-circle"></i> *@
+                        <p>Bank Transaction Report</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-cash-stack"></i>
                 <p>
                   Expenses
                   <i class="nav-arrow bi bi-chevron-right"></i>
@@ -351,10 +383,10 @@
                 </li>
               </ul>
             </li>
-            
+
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-table"></i>
+                <i class="nav-icon bi bi-graph-up-arrow"></i>
                 <p>
                   Income
                   <i class="nav-arrow bi bi-chevron-right"></i>
@@ -377,7 +409,7 @@
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-table"></i>
+                <i class="nav-icon bi bi-calculator"></i>
                 <p>
                   Liability
                   <i class="nav-arrow bi bi-chevron-right"></i>
@@ -398,7 +430,7 @@
                 </li>
               </ul>
             </li>
-             <li class="nav-item">
+            <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon bi bi-table"></i>
                 @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
@@ -413,7 +445,7 @@
                     @* <i class="nav-icon bi bi-table"></i> *@
                     @* <i class="nav-icon bi bi-box-arrow-in-right"></i> *@
                     <p>
-                     Journal Voucher
+                      Journal Voucher
                       <i class="nav-arrow bi bi-chevron-right"></i>
                     </p>
                   </a>

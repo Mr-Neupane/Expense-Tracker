@@ -87,7 +87,9 @@
                 </div>
 
                 <div class="text-end">
-                    <button type="submit" class="btn btn-sm btn-success">Save Voucher</button>
+                    <button type="submit" class="btn btn-sm btn-success"
+                            onclick="return confirm('Are you sure you want save!')">Add Jv
+                    </button>
                 </div>
             </form>
         </div>
@@ -103,7 +105,8 @@
         <td>
             <input name="Entries[__index__].LedgerCode" class="form-control form-control-sm ledger-code"
                    readonly/>
-        </td> <td>
+        </td>
+        <td>
             <input name="Entries[__index__].LedgerBalance" class="form-control form-control-sm ledger-balance"
                    readonly/>
         </td>
