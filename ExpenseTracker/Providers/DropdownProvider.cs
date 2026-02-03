@@ -101,14 +101,6 @@ public class DropdownProvider : Controller
                     Code = ls.Code,
                     LedgerId = ls.Id
                 }
-                // select new
-                // {
-                //     coaname = l.LedgerName,
-                //     ledgername = ls.LedgerName,
-                //     code = ls.Code,
-                //     id = ls.Id,
-                //     balance = 0
-                // }
             ).ToList();
         foreach (var l in ledgers)
         {
@@ -125,27 +117,5 @@ public class DropdownProvider : Controller
 
         var txnType = transactions.Select(t => t.Type).Distinct().ToList();
         return txnType;
-    }
-
-    public async Task<List<LedgerInfoForJvDto>> GetLedgerInfoForJv()
-    {
-        var ledgers = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                select new LedgerInfoForJvDto()
-                {
-                    LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),
-                    Code = ls.Code,
-                    LedgerId = ls.Id
-                }
-            ).ToList();
-
-        foreach (var ledger in ledgers)
-        {
-            var bs = _balanceProvider.GetLedgerBalance(ledger.LedgerId);
-            ledger.LedgerBalance = bs;
-        }
-
-        return ledgers;
     }
 }
