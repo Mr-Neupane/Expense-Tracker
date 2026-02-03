@@ -52,7 +52,7 @@ public class BankTransactionController : Controller
         {
             {
                 var bankLedgerId = await _provider.GetBankLedgerId(vm.BankId);
-                var ledgerBalance = await _balanceProvider.GetLedgerBalance(bankLedgerId);
+                var ledgerBalance =  _balanceProvider.GetLedgerBalance(bankLedgerId);
                 var banks = await _bankService.BankReportAsync();
 
                 var res = banks.FirstOrDefault(b => b.Id == vm.BankId);

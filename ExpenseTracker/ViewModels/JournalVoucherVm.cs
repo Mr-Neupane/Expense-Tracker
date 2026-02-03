@@ -1,6 +1,6 @@
 ﻿namespace TestApplication.ViewModels;
 
-public class JournalVoucherVm:BaseVm
+public class JournalVoucherVm : BaseVm
 {
     public DateTime VoucherDate { get; set; }
     public string Narration { get; set; }
@@ -15,4 +15,5 @@ public class JournalEntryVm
     public string LedgerCode { get; set; }
     public decimal DrAmount { get; set; }
     public decimal CrAmount { get; set; }
+    public decimal LedgerBalance { get; set; }
 }

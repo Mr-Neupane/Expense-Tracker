@@ -1,95 +1,116 @@
 ﻿@model TestApplication.ViewModels.JournalVoucherVm
 @{
-int initialRows = 1;
+    int initialRows = 1;
 }
 @{
     ViewData["Title"] = "Add Journal";
 }
+<div class="container-fluid report-wrapper mt-3">
 
-<form method="post" asp-action="AddJV">
-    <div class="row mb-2">
-        <div class="col-md-3">
-            <label asp-for="VoucherDate" class="form-label mb-1">Voucher Date <span class="text-danger">*</span></label>
-            <input asp-for="VoucherDate" type="text" id="engdate" hidden="hidden" class="form-control form-control-sm" />
-            <input  type="text" id="date" required="required" class="form-control form-control-sm" />
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" asp-action="AddJV">
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <label asp-for="VoucherDate" class="form-label mb-1">Voucher Date <span
+                                class="text-danger">*</span></label>
+                        <input asp-for="VoucherDate" type="text" id="engdate" hidden="hidden"
+                               class="form-control form-control-sm"/>
+                        <input type="text" id="date" required="required" class="form-control form-control-sm w-auto"/>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-jv" id="journalTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Ledger Name</th>
+                            <th width="150">Ledger Code</th>
+                            <th width="150">Ledger Balance</th>
+                            <th width="130" class="text-end">Total Dr</th>
+                            <th width="130" class="text-end">Total Cr</th>
+                            <th width="80" class="text-center">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i < initialRows; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <select asp-for="Entries[i].LedgerId"
+                                            class="form-select form-select-sm ledger-select"></select>
+                                    <span asp-validation-for="Entries[i].LedgerId" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input asp-for="Entries[i].LedgerCode"
+                                           class="form-control form-control-sm ledger-code" readonly/>
+                                </td>
+                                <td>
+                                    <input asp-for="Entries[i].LedgerBalance"
+                                           class="form-control form-control-sm ledger-balance" readonly/>
+                                </td>
+                                <td>
+                                    <input asp-for="Entries[i].DrAmount"
+                                           class="form-control form-control-sm text-end dr-amount"/>
+                                </td>
+                                <td>
+                                    <input asp-for="Entries[i].CrAmount"
+                                           class="form-control form-control-sm text-end cr-amount"/>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
+                                </td>
+                            </tr>
+                        }
+
+                        </tbody>
+                        <tfoot class="table-light">
+                        <tr>
+                            <th colspan="3" class="text-end">Total</th>
+                            <th class="text-end" id="totalDr">0.00</th>
+                            <th class="text-end" id="totalCr">0.00</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <button type="button" class="btn btn-sm btn-outline-primary mb-2" id="addRow">
+                    + Add Row
+                </button>
+
+                <div class="mb-2">
+                    <label asp-for="Narration" class="form-label mb-1">Narration <span
+                            class="text-danger">*</span></label>
+                    <textarea asp-for="Narration" class="form-control form-control-sm" rows="2"></textarea>
+                    <span asp-validation-for="Narration" class="text-danger"></span>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-sm btn-success">Save Voucher</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered table-jv" id="journalTable">
-            <thead class="table-light">
-            <tr>
-                <th>Ledger Name</th>
-                <th width="130">Ledger Code</th>
-                <th width="120" class="text-end">Total Dr</th>
-                <th width="120" class="text-end">Total Cr</th>
-                <th width="60" class="text-center">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            @for (int i = 0; i < initialRows; i++)
-            {
-                <tr>
-                    <td>
-                        <select asp-for="Entries[i].LedgerId" class="form-select form-select-sm ledger-select"></select>
-                        <span asp-validation-for="Entries[i].LedgerId" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="Entries[i].LedgerCode" class="form-control form-control-sm ledger-code" readonly />
-                    </td>
-                    <td>
-                        <input asp-for="Entries[i].DrAmount" class="form-control form-control-sm text-end dr-amount" />
-                    </td>
-                    <td>
-                        <input asp-for="Entries[i].CrAmount" class="form-control form-control-sm text-end cr-amount" />
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
-                    </td>
-                </tr>
-            }
-
-            </tbody>
-            <tfoot class="table-light">
-            <tr>
-                <th colspan="2" class="text-end">Total</th>
-                <th class="text-end" id="totalDr">0.00</th>
-                <th class="text-end" id="totalCr">0.00</th>
-                <th></th>
-            </tr>
-            </tfoot>
-        </table>
-    </div>
-
-    <button type="button" class="btn btn-sm btn-outline-primary mb-2" id="addRow">
-        + Add Row
-    </button>
-
-    <div class="mb-2">
-        <label asp-for="Narration" class="form-label mb-1">Narration <span class="text-danger">*</span></label>
-        <textarea asp-for="Narration" class="form-control form-control-sm" rows="2"></textarea>
-        <span asp-validation-for="Narration" class="text-danger"></span>
-    </div>
-
-    <div class="text-end">
-        <button type="submit" class="btn btn-sm btn-success">Save Voucher</button>
-    </div>
-</form>
-
+</div>
 <!-- Template row for JS -->
 <script type="text/template" id="rowTemplate">
     <tr>
         <td>
-            <select name="Entries[__index__].LedgerId" class="form-select form-select-sm ledger-select"></select>
+            <select name="Entries[__index__].LedgerId"
+                    class="form-select form-select-sm ledger-select"></select>
         </td>
         <td>
-            <input name="Entries[__index__].LedgerCode" class="form-control form-control-sm ledger-code" readonly />
+            <input name="Entries[__index__].LedgerCode" class="form-control form-control-sm ledger-code"
+                   readonly/>
         </td>
         <td>
-            <input type="number" step="0.01" name="Entries[__index__].DrAmount" class="form-control form-control-sm text-end dr-amount" value="0" />
+            <input type="number" step="0.01" name="Entries[__index__].DrAmount"
+                   class="form-control form-control-sm text-end dr-amount" value="0"/>
         </td>
         <td>
-            <input type="number" step="0.01" name="Entries[__index__].CrAmount" class="form-control form-control-sm text-end cr-amount" value="0" />
+            <input type="number" step="0.01" name="Entries[__index__].CrAmount"
+                   class="form-control form-control-sm text-end cr-amount" value="0"/>
         </td>
         <td class="text-center">
             <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
@@ -109,7 +130,7 @@ int initialRows = 1;
                 success: function (response) {
                     selectElement.empty().append('<option value="">Select Ledger</option>');
                     $.each(response, function (i, ledger) {
-                        selectElement.append(`<option value="${ledger.id}" data-code="${ledger.code}">${ledger.coaname} | ${ledger.ledgername}</option>`);
+                        selectElement.append(`<option value="${ledger.ledgerId}" data-code="${ledger.code}" data-balance="${ledger.ledgerBalance}">${ledger.ledgerName}</option>`);
                     });
                 }
             });
@@ -126,14 +147,24 @@ int initialRows = 1;
             $(this).closest('tr').find('.ledger-code').val(code);
         });
 
+        $(document).on('change', '.ledger-select', function () {
+            let ledgerBalance = $(this).find(':selected').data('balance') || 0;
+            $(this).closest('tr').find('.ledger-balance').val(ledgerBalance);
+        });
+
         // Calculate totals
         function calculateTotals() {
             let dr = 0, cr = 0;
-            $('.dr-amount').each(function () { dr += parseFloat($(this).val()) || 0; });
-            $('.cr-amount').each(function () { cr += parseFloat($(this).val()) || 0; });
+            $('.dr-amount').each(function () {
+                dr += parseFloat($(this).val()) || 0;
+            });
+            $('.cr-amount').each(function () {
+                cr += parseFloat($(this).val()) || 0;
+            });
             $('#totalDr').text(dr.toFixed(2));
             $('#totalCr').text(cr.toFixed(2));
         }
+
         $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
         calculateTotals();
 
@@ -153,6 +184,7 @@ int initialRows = 1;
             $('#journalTable tbody tr').each(function (i) {
                 $(this).find('select.ledger-select').attr('name', `Entries[${i}].LedgerId`);
                 $(this).find('input.ledger-code').attr('name', `Entries[${i}].LedgerCode`);
+                $(this).find('input.ledger-balance').attr('name', `Entries[${i}].LedgerBalance`);
                 $(this).find('input.dr-amount').attr('name', `Entries[${i}].DrAmount`);
                 $(this).find('input.cr-amount').attr('name', `Entries[${i}].CrAmount`);
             });
@@ -163,14 +195,18 @@ int initialRows = 1;
 
         function calculateTotals() {
             let dr = 0, cr = 0;
-            $('.dr-amount').each(function () { dr += parseFloat($(this).val()) || 0; });
-            $('.cr-amount').each(function () { cr += parseFloat($(this).val()) || 0; });
+            $('.dr-amount').each(function () {
+                dr += parseFloat($(this).val()) || 0;
+            });
+            $('.cr-amount').each(function () {
+                cr += parseFloat($(this).val()) || 0;
+            });
 
             $('#totalDr').text(dr.toFixed(2));
             $('#totalCr').text(cr.toFixed(2));
 
             // Enable save button only if Dr = Cr and both > 0
-            if(dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
+            if (dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
                 $('button[type="submit"]').prop('disabled', false);
             } else {
                 $('button[type="submit"]').prop('disabled', true);

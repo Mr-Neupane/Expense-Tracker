@@ -49,7 +49,7 @@ public class ExpenseController : Controller
     {
         try
         {
-            var fromBalance = await _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
+            var fromBalance =  _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
             if (vm.Amount > fromBalance)
             {
                 _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
