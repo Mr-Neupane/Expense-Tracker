@@ -69,84 +69,86 @@
 
 @if (Model != null)
 {
-    <h3 class="d-flex justify-content-center mb-3">Ledger Statement</h3>
-    <div class="container-fluid mt-3">
+    <div class="container-fluid report-wrapper ">
+        <h3 class="d-flex justify-content-center mb-3">Ledger Statement</h3>
 
-        <!-- Opening & Closing Balance -->
-        <div class="row mb-3">
-            <div class="col-md-6 offset-md-6 text-end fw-bold">
-                <strong>Opening Balance:</strong>
-                <span>@Model.Statements.Select(s => s.OpeningBalance).First().ToString("N2")</span>
-                <br/>
-                <strong>Closing Balance:</strong>
-                <span>@Model.Statements.Select(s => s.ClosingBalance).First().ToString("N2")</span>
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <div class="container-fluid mt-3">
+
+                    <!-- Opening & Closing Balance -->
+                    <div class="row mb-3">
+                        <div class="col-md-6 offset-md-6 text-end fw-bold">
+                            <strong>Opening Balance:</strong>
+                            <span>@Model.Statements.Select(s => s.OpeningBalance).First().ToString("N2")</span>
+                            <br/>
+                            <strong>Closing Balance:</strong>
+                            <span>@Model.Statements.Select(s => s.ClosingBalance).First().ToString("N2")</span>
+                        </div>
+                    </div>
+
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped w-100" id="datatable"
+                               style="border-collapse: collapse;">
+                            <thead class="table-light">
+                            <tr>
+                                <th>S.N</th>
+                                <th style="width: 30%;">Ledger Name</th>
+                                <th style="width: 15%;">Voucher No</th>
+                                <th style="width: 20%;">Transaction Date</th>
+                                <th class="text-end" style="width: 22%;">Debit Amount</th>
+                                <th class="text-end" style="width: 25%;">Credit Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @{
+                                int sn = 1;
+                            }
+                            @foreach (var statement in Model.Statements)
+                            {
+                                foreach (var item in statement.LedgerStatements)
+                                {
+                                    <tr>
+                                        <td>@sn</td>
+                                        <td>@item.LedgerName</td>
+                                        <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher"
+                                               asp-action="VoucherDetail"
+                                               asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
+                                        <td>@(new NepDate.NepaliDate(@item.TxnDate))</td>
+                                        <td class="text-end">@item.DrAmount.ToString("N2")</td>
+                                        <td class="text-end">@item.CrAmount.ToString("N2")</td>
+                                    </tr>
+                                }
+
+                                sn++;
+                            }
+
+
+                            </tbody>
+                            <tfoot>
+                            <tr class="fw-bold">
+                                <td></td>
+                                <td>Total Amount</td>
+                                <td></td>
+                                <td></td>
+                                <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.DrAmount).ToString("N2")</td>
+                                <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.CrAmount).ToString("N2")</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
             </div>
         </div>
-
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped w-100" id="datatable" style="border-collapse: collapse;">
-                <thead class="table-light">
-                <tr>
-                    <th>S.N</th>
-                    <th style="width: 30%;">Ledger Name</th>
-                    <th style="width: 15%;">Voucher No</th>
-                    <th style="width: 20%;">Transaction Date</th>
-                    <th class="text-end" style="width: 22%;">Debit Amount</th>
-                    <th class="text-end" style="width: 25%;">Credit Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-                @{
-                    int sn = 1;
-                }
-                @foreach (var statement in Model.Statements)
-                {
-                    foreach (var item in statement.LedgerStatements)
-                    {
-                        <tr>
-                            <td>@sn</td>
-                            <td>@item.LedgerName</td>
-                            <td><a target="_blank" style="text-decoration: none" asp-controller="Voucher"
-                                   asp-action="VoucherDetail"
-                                   asp-route-transactionid="@item.TransactionID">@item.VoucherNo</a></td>
-                            <td>@(new NepDate.NepaliDate(@item.TxnDate))</td>
-                            <td class="text-end">@item.DrAmount.ToString("N2")</td>
-                            <td class="text-end">@item.CrAmount.ToString("N2")</td>
-                        </tr>
-                    }
-
-                    sn++;
-                }
-
-
-                </tbody>
-                <tfoot>
-                <tr class="fw-bold">
-                    <td></td>
-                    <td>Total Amount</td>
-                    <td></td>
-                    <td></td>
-                    <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.DrAmount).ToString("N2")</td>
-                    <td>@Model.Statements.SelectMany(x => x.LedgerStatements).Sum(l => l.CrAmount).ToString("N2")</td>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-
     </div>
 }
 
-else
-{
-    TempData["AlertMessage"] = "Ledger statement not found";
-}
-
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    
+
     $(document).ready(function () {
 
         function loadLedgers() {

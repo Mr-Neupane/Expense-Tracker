@@ -7,7 +7,7 @@
 
 
 
-<h2 class="mt-3 mb-4 text-center font-weight-bold ">Accounting Transaction Report</h2>
+
 <style>
     .report-filter-card {
         border: 1px solid #e3e6ea;
@@ -57,115 +57,128 @@
     }
 
 </style>
-<div class="report-filter-card fa-bold">
-    <form method="post" asp-action="AccountingTransaction" class="filter-form">
+<div class="container-fluid report-wrapper mt-3 ">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="report-filter-card fa-bold">
+                <h4 class="mt-3 mb-4 text-center font-weight-bold ">Accounting Transaction Report</h4>
+                <form method="post" asp-action="AccountingTransaction" class="filter-form">
 
-        <div class="filter-item">
-            <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
-            <input id="engdate" type="text" asp-for="DateFrom" hidden/>
-            <input id="date" value="@Model.DateFrom" name="FromDate" type="text" class="form-control"/>
+                    <div class="filter-item">
+                        <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
+                        <input id="engdate" type="text" asp-for="DateFrom" hidden/>
+                        <input id="date" value="@Model.DateFrom" name="FromDate" type="text" class="form-control"/>
+                    </div>
+
+                    <div class="filter-item">
+                        <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
+                        <input id="datetoengdate" asp-for="DateTo" type="text" hidden/>
+                        <input id="dateto" type="text" class="form-control"/>
+                    </div>
+
+
+                    <div class="filter-item">
+                        <label for="TxnType" class="fs-6">Transaction Type</label>
+                        <select name="TxnType" required="required" id="TransactionType" class="form-control"
+                                asp-for="TxnType">
+                            <option value="All">All Types</option>
+                            @if (Model.TransactionsSelectList != null)
+                            {
+                                @foreach (var item in Model.TransactionsSelectList)
+                                {
+                                    <option value="@item.Text">@item.Text</option>
+                                }
+                            }
+
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="status" class="fs-6">Status</label>
+                        <select id="status" asp-for="Status" name="Status" class="form-control">
+                            <option value="">All</option>
+                            <option value="@Status.Active.ToInt()">@Status.Active</option>
+                            <option value="@Status.Reversed.ToInt()">@Status.Reversed</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-item filter-button">
+                        <button type="submit" class="btn btn-primary">
+                            Search
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
-
-        <div class="filter-item">
-            <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
-            <input id="datetoengdate" asp-for="DateTo" type="text" hidden/>
-            <input id="dateto"  type="text" class="form-control"/>
-        </div>
-
-
-        <div class="filter-item">
-            <label for="TxnType" class="fs-6">Transaction Type</label>
-            <select name="TxnType" required="required" id="TransactionType" class="form-control" asp-for="TxnType">
-                <option value="">-- Select --</option>
-                <option value="All">All Types</option>
-                @if (Model.TransactionsSelectList != null)
-                {
-                    @foreach (var item in Model.TransactionsSelectList)
-                    {
-                        <option value="@item.Text">@item.Text</option>
-                    }
-                }
-
-            </select>
-        </div>
-        <div class="filter-item">
-            <label for="status" class="fs-6">Status</label>
-            <select id="status" asp-for="Status" name="Status" class="form-control">
-                <option value="">All</option>
-                <option value="@Status.Active.ToInt()">@Status.Active</option>
-                <option value="@Status.Reversed.ToInt()">@Status.Reversed</option>
-            </select>
-        </div>
-
-        <div class="filter-item filter-button">
-            <button type="submit" class="btn btn-primary">
-                Search
-            </button>
-        </div>
-
-    </form>
+    </div>
 </div>
 @if (Model.AccountingTransactions != null)
 {
-    <table class="table table-bordered table-striped table-hover mt-3" style="border-collapse: collapse;"
-           id="datatable">
-        <thead class="bg-dark text-white text-center">
-        <tr>
-            <th style="width: 50px;">SN</th>
-            <th>Type</th>
-            <th>Transaction Date</th>
-            <th class="text-right">Amount</th>
-            <th>Voucher Number</th>
-            <th>Recorded By</th>
-            <th>Status</th>
-            <th>Remarks</th>
+    <div class="container-fluid report-wrapper mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover mt-3" style="border-collapse: collapse;"
+                       id="datatable">
+                    <thead class="bg-dark text-white text-center">
+                    <tr>
+                        <th style="width: 50px;">SN</th>
+                        <th>Type</th>
+                        <th>Transaction Date</th>
+                        <th class="text-right">Amount</th>
+                        <th>Voucher Number</th>
+                        <th>Recorded By</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
 
-        </tr>
-        </thead>
+                    </tr>
+                    </thead>
 
-        <tbody>
-        @{
-            int sn = 1;
-        }
-        @foreach (var item in Model.AccountingTransactions)
-        {
-            <tr>
-                <td class="text-center">@sn</td>
+                    <tbody>
+                    @{
+                        int sn = 1;
+                    }
+                    @foreach (var item in Model.AccountingTransactions)
+                    {
+                        <tr>
+                            <td class="text-center">@sn</td>
 
-                <td>@item.Type</td>
+                            <td>@item.Type</td>
 
-                <td>
-                    @(new NepDate.NepaliDate(item.TxnDate))
+                            <td>
+                                @(new NepDate.NepaliDate(item.TxnDate))
 
-                </td>
+                            </td>
 
-                <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
+                            <td class="text-right">@String.Format("{0:N2}", item.Amount)</td>
 
-                <td>
-                    <a asp-action="VoucherDetail" target="_blank"
-                       asp-route-transactionid="@item.TransactionId">
-                        @item.VoucherNo
-                    </a>
-                </td>
+                            <td>
+                                <a asp-action="VoucherDetail" target="_blank"
+                                   asp-route-transactionid="@item.TransactionId">
+                                    @item.VoucherNo
+                                </a>
+                            </td>
 
-                <td>@item.Username</td>
-                <td class="@(item.Status == 1 ? "text-success" : "text-danger")">@(item.Status == 1 ? "Active" : "Reversed")</td>
-                <td>@item.Remarks</td>
-            </tr>
+                            <td>@item.Username</td>
+                            <td class="@(item.Status == 1 ? "text-success" : "text-danger")">@(item.Status == 1 ? "Active" : "Reversed")</td>
+                            <td>@item.Remarks</td>
+                        </tr>
 
-            sn++;
-        }
+                        sn++;
+                    }
 
-        </tbody>
-        <tfoot>
-        <td></td>
-        <td colspan="2">Total</td>
-        <td>@Model.AccountingTransactions.Sum(d => d.Amount).ToString("N2")</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        </tfoot>
-    </table>
+                    </tbody>
+                    <tfoot>
+                    <td></td>
+                    <td colspan="2">Total</td>
+                    <td>@Model.AccountingTransactions.Sum(d => d.Amount).ToString("N2")</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
 }
 
