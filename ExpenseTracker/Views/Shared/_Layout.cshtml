@@ -63,6 +63,23 @@
     integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
     crossorigin="anonymous"
   />
+  <style>
+    .dropdown-submenu {
+      position: relative;
+    }
+
+    .dropdown-submenu > .dropdown-menu {
+      top: 0;
+      left: 100%;
+      margin-left: 0.1rem;
+      display: none;
+    }
+
+    .dropdown-submenu.show > .dropdown-menu {
+      display: block;
+    }
+
+  </style>
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
@@ -84,8 +101,105 @@
           <li class="nav-item d-none d-md-block">
             <a asp-action="Index" asp-controller="Home" class="nav-link">Home</a>
           </li>
-          <li class="nav-item d-none d-md-block">
-            <a href="#" class="nav-link">Contact</a>
+          <li class="nav-item dropdown d-none d-md-block">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="contactDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              data-bs-auto-close="outside"
+              aria-expanded="false"
+            >
+              Basic Setup
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="contactDropdown">
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Ledger</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateParentLedger">Add Parent
+                      Ledger</a>
+                  </li>
+                  <li><a class="dropdown-item" asp-controller="Ledger" asp-action="CreateLedger">Add Ledger</a></li>
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Bank</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" asp-controller="Bank" asp-action="CreateBank">Create Bank</a></li>
+                </ul>
+              </li>
+
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Basic Reports</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" asp-controller="Ledger" asp-action="ParentLedgerReport">Parent Ledger
+                      Report</a></li>
+                  <li><a class="dropdown-item" asp-controller="Ledger" asp-action="LedgerReport">Ledger List</a></li>
+                  <li><a class="dropdown-item" asp-controller="Bank" asp-action="BankReport">Bank Report</a></li>
+
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown d-none d-md-block">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="transactionDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              data-bs-auto-close="outside"
+              aria-expanded="false"
+            >
+              Transactions
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="transactionDropdown">
+              <li><a class="dropdown-item" asp-controller="Expense" asp-action="RecordExpense">Record Expense</a></li>
+              <li><a class="dropdown-item" asp-controller="Income" asp-action="RecordIncome">Record Income</a></li>
+              <li><a class="dropdown-item" asp-controller="Liability" asp-action="AddLiability">Record Liability</a>
+              </li>
+              <li><a class="dropdown-item" asp-controller="Voucher" asp-action="AddJv">Record Journal Voucher</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown d-none d-md-block">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="reportsDropdown"
+              role="button"
+              data-bs-toggle="dropdown"
+              data-bs-auto-close="outside"
+              aria-expanded="false"
+            >
+              Reporting
+            </a>
+
+            <ul class="dropdown-menu" aria-labelledby="reportsDropdown">
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Basic Reports</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" asp-controller="Expense" asp-action="ExpenseReport">Expense Report</a>
+                  </li>
+                  <li><a class="dropdown-item" asp-controller="Income" asp-action="IncomeReport">Income Report</a></li>
+                  <li><a class="dropdown-item" asp-controller="Liability" asp-action="LiabilityReport">Liability
+                      Report</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <a class="dropdown-item dropdown-toggle" href="#">Advance Reports</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" asp-controller="Voucher" asp-action="AccountingTransaction">Accounting
+                      Transaction</a></li>
+                  <li><a class="dropdown-item" asp-controller="Ledger" asp-action="LedgerStatement">Ledger Statement</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </li>
 
         </ul>
@@ -553,15 +667,9 @@
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
   crossorigin="anonymous"
 ></script>
-<!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
-
-<!--end::OverlayScrollbars Configure-->
-
-<!-- OPTIONAL SCRIPTS -->
-
-<!-- sortablejs -->
 <script
   src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
   crossorigin="anonymous"
@@ -662,6 +770,18 @@
   src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-rc3/dist/js/adminlte.min.js"
   crossorigin="anonymous"
 ></script>
+<script>
+  document.querySelectorAll('.dropdown-submenu > a').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const parent = el.parentElement;
+      parent.classList.toggle('show');
+    });
+  });
+</script>
+
 
 
 @await RenderSectionAsync("Scripts", required: false)
