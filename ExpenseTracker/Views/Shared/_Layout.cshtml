@@ -75,7 +75,7 @@
       display: none;
     }
 
-    .dropdown-submenu.show > .dropdown-menu {
+    .dropdown-submenu:hover > .dropdown-menu {
       display: block;
     }
 
@@ -157,6 +157,7 @@
             </a>
 
             <ul class="dropdown-menu" aria-labelledby="transactionDropdown">
+              <li><a class="dropdown-item" asp-controller="BankTransaction" asp-action="BankDepositandWithdraw">Record Bank Transaction</a></li>
               <li><a class="dropdown-item" asp-controller="Expense" asp-action="RecordExpense">Record Expense</a></li>
               <li><a class="dropdown-item" asp-controller="Income" asp-action="RecordIncome">Record Income</a></li>
               <li><a class="dropdown-item" asp-controller="Liability" asp-action="AddLiability">Record Liability</a>
@@ -227,7 +228,7 @@
                 class="user-image rounded-circle shadow"
                 alt="User Image"
               />
-              <span class="d-none d-md-inline">Alexander Pierce</span>
+              <span class="d-none d-md-inline">Admin User</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
               <!--begin::User Image-->
@@ -238,25 +239,14 @@
                   alt="User Image"
                 />
                 <p>
-                  Alexander Pierce - Web Developer
-                  <small>Member since Nov. 2023</small>
+                 Admin User
+                  @* <small>Member since Nov. 2023</small> *@
                 </p>
               </li>
               <!--end::User Image-->
               <!--begin::Menu Body-->
               <li class="user-body">
                 <!--begin::Row-->
-                <div class="row">
-                  <div class="col-4 text-center">
-                    <a href="#">Followers</a>
-                  </div>
-                  <div class="col-4 text-center">
-                    <a href="#">Sales</a>
-                  </div>
-                  <div class="col-4 text-center">
-                    <a href="#">Friends</a>
-                  </div>
-                </div>
                 <!--end::Row-->
               </li>
               <!--end::Menu Body-->
@@ -318,19 +308,19 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="./UI/general.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon bi bi-circle"></i>
                     <p>General</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="./UI/icons.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon bi bi-circle"></i>
                     <p>Icons</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="./UI/timeline.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon bi bi-circle"></i>
                     <p>Timeline</p>
                   </a>
@@ -347,7 +337,7 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="./forms/general.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="nav-icon bi bi-circle"></i>
                     <p>General Elements</p>
                   </a>
@@ -444,7 +434,7 @@
                     <li class="nav-item">
                       <a asp-controller="BankTransaction" asp-action="BankDepositandWithdraw" class="nav-link">
                         @* <i class="nav-icon bi bi-circle"></i> *@
-                        <p>Bank Transaction Report</p>
+                        <p>Record Bank Transaction</p>
                       </a>
                     </li>
                   </ul>
@@ -605,12 +595,12 @@
             </li>
 
 
-            <li class="nav-item">
-              <a href="./docs/license.html" class="nav-link">
-                <i class="nav-icon bi bi-patch-check-fill"></i>
-                <p>License</p>
-              </a>
-            </li>
+            @* <li class="nav-item"> *@
+            @*   <a href="#" class="nav-link"> *@
+            @*     <i class="nav-icon bi bi-patch-check-fill"></i> *@
+            @*     <p>License</p> *@
+            @*   </a> *@
+            @* </li> *@
 
 
           </ul>
