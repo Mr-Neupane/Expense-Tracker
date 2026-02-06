@@ -157,20 +157,25 @@
             let ledgerBalance = $(this).find(':selected').data('balance') || 0;
             $(this).closest('tr').find('.ledger-balance').val(ledgerBalance);
         });
+        $(document).on('change', '.dr-amount', function () {
+            var cr = $(this).closest('tr').find('.cr-amount');
+            var dr = this.value;
+            if (dr > 0) {
+                cr.prop('readonly', true)
+            } else {
+                cr.prop('readonly', false)
+            }
+        });
 
-        // Calculate totals
-        function calculateTotals() {
-            let dr = 0, cr = 0;
-            $('.dr-amount').each(function () {
-                dr += parseFloat($(this).val()) || 0;
-            });
-            $('.cr-amount').each(function () {
-                cr += parseFloat($(this).val()) || 0;
-            });
-            $('#totalDr').text(dr.toFixed(2));
-            $('#totalCr').text(cr.toFixed(2));
-        }
-
+        $(document).on('change', '.cr-amount', function () {
+            var dr = $(this).closest('tr').find('.dr-amount');
+            var cr = this.value;
+            if (cr > 0) {
+                dr.prop('readonly', true)
+            } else {
+                dr.prop('readonly', false)
+            }
+        });
         $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
         calculateTotals();
 
@@ -208,6 +213,7 @@
                 cr += parseFloat($(this).val()) || 0;
             });
 
+
             $('#totalDr').text(dr.toFixed(2));
             $('#totalCr').text(cr.toFixed(2));
 
@@ -221,8 +227,6 @@
 
         $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
         calculateTotals();
-
-        // Other code for adding/removing rows...
     });
 
 </script>
