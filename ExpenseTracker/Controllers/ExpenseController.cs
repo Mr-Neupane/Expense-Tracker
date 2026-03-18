@@ -1,5 +1,6 @@
 ﻿using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
@@ -47,13 +48,27 @@ public class ExpenseController : Controller
     [HttpPost]
     public async Task<IActionResult> RecordExpense(ExpenseVm vm)
     {
+        var cashAndBankLedger = _dropdownProvider.GetCashBankLedgers();
+        var expenseLedger = _dropdownProvider.GetExpenseLedgers();
+        var nvm = new ExpenseVm
+        {
+            ExpenseLedger = vm.ExpenseLedger,
+            TxnDate = vm.TxnDate,
+            ExpenseFromLedger = vm.ExpenseFromLedger,
+            Type = vm.Type,
+            Remarks = vm.Remarks,
+            Amount = vm.Amount,
+            ExpenseLedgers = new SelectList(expenseLedger, "Id", "Name"),
+            CashAndBankLedgers = new SelectList(cashAndBankLedger, "Id", "Name")
+        };
         try
         {
+            
             var fromBalance = _balanceProvider.GetLedgerBalance(vm.ExpenseFromLedger);
             if (vm.Amount > fromBalance)
             {
                 _toastNotification.AddAlertToastMessage("Insufficient balance on selected Ledger");
-                return View();
+                return View(nvm);
             }
 
             var expense = new NewExpenseDto
@@ -87,19 +102,7 @@ public class ExpenseController : Controller
         }
         catch (Exception e)
         {
-            var cashAndBankLedger = _dropdownProvider.GetCashBankLedgers();
-            var expenseLedger = _dropdownProvider.GetExpenseLedgers();
-            var nvm = new ExpenseVm
-            {
-                ExpenseLedger = vm.ExpenseLedger,
-                TxnDate = vm.TxnDate,
-                ExpenseFromLedger = vm.ExpenseFromLedger,
-                Type = vm.Type,
-                Remarks = vm.Remarks,
-                Amount = vm.Amount,
-                ExpenseLedgers = new SelectList(expenseLedger, "Id", "Name"),
-                CashAndBankLedgers = new SelectList(cashAndBankLedger, "Id", "Name")
-            };
+            
             _toastNotification.AddErrorToastMessage("Expense could not be recorded." + e.Message);
             return View(nvm);
         }

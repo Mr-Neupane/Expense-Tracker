@@ -1,5 +1,6 @@
 ﻿using System.Transactions;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
 using ExpenseTracker.Providers;
 using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;

@@ -1,7 +1,7 @@
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 
-namespace TestApplication.Interface;
+namespace ExpenseTracker.Interface;
 
 public interface IExpenseService
 {
