@@ -1,5 +1,7 @@
-using ExpenseTracker.Data;
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
+using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.ViewModels;
 using NToastNotify;
@@ -8,12 +10,14 @@ namespace ExpenseTracker.Controllers;
 
 public class UserController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUserGenericRepository _userGenericRepo;
+    private readonly IUow _uow;
     private readonly IToastNotification _toastNotification;
 
-    public UserController(ApplicationDbContext context, IToastNotification toastNotification)
+    public UserController(IUserGenericRepository userGenericRepo, IUow uow, IToastNotification toastNotification)
     {
-        _context = context;
+        _userGenericRepo = userGenericRepo;
+        _uow = uow;
         _toastNotification = toastNotification;
     }
 
@@ -28,7 +32,7 @@ public class UserController : Controller
     {
         try
         {
-            var existingUser = _context.Users.FirstOrDefault(u => u.Username == vm.Username);
+            var existingUser = await _userGenericRepo.SingleOrDefaultAsync(u => u.Username == vm.Username);
             if (existingUser == null)
             {
                 var addUser = new User()
@@ -36,11 +40,10 @@ public class UserController : Controller
                     Username = vm.Username,
                     Password = vm.Password
                 };
-                await _context.Users.AddAsync(addUser);
-                await _context.SaveChangesAsync();
+                await _uow.AddAsync(addUser);
+                await _uow.SaveChangesAsync();
                 _toastNotification.AddSuccessToastMessage("User created successfully");
             }
-
             else
             {
                 _toastNotification.AddErrorToastMessage($"User with {vm.Username.Trim()} username already exists");

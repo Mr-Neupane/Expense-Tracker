@@ -1,100 +1,59 @@
-﻿using ExpenseTracker.Data;
-using ExpenseTracker.Dtos;
-using Microsoft.AspNetCore.Mvc;
+﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Repository;
+using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
 
-
 namespace ExpenseTracker.Providers;
 
-public class DropdownProvider : Controller
+public class DropdownProvider
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ICoaGenericRepository _coaGenericRepo;
+    private readonly ILedgerGenericRepository _ledgerGenericRepo;
+    private readonly IBankGenericRepository _bankGenericRepo;
+    private readonly ITransactionGenericRepository _txnRepo;
     private readonly IBalanceProvider _balanceProvider;
+    private const int CashParentLedgerId = -1;
+    private const int BankParentLedgerId = -2;
 
-    public DropdownProvider(ApplicationDbContext context, IBalanceProvider balanceProvider)
+    public DropdownProvider(ICoaGenericRepository coaGenericRepo, ILedgerGenericRepository ledgerGenericRepo,
+        IBankGenericRepository bankGenericRepo, ITransactionGenericRepository txnRepo, IBalanceProvider balanceProvider)
     {
-        _context = context;
+        _coaGenericRepo = coaGenericRepo;
+        _ledgerGenericRepo = ledgerGenericRepo;
+        _bankGenericRepo = bankGenericRepo;
+        _txnRepo = txnRepo;
         _balanceProvider = balanceProvider;
     }
 
-    [HttpGet]
     public List<DropdownListDto> GetAllBanks()
     {
-        var banks = _context.Banks.Select(x => new DropdownListDto
-        {
-            Id = x.Id,
-            Name = x.BankName
-        }).ToList();
-        return banks;
+        return _bankGenericRepo.GetBaseQueryable()
+            .Select(x => new DropdownListDto { Id = x.Id, Name = x.BankName }).ToList();
     }
 
     public List<DropdownListDto> GetExpenseLedgers()
     {
-        var expLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+
+        return (from c in cQuery
+                join l in lQuery on c.Id equals l.ParentId
+                join ls in lQuery on l.Id equals ls.SubParentId
                 where c.Name == "Expenses" && ls.Status == Status.Active.ToInt()
-                select new DropdownListDto()
-                {
-                    Name = ls.LedgerName,
-                    Id = ls.Id
-                }
+                select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
             ).ToList();
-        return expLedger;
     }
 
-    public JsonResult GetLiabilityLedgers()
+    public List<LedgerInfoForJvDto> GetLedgers()
     {
-        var liabilityLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where c.Name == "Liabilities"
-                select new
-                {
-                    ledgername = ls.LedgerName,
-                    id = ls.Id
-                }
-            ).ToList();
-        return Json(liabilityLedger);
-    }
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
 
-    public List<DropdownListDto> GetCashBankLedgers()
-    {
-        var cashAndBankLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where (ls.SubParentId == -1 || ls.SubParentId == -2)
-                select new DropdownListDto
-                {
-                    Name = ls.LedgerName,
-                    Id = ls.Id
-                }
-            ).ToList();
-        return cashAndBankLedger;
-    }
-
-    public List<DropdownListDto> GetIncomeLedgers()
-    {
-        var incomeLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where c.Name == "Income"
-                select new DropdownListDto()
-                {
-                    Name = ls.LedgerName,
-                    Id = ls.Id
-                }
-            ).ToList();
-        return incomeLedger;
-    }
-
-    public JsonResult GetLedgers()
-    {
-        var ledgers = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                select new LedgerInfoForJvDto()
+        var ledgers = (from c in cQuery
+                join l in lQuery on c.Id equals l.ParentId
+                join ls in lQuery on l.Id equals ls.SubParentId
+                select new LedgerInfoForJvDto
                 {
                     LedgerBalance = 0,
                     LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),
@@ -103,19 +62,53 @@ public class DropdownProvider : Controller
                 }
             ).ToList();
         foreach (var l in ledgers)
-        {
-            var bs = _balanceProvider.GetLedgerBalance(l.LedgerId);
-            l.LedgerBalance = bs;
-        }
+            l.LedgerBalance = _balanceProvider.GetLedgerBalance(l.LedgerId);
 
-        return Json(ledgers);
+        return ledgers;
+    }
+
+    public List<DropdownListDto> GetCashBankLedgers()
+    {
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+
+        return (from c in cQuery
+                join l in lQuery on c.Id equals l.ParentId
+                join ls in lQuery on l.Id equals ls.SubParentId
+                where ls.SubParentId == CashParentLedgerId || ls.SubParentId == BankParentLedgerId
+                select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
+            ).ToList();
+    }
+
+    public List<DropdownListDto> GetIncomeLedgers()
+    {
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+
+        return (from c in cQuery
+                join l in lQuery on c.Id equals l.ParentId
+                join ls in lQuery on l.Id equals ls.SubParentId
+                where c.Name == "Income"
+                select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
+            ).ToList();
+    }
+
+    public List<DropdownListDto> GetLiabilityLedgers()
+    {
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+
+        return (from c in cQuery
+                join l in lQuery on c.Id equals l.ParentId
+                join ls in lQuery on l.Id equals ls.SubParentId
+                where c.Name == "Liabilities"
+                select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
+            ).ToList();
     }
 
     public async Task<List<string>> GetTransactionTypeAsync()
     {
-        var transactions = await _context.AccountingTransaction.ToListAsync();
-
-        var txnType = transactions.Select(t => t.Type).Distinct().ToList();
-        return txnType;
+        var transactions = await _txnRepo.GetAllAsync();
+        return transactions.Select(t => t.Type).Distinct().ToList();
     }
 }

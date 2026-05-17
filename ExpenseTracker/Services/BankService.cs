@@ -1,6 +1,8 @@
-﻿using ExpenseTracker.Data;
-using ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
+using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
 using TestApplication.ViewModels.Interface;
@@ -9,23 +11,29 @@ namespace ExpenseTracker.Services;
 
 public class BankService : IBankService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUow _uow;
+    private readonly IBankGenericRepository _bankGenericRepo;
+    private readonly IBankTransactionGenericRepository _bankTxnRepo;
+    private readonly IUserGenericRepository _userGenericRepo;
 
-    public BankService(ApplicationDbContext context)
+    public BankService(IUow uow, IBankGenericRepository bankGenericRepo,
+        IBankTransactionGenericRepository bankTxnRepo, IUserGenericRepository userGenericRepo)
     {
-        _context = context;
+        _uow = uow;
+        _bankGenericRepo = bankGenericRepo;
+        _bankTxnRepo = bankTxnRepo;
+        _userGenericRepo = userGenericRepo;
     }
 
 
     public async Task<List<Bank>> BankReportAsync()
     {
-        var report = await _context.Banks.Where(b => b.Status == Status.Active.ToInt()).ToListAsync();
-        return report;
+        return await _bankGenericRepo.GetAsync(b => b.Status == Status.Active.ToInt());
     }
 
     public async Task EditBankAsync(BankDto dto)
     {
-        var bank = await _context.Banks.FindAsync(dto.Id);
+        var bank = await _bankGenericRepo.FindOrThrowAsync(dto.Id);
         if (bank.BankName != dto.BankName)
         {
             bank.BankName = dto.BankName;
@@ -46,7 +54,7 @@ public class BankService : IBankService
             bank.BankAddress = dto.BankAddress;
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
@@ -64,20 +72,20 @@ public class BankService : IBankService
             Status = Status.Active.ToInt(),
             TransactionId = 0
         };
-        await _context.BankTransaction.AddAsync(banktransaction);
-        await _context.SaveChangesAsync();
+        await _uow.AddAsync(banktransaction);
+        await _uow.SaveChangesAsync();
         return banktransaction;
     }
 
     public async Task UpdateAccountingTransactionIdInBankTransactionAsync(int id, int transactionId)
     {
-        var txn = await _context.BankTransaction.Where(t => t.Id == id).ToListAsync();
+        var txn = await _bankTxnRepo.GetAsync(t => t.Id == id);
         foreach (var t in txn)
         {
             t.TransactionId = transactionId;
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<Bank> AddBankAsync(BankDto dto)
@@ -97,35 +105,38 @@ public class BankService : IBankService
             RecById = -1
         };
 
-        await _context.Banks.AddAsync(bank);
-        await _context.SaveChangesAsync();
+        await _uow.AddAsync(bank);
+        await _uow.SaveChangesAsync();
         return bank;
     }
 
     public async Task UpdateRemainingBalanceInBankAsync(int bid)
     {
-        var deposit = _context.BankTransaction
+        var bankTxnQuery = _bankTxnRepo.GetBaseQueryable();
+        var deposit = await bankTxnQuery
             .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Deposit" && t.BankId == bid)
-            .Sum(t => t.Amount);
-        var withdraw = _context.BankTransaction
+            .SumAsync(t => t.Amount);
+        var withdraw = await bankTxnQuery
             .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
-            .Sum(t => t.Amount);
+            .SumAsync(t => t.Amount);
         var remBal = deposit - withdraw;
-        var bank = await _context.Banks.Where(b => b.Id == bid).SingleOrDefaultAsync();
-        if (bank == null )
+        var bank = await _bankGenericRepo.SingleOrDefaultAsync(b => b.Id == bid);
+        if (bank == null)
         {
             throw new Exception("Cannot update remaining balance");
         }
         else
         {
             bank.RemainingBalance = remBal;
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
         }
     }
 
     public async Task ReverseBankTransactionAsync(int id, int transactionId)
     {
-        var txn = await _context.BankTransaction.Where(t => t.Id == id || t.TransactionId == transactionId)
+        var bankTxnQuery = _bankTxnRepo.GetBaseQueryable();
+        var txn = await bankTxnQuery
+            .Where(t => t.Id == id && t.TransactionId == transactionId)
             .FirstOrDefaultAsync();
 
         if (txn == null)
@@ -135,16 +146,19 @@ public class BankService : IBankService
         else
         {
             txn.Status = Status.Reversed.ToInt();
-
-            await _context.SaveChangesAsync();
+            await _uow.SaveChangesAsync();
         }
     }
 
     public async Task<List<BankTransactionReportDto>> BankTransactionReportAsync()
     {
-        var res = await (from bt in _context.BankTransaction
-                join u in _context.Users on bt.RecById equals u.Id
-                join b in _context.Banks on bt.BankId equals b.Id
+        var btQuery = _bankTxnRepo.GetBaseQueryable();
+        var uQuery = _userGenericRepo.GetBaseQueryable();
+        var bQuery = _bankGenericRepo.GetBaseQueryable();
+
+        var res = await (from bt in btQuery
+                join u in uQuery on bt.RecById equals u.Id
+                join b in bQuery on bt.BankId equals b.Id
                 where bt.Status == Status.Active.ToInt()
                 select new BankTransactionReportDto
                 {
