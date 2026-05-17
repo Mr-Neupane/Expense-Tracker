@@ -1,4 +1,5 @@
 ﻿using System.Transactions;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
@@ -33,7 +34,7 @@ public class VoucherService : IVoucherService
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
-            RecById = -1,
+            RecById = UserConstants.AdminUser,
             TransactionDetails = dto.Details.Select(d => new TransactionDetail
             {
                 LedgerId = d.LedgerID,
@@ -42,7 +43,7 @@ public class VoucherService : IVoucherService
                 DrCr = d.IsDr ? 'D' : 'C',
                 RecStatus = 'A',
                 Status = Status.Active.ToInt(),
-                RecById = -1
+                RecById = UserConstants.AdminUser
             }).ToList()
         };
         await _dbContext.AccountingTransaction.AddAsync(txn);
@@ -63,7 +64,7 @@ public class VoucherService : IVoucherService
                     VoucherNo = t.VoucherNo,
                     Remarks = t.Remarks,
                     Type = t.Type,
-                    Username = u.Username,
+                    Username = u.UserName,
                     Amount = t.Amount,
                     Status = t.Status
                 }
@@ -172,7 +173,7 @@ public class VoucherService : IVoucherService
                 Typeid = t.TypeId,
                 Remarks = t.Remarks,
                 TxnDate = t.TxnDate,
-                UserName = u.Username,
+                UserName = u.UserName,
                 IsReverseVoucher = t.IsReversed
             }).ToListAsync();
         return report;

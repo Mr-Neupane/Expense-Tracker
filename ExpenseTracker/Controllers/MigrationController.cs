@@ -1,5 +1,8 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
@@ -7,7 +10,11 @@ using TestApplication.Enums;
 
 namespace ExpenseTracker.Controllers;
 
-public class MigrationController(ApplicationDbContext context, IToastNotification toastNotification)
+[AllowAnonymous]
+public class MigrationController(
+    ApplicationDbContext context,
+    UserManager<AppUser> userManager,
+    IToastNotification toastNotification)
     : Controller
 {
     [HttpGet]
@@ -20,17 +27,22 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
     {
         try
         {
-            var existingUser = await context.Users.Where(x => x.Id == -1).SingleOrDefaultAsync();
+            var existingUser = await userManager.FindByIdAsync(UserConstants.AdminUser.ToString());
             if (existingUser == null)
             {
-                var user = new User
+                var user = new AppUser
                 {
-                    Id = -1,
-                    Username = "Admin User",
-                    Password = "Admin@123"
+                    Id = UserConstants.AdminUser,
+                    UserName = "Admin User",
+                    DisplayName = "Admin User"
                 };
-                await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
+                var createResult = await userManager.CreateAsync(user, "Admin@123");
+                if (!createResult.Succeeded)
+                {
+                    toastNotification.AddErrorToastMessage(
+                        string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                    return Redirect("/Migration/Index");
+                }
             }
 
             var existingCoaLedger =
@@ -41,22 +53,22 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
                 {
                     new()
                     {
-                        Id = 1,
+                        Id = CoaConstants.Assets,
                         Name = "Assets"
                     },
                     new()
                     {
-                        Id = 2,
+                        Id = CoaConstants.Liabilities,
                         Name = "Liabilities"
                     },
                     new()
                     {
-                        Id = 3,
+                        Id = CoaConstants.Income,
                         Name = "Income"
                     },
                     new()
                     {
-                        Id = 4,
+                        Id = CoaConstants.Expenses,
                         Name = "Expenses"
                     }
                 };
@@ -64,83 +76,82 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
                 await context.SaveChangesAsync();
             }
 
-
-            var defaultParentLedger = await context.Ledgers.Where(x => x.Id == -1).SingleOrDefaultAsync();
+            var defaultParentLedger = await context.Ledgers.Where(x => x.Id == LedgerConstants.CashAccount).SingleOrDefaultAsync();
             if (defaultParentLedger == null)
             {
                 var parentLedgers = new List<Ledger>
                 {
                     new()
                     {
-                        Id = -1,
-                        ParentId = 1,
+                        Id = LedgerConstants.CashAccount,
+                        ParentId = CoaConstants.Assets,
                         LedgerName = "Cash Account",
                         Code = "80",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -2,
-                        ParentId = 1,
+                        Id = LedgerConstants.BankAccount,
+                        ParentId = CoaConstants.Assets,
                         LedgerName = "Bank Account",
                         Code = "90",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -4,
-                        ParentId = 2,
+                        Id = LedgerConstants.CurrentLiabilities,
+                        ParentId = CoaConstants.Liabilities,
                         LedgerName = "Current Liabilities",
                         Code = "60",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -5,
-                        ParentId = 2,
+                        Id = LedgerConstants.OtherLiabilities,
+                        ParentId = CoaConstants.Liabilities,
                         LedgerName = "Other Liabilities",
                         Code = "70",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -6,
-                        ParentId = 3,
+                        Id = LedgerConstants.OtherIncome,
+                        ParentId = CoaConstants.Income,
                         LedgerName = "Other Income",
                         Code = "160.1",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -7,
-                        ParentId = 3,
+                        Id = LedgerConstants.InvestmentInterest,
+                        ParentId = CoaConstants.Income,
                         LedgerName = "Investment Interest",
                         Code = "160.2",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -8,
-                        ParentId = 4,
+                        Id = LedgerConstants.OtherExpenses,
+                        ParentId = CoaConstants.Expenses,
                         LedgerName = "Other Expenses",
                         Code = "150.1",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -9,
-                        ParentId = 4,
+                        Id = LedgerConstants.InterestExpenses,
+                        ParentId = CoaConstants.Expenses,
                         LedgerName = "Interest Expenses",
                         Code = "150.2",
                         SubParentId = null
                     },
                     new()
                     {
-                        Id = -3,
+                        Id = LedgerConstants.Cash,
                         ParentId = null,
                         LedgerName = "Cash",
                         Code = "80.1",
-                        SubParentId = -1
+                        SubParentId = LedgerConstants.CashAccount
                     }
                 };
                 await context.Ledgers.AddRangeAsync(parentLedgers);
@@ -153,7 +164,7 @@ public class MigrationController(ApplicationDbContext context, IToastNotificatio
         catch (Exception e)
         {
             toastNotification.AddErrorToastMessage(e.Message);
-            return Redirect($"Home/Migration/");
+            return Redirect("/Migration/Index");
         }
     }
 }

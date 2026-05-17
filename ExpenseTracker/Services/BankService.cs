@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +60,7 @@ public class BankService : IBankService
             Type = dto.Type,
             Remarks = dto.Remarks,
             RecDate = DateTime.Now.ToUniversalTime(),
-            RecById = -1,
+            RecById = UserConstants.AdminUser,
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
             TransactionId = 0
@@ -94,7 +95,7 @@ public class BankService : IBankService
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
 
         await _context.Banks.AddAsync(bank);
@@ -156,7 +157,7 @@ public class BankService : IBankService
                     Type = bt.Type,
                     Amount = bt.Amount,
                     TxnDate = bt.TxnDate,
-                    Username = u.Username,
+                    Username = u.UserName,
                 }
             ).ToListAsync();
         return res;

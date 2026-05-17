@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Models;
@@ -25,8 +26,8 @@ public class ExpenseService : IExpenseService
             TxnDate = dto.TxnDate.ToUniversalTime(),
             RecDate = DateTime.Now.ToUniversalTime(),
             RecStatus = 'A',
-            Status = 1,
-            RecById = -1,
+            Status = StatusConstants.Active,
+            RecById = UserConstants.AdminUser,
         };
         await _context.Expenses.AddAsync(expense);
         await _context.SaveChangesAsync();
@@ -39,7 +40,7 @@ public class ExpenseService : IExpenseService
         var report = await (from t in _context.AccountingTransaction
             join e in _context.Expenses on t.TypeId equals e.Id
             join u in _context.Users on e.RecById equals u.Id
-            where t.Status == 1 && t.Type == "Expense" && e.Status == 1
+            where t.Status == StatusConstants.Active && t.Type == "Expense" && e.Status == StatusConstants.Active
             select new ExpenseReportDto
             {
                 LedgerId = 0,
@@ -47,7 +48,7 @@ public class ExpenseService : IExpenseService
                 Amount = e.DrAmount,
                 TxnDate = t.TxnDate,
                 VoucherNo = t.VoucherNo,
-                Username = u.Username,
+                Username = u.UserName,
                 Status = e.Status,
             }).ToListAsync();
         return report;
@@ -56,9 +57,9 @@ public class ExpenseService : IExpenseService
     public async Task ReverseRecordedExpenseAsync(int id)
     {
         var expense = await _context.Expenses.FindAsync(id);
-        if (expense is { Status: 1 })
+        if (expense is { Status: StatusConstants.Active })
         {
-            expense.Status = 2;
+            expense.Status = StatusConstants.Reversed;
             await _context.SaveChangesAsync();
         }
         else

@@ -1,8 +1,13 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Manager;
+using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using TestApplication.Interface;
@@ -19,21 +24,48 @@ public static class DiConfig
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = AppConstants.PasswordMinLength;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/Account/Login";
+            options.LogoutPath = "/Account/Logout";
+            options.AccessDeniedPath = "/Account/Login";
+            options.ExpireTimeSpan = TimeSpan.FromDays(AppConstants.CookieExpireDays);
+            options.SlidingExpiration = true;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        });
+
         builder.Services.AddRazorPages();
-
         builder.UseServices();
-
         builder.UseNotificationServices();
     }
 
     private static void UseNotificationServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllersWithViews()
+        builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build()));
+            })
             .AddNToastNotifyToastr(new ToastrOptions
             {
                 PositionClass = ToastPositions.BottomRight,
                 CloseButton = true,
-                TimeOut = 5000
+                TimeOut = AppConstants.ToastTimeoutMs
             });
     }
 

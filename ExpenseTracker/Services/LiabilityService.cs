@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ public class LiabilityService : ILiabilityService
             RecDate = DateTime.Now.ToUniversalTime(),
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
         await _context.Liabilities.AddRangeAsync(liability);
         await _context.SaveChangesAsync();
@@ -49,7 +50,7 @@ public class LiabilityService : ILiabilityService
                 Transactionid = t.Id,
                 Voucherno = t.VoucherNo,
                 Status = t.Status,
-                Username = u.Username,
+                Username = u.UserName,
                 Amount = t.Amount,
                 Remarks = t.Remarks
             }).ToListAsync();

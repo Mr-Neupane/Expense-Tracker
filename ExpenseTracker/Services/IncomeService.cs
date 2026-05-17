@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ public class IncomeService : IIncomeService
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
             RecStatus = 'A',
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
         await _context.Incomes.AddAsync(income);
         await _context.SaveChangesAsync();
@@ -61,7 +62,7 @@ public class IncomeService : IIncomeService
                 Date = i.TxnDate,
                 VoucherNo = t.VoucherNo,
                 TransactionId = t.Id,
-                Username = u.Username,
+                Username = u.UserName,
                 Status = i.Status,
             }).ToListAsync();
         return report;

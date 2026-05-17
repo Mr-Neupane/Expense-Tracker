@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
 using Microsoft.AspNetCore.Mvc;
 using TestApplication.ViewModels;
 using ExpenseTracker.Providers;
@@ -71,7 +73,7 @@ public class LedgerController : Controller
         var res = await (from l in _context.Ledgers
             join pl in _context.Ledgers on l.SubParentId equals pl.Id
             join c in _context.CoaLedger on pl.ParentId equals c.Id
-            where l.Id == ledgerId && l.Status == 1 && l.SubParentId != -2
+            where l.Id == ledgerId && l.Status == StatusConstants.Active && l.SubParentId != LedgerConstants.BankAccount
             select new EditLedgerVM
             {
                 LedgerId = l.Id,
@@ -248,7 +250,7 @@ public class LedgerController : Controller
 
     public IActionResult GetSubParents(int parentId)
     {
-        var res = _context.Ledgers.Where(x => x.Id != -2 && x.ParentId == parentId
+        var res = _context.Ledgers.Where(x => x.Id != LedgerConstants.BankAccount && x.ParentId == parentId
         ).ToList();
         var jsonRes = res.Select(x => new
             { ledgername = x.LedgerName, id = x.Id });

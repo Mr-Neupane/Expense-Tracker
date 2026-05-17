@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
 using ExpenseTracker.ViewModels;
@@ -77,11 +78,11 @@ public class BankTransactionController : Controller
                         {
                             new()
                             {
-                                LedgerID = vm.Type == "Deposit" ? bankLedgerId : -3, IsDr = true, Amount = vm.Amount
+                                LedgerID = vm.Type == "Deposit" ? bankLedgerId : LedgerConstants.Cash, IsDr = true, Amount = vm.Amount
                             },
                             new()
                             {
-                                LedgerID = vm.Type == "Withdraw" ? bankLedgerId : -3, IsDr = false, Amount = vm.Amount
+                                LedgerID = vm.Type == "Withdraw" ? bankLedgerId : LedgerConstants.Cash, IsDr = false, Amount = vm.Amount
                             },
                         }
                     };

@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Providers;
@@ -45,7 +47,7 @@ public class BankController : Controller
             {
                 Name = vm.BankName,
                 ParentId = null,
-                SubParentId = -2,
+                SubParentId = LedgerConstants.BankAccount,
             });
 
             await _bankService.AddBankAsync(new BankDto

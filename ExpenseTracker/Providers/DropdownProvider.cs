@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -64,7 +65,7 @@ public class DropdownProvider : Controller
         var cashAndBankLedger = (from c in _context.CoaLedger
                 join l in _context.Ledgers on c.Id equals l.ParentId
                 join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where (ls.SubParentId == -1 || ls.SubParentId == -2)
+                where (ls.SubParentId == LedgerConstants.CashAccount || ls.SubParentId == LedgerConstants.BankAccount)
                 select new DropdownListDto
                 {
                     Name = ls.LedgerName,
