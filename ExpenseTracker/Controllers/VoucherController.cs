@@ -1,7 +1,9 @@
 ﻿using System.Transactions;
-using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Manager;
+using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,7 +15,8 @@ namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ITransactionGenericRepository _txnRepo;
+    private readonly IBankGenericRepository _bankGenericRepo;
     private readonly IVoucherService _voucherService;
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
@@ -21,11 +24,12 @@ public class VoucherController : Controller
     private readonly IBankService _bankService;
 
 
-    public VoucherController(ApplicationDbContext context, IVoucherService voucherService,
-        ReverseTransactionManager reverseTransactionManager, IToastNotification toastNotification,
-        DropdownProvider dropdownProvider, IBankService bankService)
+    public VoucherController(ITransactionGenericRepository txnRepo, IBankGenericRepository bankGenericRepo,
+        IVoucherService voucherService, ReverseTransactionManager reverseTransactionManager,
+        IToastNotification toastNotification, DropdownProvider dropdownProvider, IBankService bankService)
     {
-        _context = context;
+        _txnRepo = txnRepo;
+        _bankGenericRepo = bankGenericRepo;
         _voucherService = voucherService;
         _reverseTransactionManager = reverseTransactionManager;
         _toastNotification = toastNotification;
@@ -43,14 +47,10 @@ public class VoucherController : Controller
     public async Task<IActionResult> AccountingTransaction()
     {
         var type = await _dropdownProvider.GetTransactionTypeAsync();
-        var transactions = _context.AccountingTransaction.ToList();
-
         var model =
             new AccountingTxnVm
             {
-                TransactionsSelectList = new SelectList(
-                    type
-                )
+                TransactionsSelectList = new SelectList(type)
             };
 
         return View(model);
@@ -129,7 +129,7 @@ public class VoucherController : Controller
 
                 foreach (var d in vm.Entries)
                 {
-                    var bank = _context.Banks.SingleOrDefault(x => x.LedgerId == d.LedgerId);
+                    var bank = await _bankGenericRepo.SingleOrDefaultAsync(x => x.LedgerId == d.LedgerId);
 
                     if (bank != null)
                     {

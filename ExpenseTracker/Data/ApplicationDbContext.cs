@@ -1,4 +1,6 @@
-﻿using ExpenseTracker.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
+using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -30,6 +32,8 @@ public class ApplicationDbContext : DbContext
         {
             foreach (var property in entity.GetProperties())
             {
+                if (property.PropertyInfo?.GetCustomAttribute<ColumnAttribute>() != null)
+                    continue;
                 var propertyName = property.Name;
                 property.SetColumnName(ToSnakeCase(propertyName)); 
             }
