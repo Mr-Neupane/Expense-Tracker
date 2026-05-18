@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TestApplication.ViewModels;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Models;
 

@@ -22,6 +22,89 @@ namespace ExpenseTracker.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ExpenseTracker.Models.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("access_failed_count");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text")
+                        .HasColumnName("concurrency_stamp");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("email_confirmed");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("lockout_enabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lockout_end");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_email");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_user_name");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text")
+                        .HasColumnName("password_hash");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("phone_number");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean")
+                        .HasColumnName("phone_number_confirmed");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text")
+                        .HasColumnName("security_stamp");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("two_factor_enabled");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("user_name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("ExpenseTracker.Models.Bank", b =>
                 {
                     b.Property<int>("Id")
@@ -499,7 +582,7 @@ namespace ExpenseTracker.Migrations
                     b.ToTable("transaction_details", "accounting");
                 });
 
-            modelBuilder.Entity("ExpenseTracker.Models.User", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -508,24 +591,154 @@ namespace ExpenseTracker.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Password")
-                        .IsRequired()
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("text")
-                        .HasColumnName("password");
+                        .HasColumnName("concurrency_stamp");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("username");
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("normalized_name");
 
                     b.HasKey("Id");
 
-                    b.ToTable("users", "public");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_value");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_type");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text")
+                        .HasColumnName("claim_value");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text")
+                        .HasColumnName("login_provider");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("text")
+                        .HasColumnName("provider_key");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("text")
+                        .HasColumnName("provider_display_name");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("text")
+                        .HasColumnName("login_provider");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text")
+                        .HasColumnName("value");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.Bank", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -536,7 +749,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.BankTransaction", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -547,7 +760,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.Coa", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -564,7 +777,7 @@ namespace ExpenseTracker.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -577,7 +790,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.Income", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,7 +801,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.Ledger", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -599,7 +812,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.Liability", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -610,7 +823,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.Transaction", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -621,7 +834,7 @@ namespace ExpenseTracker.Migrations
 
             modelBuilder.Entity("ExpenseTracker.Models.TransactionDetail", b =>
                 {
-                    b.HasOne("ExpenseTracker.Models.User", "RecBy")
+                    b.HasOne("ExpenseTracker.Models.AppUser", "RecBy")
                         .WithMany()
                         .HasForeignKey("RecById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -636,6 +849,57 @@ namespace ExpenseTracker.Migrations
                     b.Navigation("RecBy");
 
                     b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseTracker.Models.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("ExpenseTracker.Models.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ExpenseTracker.Models.Transaction", b =>

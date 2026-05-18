@@ -1,8 +1,8 @@
-﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace TestApplication.ViewModels;
+namespace ExpenseTracker.ViewModels;
 
 public class AccountingTxnVm
 {

@@ -1,12 +1,12 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.ViewModels;
+using ExpenseTracker.Enums;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Services;
 

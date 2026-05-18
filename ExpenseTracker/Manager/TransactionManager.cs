@@ -1,9 +1,9 @@
-﻿using System.Transactions;
+using System.Transactions;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Providers;
-using TestApplication.Interface;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels.Interface;
 using Transaction = ExpenseTracker.Models.Transaction;
 
 namespace ExpenseTracker.Manager;

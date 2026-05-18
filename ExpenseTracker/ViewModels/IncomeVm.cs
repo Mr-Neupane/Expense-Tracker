@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace TestApplication.ViewModels;
+namespace ExpenseTracker.ViewModels;
 
 public class IncomeVm : BaseVm
 {

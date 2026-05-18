@@ -1,4 +1,4 @@
-using TestApplication.ViewModels;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.ViewModels;
 

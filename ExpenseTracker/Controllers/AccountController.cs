@@ -1,8 +1,6 @@
-using System.Transactions;
-using ExpenseTracker.Models;
+using ExpenseTracker.Manager.Interfaces;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
@@ -10,17 +8,14 @@ namespace ExpenseTracker.Controllers;
 
 public class AccountController : Controller
 {
-    private readonly SignInManager<AppUser> _signInManager;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IAuthManager _authManager;
     private readonly IToastNotification _toastNotification;
 
     public AccountController(
-        SignInManager<AppUser> signInManager,
-        UserManager<AppUser> userManager,
+        IAuthManager authManager,
         IToastNotification toastNotification)
     {
-        _signInManager = signInManager;
-        _userManager = userManager;
+        _authManager = authManager;
         _toastNotification = toastNotification;
     }
 
@@ -40,25 +35,7 @@ public class AccountController : Controller
     {
         try
         {
-            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                var user = await _userManager.FindByNameAsync(vm.Username);
-                if (user == null)
-                {
-                    _toastNotification.AddErrorToastMessage("Invalid username or password.");
-                    return View(vm);
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
-
-                if (!result.Succeeded)
-                {
-                    _toastNotification.AddErrorToastMessage("Invalid username or password.");
-                    return View(vm);
-                }
-
-                scope.Complete();
-            }
+            await _authManager.Login(vm.Username, vm.Password);
 
             _toastNotification.AddSuccessToastMessage("Login successful.");
             return RedirectToAction("Index", "Home");
@@ -72,11 +49,7 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Logout()
     {
-        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-        {
-            await _signInManager.SignOutAsync();
-            scope.Complete();
-        }
+        await _authManager.Logout();
 
         _toastNotification.AddSuccessToastMessage("Logged out successfully.");
         return RedirectToAction("Login");

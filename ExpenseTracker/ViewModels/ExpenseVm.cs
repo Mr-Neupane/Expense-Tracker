@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace TestApplication.ViewModels;
+namespace ExpenseTracker.ViewModels;
 
 public class ExpenseVm : BaseVm
 {

@@ -1,4 +1,4 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using TestApplication.Enums;
+using ExpenseTracker.Enums;
 
 namespace ExpenseTracker.Controllers;
 

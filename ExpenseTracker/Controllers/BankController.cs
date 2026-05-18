@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
@@ -9,9 +9,9 @@ using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NToastNotify;
-using TestApplication.Interface;
-using TestApplication.ViewModels;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels;
+using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 

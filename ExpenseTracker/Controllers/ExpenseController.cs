@@ -1,4 +1,4 @@
-﻿using ExpenseTracker.Data;
+using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Manager;
@@ -6,9 +6,9 @@ using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
-using TestApplication.Interface;
-using TestApplication.ViewModels;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels;
+using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Controllers;
 

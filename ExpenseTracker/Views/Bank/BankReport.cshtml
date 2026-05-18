@@ -41,7 +41,7 @@
                         <td>@item.AccountNumber</td>
 
                         <td class="text-right">
-                            @String.Format("{0:N2}", item.RemainingBalance)
+                            @($"{item.RemainingBalance:N2}")
                         </td>
 
                         <td>@item.BankContactNumber</td>

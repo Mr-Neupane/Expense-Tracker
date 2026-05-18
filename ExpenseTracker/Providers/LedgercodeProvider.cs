@@ -1,11 +1,11 @@
-﻿using Dapper;
+using Dapper;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.ViewModels;
+using ExpenseTracker.Enums;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Providers;
 

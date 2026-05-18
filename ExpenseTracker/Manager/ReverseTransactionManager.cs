@@ -1,7 +1,7 @@
-﻿using System.Transactions;
+using System.Transactions;
 using ExpenseTracker.Interface;
-using TestApplication.Interface;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Manager;
 

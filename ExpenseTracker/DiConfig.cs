@@ -1,17 +1,19 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Manager;
+using ExpenseTracker.Manager.Interfaces;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using TestApplication.Interface;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker;
 
@@ -48,6 +50,8 @@ public static class DiConfig
             options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         });
 
+        builder.Services.AddHttpContextAccessor();
+
         builder.Services.AddRazorPages();
         builder.UseServices();
         builder.UseNotificationServices();
@@ -72,6 +76,8 @@ public static class DiConfig
     private static void UseServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        builder.Services.AddScoped<IAuthManager, AuthManager>();
+        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
         builder.Services.AddScoped<IVoucherService, VoucherService>();
         builder.Services.AddScoped<IBankService, BankService>();
         builder.Services.AddScoped<IIncomeService, IncomeService>();

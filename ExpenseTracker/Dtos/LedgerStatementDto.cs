@@ -1,4 +1,6 @@
-﻿using TestApplication.ViewModels;
+using ExpenseTracker.ViewModels;
+
+namespace ExpenseTracker.Dtos;
 
 public class LedgerStatementDto
 {
