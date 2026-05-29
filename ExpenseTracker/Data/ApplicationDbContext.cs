@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 ﻿using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+=======
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
+using ExpenseTracker.Models;
+>>>>>>> main
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Data;
@@ -35,6 +41,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>
         {
             foreach (var property in entity.GetProperties())
             {
+                if (property.PropertyInfo?.GetCustomAttribute<ColumnAttribute>() != null)
+                    continue;
                 var propertyName = property.Name;
                 property.SetColumnName(ToSnakeCase(propertyName));
             }

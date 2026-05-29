@@ -164,9 +164,9 @@
                     $.each(data, function (index, ledger) {
                         $('#LedgerSelection').append(
                             $('<option>', {
-                                value: ledger.id,
-                                text: ledger.coaname + ' | ' + ledger.ledgername,
-                                selected: ledger.id == selectedLedgerId
+                                value: ledger.ledgerId,
+                                text: ledger.ledgerName,
+                                selected: ledger.ledgerId == selectedLedgerId
                             })
                         );
                     });

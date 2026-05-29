@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 using System.Transactions;
 using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
+=======
+﻿using System.Transactions;
+>>>>>>> main
 using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
+using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
 using ExpenseTracker.ViewModels.Interface;
@@ -12,11 +19,21 @@ namespace ExpenseTracker.Services;
 
 public class VoucherService : IVoucherService
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IUow _uow;
+    private readonly ITransactionGenericRepository _txnRepo;
+    private readonly ITransactionDetailGenericRepository _txnDetailGenericRepo;
+    private readonly ILedgerGenericRepository _ledgerGenericRepo;
+    private readonly IUserGenericRepository _userGenericRepo;
 
-    public VoucherService(ApplicationDbContext dbContext)
+    public VoucherService(IUow uow, ITransactionGenericRepository txnRepo,
+        ITransactionDetailGenericRepository txnDetailGenericRepo, ILedgerGenericRepository ledgerGenericRepo,
+        IUserGenericRepository userGenericRepo)
     {
-        _dbContext = dbContext;
+        _uow = uow;
+        _txnRepo = txnRepo;
+        _txnDetailGenericRepo = txnDetailGenericRepo;
+        _ledgerGenericRepo = ledgerGenericRepo;
+        _userGenericRepo = userGenericRepo;
     }
 
     public async Task<Transaction> RecordTransactionAsync(AccTransactionDto dto)
@@ -46,15 +63,18 @@ public class VoucherService : IVoucherService
                 RecById = UserConstants.AdminUser
             }).ToList()
         };
-        await _dbContext.AccountingTransaction.AddAsync(txn);
-        await _dbContext.SaveChangesAsync();
+        await _uow.AddAsync(txn);
+        await _uow.SaveChangesAsync();
         return txn;
     }
 
     public async Task<List<AccountingTransactionReportDto>> AccountingTransactionReportAsync(TransactionReportDto dto)
     {
-        var accTransactionRepo = await (from t in _dbContext.AccountingTransaction
-                join u in _dbContext.Users on t.RecById equals u.Id
+        var tQuery = _txnRepo.GetBaseQueryable();
+        var uQuery = _userGenericRepo.GetBaseQueryable();
+
+        var accTransactionRepo = await (from t in tQuery
+                join u in uQuery on t.RecById equals u.Id
                 where (dto.Status == 0 || dto.Status == t.Status) && t.TxnDate.Date >= dto.DateFrom.Date &&
                       t.TxnDate.Date <= dto.DateTo.Date && (dto.Type == "All" || dto.Type == t.Type)
                 select new AccountingTransactionReportDto
@@ -74,22 +94,20 @@ public class VoucherService : IVoucherService
 
     public async Task ReverseTransactionAsync(int transactionId)
     {
-        var transaction = await _dbContext.AccountingTransaction.SingleOrDefaultAsync(x => x.Id == transactionId);
+        var transaction = await _txnRepo.SingleOrDefaultAsync(x => x.Id == transactionId);
         if (transaction != null)
         {
             using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var txn = await _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId)
-                    .ToListAsync();
+                var txn = await _txnDetailGenericRepo.GetAsync(t => t.TransactionId == transactionId);
                 var revTxn = await RecordReverseTransactionAsync(transactionId);
                 {
                     transaction.Status = Status.Reversed.ToInt();
                     transaction.IsReversed = true;
                     transaction.ReversedId = revTxn.Id;
                     txn.ForEach(a => a.Status = Status.Reversed.ToInt());
-                    await _dbContext.SaveChangesAsync();
+                    await _uow.SaveChangesAsync();
                 }
-
 
                 scope.Complete();
             }
@@ -102,17 +120,17 @@ public class VoucherService : IVoucherService
 
     private async Task<Transaction> RecordReverseTransactionAsync(int transactionId)
     {
-        var existingTransaction =
-            await _dbContext.AccountingTransaction.Where(x => x.Id == transactionId).Select(x => x.Id)
-                .SingleOrDefaultAsync();
-        if (existingTransaction == null || transactionId == 0)
+        var tQuery = _txnRepo.GetBaseQueryable();
+
+        var exists = await tQuery.AnyAsync(x => x.Id == transactionId);
+        if (!exists || transactionId == 0)
         {
             throw new Exception("Transaction not found");
         }
         else
         {
             var voucherNo = GetVoucherNo(null, transactionId, true);
-            var txn = (from t in _dbContext.AccountingTransaction
+            var txn = await (from t in tQuery
                 where t.Id == transactionId
                 select new AccTransactionDto
                 {
@@ -122,9 +140,9 @@ public class VoucherService : IVoucherService
                     TypeId = t.TypeId,
                     Remarks = "Reverse transaction",
                     IsJv = t.VoucherType == (int)VoucherType.Journal,
-                }).Single();
+                }).SingleAsync();
 
-            var txnDetail = _dbContext.TransactionDetails.Where(t => t.TransactionId == transactionId).ToList();
+            var txnDetail = await _txnDetailGenericRepo.GetAsync(t => t.TransactionId == transactionId);
             var newTxn = new Transaction
             {
                 TxnDate = txn.TxnDate,
@@ -136,22 +154,31 @@ public class VoucherService : IVoucherService
                 Remarks = txn.Remarks,
                 IsReversed = true,
                 ReversedId = null,
+                RecStatus = 'A',
+                Status = Status.Active.ToInt(),
+                RecDate = DateTime.UtcNow,
+                RecById = -1,
                 TransactionDetails = txnDetail.Select(x => new TransactionDetail
                 {
                     LedgerId = x.LedgerId,
                     DrAmount = x.CrAmount,
                     CrAmount = x.DrAmount,
                     DrCr = x.DrCr != 'D' ? 'D' : 'C',
+                    RecStatus = 'A',
+                    Status = Status.Active.ToInt(),
+                    RecDate = DateTime.UtcNow,
+                    RecById = -1,
                 }).ToList()
             };
-            await _dbContext.AccountingTransaction.AddRangeAsync(newTxn);
-            await _dbContext.SaveChangesAsync();
+            await _uow.AddAsync(newTxn);
+            await _uow.SaveChangesAsync();
             return newTxn;
         }
     }
 
     public async Task<List<VoucherDetailDto>> VoucherDetailAsync(int transactionId)
     {
+<<<<<<< HEAD
         var report = await (from t in _dbContext.AccountingTransaction
             join td in _dbContext.TransactionDetails on t.Id equals td.TransactionId
             join l in _dbContext.Ledgers on td.LedgerId equals l.Id
@@ -176,46 +203,81 @@ public class VoucherService : IVoucherService
                 UserName = u.UserName,
                 IsReverseVoucher = t.IsReversed
             }).ToListAsync();
+=======
+        var tQuery = _txnRepo.GetBaseQueryable();
+        var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var uQuery = _userGenericRepo.GetBaseQueryable();
+
+        var report = await (from t in tQuery
+                join td in tdQuery on t.Id equals td.TransactionId
+                join l in lQuery on td.LedgerId equals l.Id
+                join p in lQuery on l.SubParentId equals p.Id
+                join u in uQuery on t.RecById equals u.Id
+                where td.TransactionId == transactionId
+                select new VoucherDetailDto
+                {
+                    LedgerName = string.Concat(p.LedgerName,
+                        " > ",
+                        l.LedgerName),
+                    Code = l.Code,
+                    VoucherNo = t.VoucherNo,
+                    DrAmount = td.DrAmount,
+                    CrAmount = td.CrAmount,
+                    Type = t.Type,
+                    TransactionId = td.TransactionId,
+                    Status = t.Status,
+                    Typeid = t.TypeId,
+                    Remarks = t.Remarks,
+                    TxnDate = t.TxnDate,
+                    UserName = u.Username,
+                    IsReverseVoucher = t.IsReversed
+                }).ToListAsync();
+>>>>>>> main
         return report;
     }
 
     private string GetVoucherNo(bool? isJv = null, int? transactionId = null, bool? isReverse = null)
     {
-        if (isReverse.HasValue.Equals(true))
+        if (isReverse == true)
         {
-            var txn = _dbContext.AccountingTransaction.Where(x => x.Id == transactionId).Select(x => x.VoucherNo)
+            var txn = _txnRepo.GetBaseQueryable()
+                .Where(x => x.Id == transactionId).Select(x => x.VoucherNo)
                 .SingleOrDefault();
             const string revPref = "Rev-";
 
             if (txn == null)
             {
-                throw new Exception("Transaction with supplied parm not found");
+                throw new KeyNotFoundException($"Transaction with id {transactionId} not found");
             }
             else
             {
                 var voucherNo = string.Concat(revPref, txn);
                 return voucherNo;
             }
+
         }
 
         if (isJv.HasValue)
         {
-            if (isJv.Equals(true))
+            if (isJv.Value)
             {
-                var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Journal);
-                var voucherNo = string.Concat("JV00000", (cn + 1));
+                var cn = _txnRepo.GetBaseQueryable()
+                    .Count(x => x.VoucherType == (int)VoucherType.Journal);
+                var voucherNo = $"JV{(cn + 1):D6}";
                 return voucherNo;
             }
             else
             {
-                var cn = _dbContext.AccountingTransaction.Count(x => x.VoucherType == (int)VoucherType.Automatic);
-                var voucherNo = string.Concat("AV00000", (cn + 1));
+                var cn = _txnRepo.GetBaseQueryable()
+                    .Count(x => x.VoucherType == (int)VoucherType.Automatic);
+                var voucherNo = $"AV{(cn + 1):D6}";
                 return voucherNo;
             }
         }
         else
         {
-            throw new Exception("Transaction with supplied parm not found");
+            throw new InvalidOperationException("Voucher number cannot be generated: no voucher type was specified");
         }
     }
 }

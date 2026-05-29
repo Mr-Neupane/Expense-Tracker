@@ -1,15 +1,21 @@
 using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Manager.Interfaces;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.Services;
+<<<<<<< HEAD
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
+=======
+using ExpenseTracker.UnitOfWork;
+using ExpenseTracker.UnitOfWork.Interfaces;
+>>>>>>> main
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 using ExpenseTracker.Interface;
@@ -76,8 +82,25 @@ public static class DiConfig
     private static void UseServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+<<<<<<< HEAD
         builder.Services.AddScoped<IAuthManager, AuthManager>();
         builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+=======
+
+        builder.Services.AddScoped<IUow, Uow>();
+
+        builder.Services.AddScoped<IBankGenericRepository, BankGenericRepository>();
+        builder.Services.AddScoped<IBankTransactionGenericRepository, BankTransactionGenericRepository>();
+        builder.Services.AddScoped<ICoaGenericRepository, CoaGenericRepository>();
+        builder.Services.AddScoped<IExpenseGenericRepository, ExpenseGenericRepository>();
+        builder.Services.AddScoped<IIncomeGenericRepository, IncomeGenericRepository>();
+        builder.Services.AddScoped<ILedgerGenericRepository, LedgerGenericRepository>();
+        builder.Services.AddScoped<ILiabilityGenericRepository, LiabilityGenericRepository>();
+        builder.Services.AddScoped<ITransactionGenericRepository, TransactionGenericRepository>();
+        builder.Services.AddScoped<ITransactionDetailGenericRepository, TransactionDetailGenericRepository>();
+        builder.Services.AddScoped<IUserGenericRepository, UserGenericRepository>();
+
+>>>>>>> main
         builder.Services.AddScoped<IVoucherService, VoucherService>();
         builder.Services.AddScoped<IBankService, BankService>();
         builder.Services.AddScoped<IIncomeService, IncomeService>();

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using Dapper;
 using ExpenseTracker.Controllers;
 using ExpenseTracker.Data;
@@ -6,50 +7,53 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
 using ExpenseTracker.ViewModels;
+=======
+﻿using ExpenseTracker.Repository;
+using ExpenseTracker.Models;
+using Microsoft.EntityFrameworkCore;
+>>>>>>> main
 
 namespace ExpenseTracker.Providers;
 
-public class IProvider : Controller
+public class IProvider
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ILedgerGenericRepository _ledgerGenericRepo;
+    private readonly IBankGenericRepository _bankGenericRepo;
 
-    public IProvider(ApplicationDbContext context)
+    public IProvider(ILedgerGenericRepository ledgerGenericRepo, IBankGenericRepository bankGenericRepo)
     {
-        _context = context;
+        _ledgerGenericRepo = ledgerGenericRepo;
+        _bankGenericRepo = bankGenericRepo;
     }
 
     public async Task<string> GetLedgerCode(int? subparentid)
     {
-        var parentLedger = await _context.Ledgers.Where(x => x.Id == subparentid).SingleOrDefaultAsync();
+        var parentLedger = await _ledgerGenericRepo.SingleOrDefaultAsync(x => x.Id == subparentid);
         if (parentLedger == null)
-        {
             throw new Exception("Ledger code not found");
-        }
-        else
-        {
-            var newCode = await _context.Ledgers
-                .Where(x => x.SubParentId == subparentid).CountAsync() + 1;
-            var ledgerCode = string.Concat(parentLedger.Code, '.', newCode);
-            return ledgerCode;
-        }
+
+        var newCode = await _ledgerGenericRepo.CountAsync(x => x.SubParentId == subparentid) + 1;
+        return string.Concat(parentLedger.Code, '.', newCode);
     }
 
     public async Task<int> GetBankLedgerId(int bankid)
     {
-        var bank = await _context.Banks.Where(x => x.Id == bankid).SingleOrDefaultAsync();
+        var bank = await _bankGenericRepo.SingleOrDefaultAsync(x => x.Id == bankid);
+        if (bank == null)
+            throw new Exception("Bank not found");
         return bank.LedgerId;
     }
 
     public async Task<bool> ValidateLedgerCode(string ledgercode)
     {
-        var existing = await _context.Ledgers.Select(x => x.Code == ledgercode).FirstOrDefaultAsync();
-        return existing;
+        return await _ledgerGenericRepo.GetBaseQueryable()
+            .Select(x => x.Code == ledgercode).FirstOrDefaultAsync();
     }
 
     public async Task<int?> GetBankIdByLedgerId(int ledgerId)
     {
-        var bankId = await _context.Banks.Where(x => x.LedgerId == ledgerId).Select(x => x.Id).SingleOrDefaultAsync();
-
-        return bankId;
+        return await _bankGenericRepo.GetBaseQueryable()
+            .Where(x => x.LedgerId == ledgerId).Select(x => x.Id)
+            .SingleOrDefaultAsync();
     }
 }

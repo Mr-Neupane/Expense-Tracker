@@ -1,17 +1,25 @@
+<<<<<<< HEAD
 using Dapper;
 using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
+=======
+﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using ExpenseTracker.Providers;
-using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using NToastNotify;
+<<<<<<< HEAD
 using ExpenseTracker.Interface;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.ViewModels.Interface;
+=======
+using TestApplication.Interface;
+using TestApplication.ViewModels.Interface;
+>>>>>>> main
 
 namespace ExpenseTracker.Controllers;
 
@@ -20,14 +28,14 @@ public class BankController : Controller
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
     private readonly ILedgerService _ledgerService;
-    private readonly ApplicationDbContext _context;
+    private readonly IBankGenericRepository _bankGenericRepo;
 
-    public BankController(IToastNotification toastNotification, IBankService bankService, ApplicationDbContext context,
-        ILedgerService ledgerService)
+    public BankController(IToastNotification toastNotification, IBankService bankService,
+        IBankGenericRepository bankGenericRepo, ILedgerService ledgerService)
     {
         _toastNotification = toastNotification;
         _bankService = bankService;
-        _context = context;
+        _bankGenericRepo = bankGenericRepo;
         _ledgerService = ledgerService;
     }
 
@@ -76,7 +84,7 @@ public class BankController : Controller
     [HttpGet]
     public async Task<IActionResult> EditBank(int id)
     {
-        var res = await _context.Banks.FindAsync(id);
+        var res = await _bankGenericRepo.FindOrThrowAsync(id);
 
         var editBankDetail = new BankDto
         {

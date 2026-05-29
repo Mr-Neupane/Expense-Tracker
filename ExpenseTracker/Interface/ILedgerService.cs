@@ -11,6 +11,7 @@ public interface ILedgerService
     public Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync();
     public Task<List<LedgerReportDto>> GetLedgerReportAsync();
     public Task<bool> DeactivateLedgerAsync(int ledgerId);
+    public Task<List<int>> DeactivateLedgerAsync(List<int> ledgerIds);
     public Task ActivateLedgerAsync(int ledgerId);
     public Task<List<LedgerStatement>> GetLedgerStatementsAsync(LedgerStatementDto dto);
 }

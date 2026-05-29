@@ -37,7 +37,7 @@ public class AccTransactionManager
             Type = accTransaction.Type,
             TypeId = typeId,
             Remarks = accTransaction.Remarks,
-            IsJv = false,
+            IsJv = accTransaction.IsJv,
             Details = accTransaction.Details,
         });
         return accTxn;

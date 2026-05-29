@@ -21,7 +21,7 @@
                 <label asp-for="AccountOpenDate" class="form-label">Open Date <span class="text-danger">*</span></label>
                 <input asp-for="AccountOpenDate" class="form-control" type="text"
                        value="@(new NepDate.NepaliDate(@Model.AccountOpenDate))"
-                       disabled="disabled"/>
+                       readonly="readonly"/>
                 <span asp-validation-for="AccountOpenDate" class="text-danger"></span>
             </div>
 

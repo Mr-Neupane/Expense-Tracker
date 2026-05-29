@@ -36,7 +36,8 @@ public class LiabilityController : Controller
     {
         try
         {
-            var bankid = await _provider.GetBankLedgerId(vm.LiabilityFromLedger);
+            var bankIdByLedger = await _provider.GetBankIdByLedgerId(vm.LiabilityFromLedger);
+            var bankid = bankIdByLedger ?? 0;
             var liability = new LiabilityDto
             {
                 LedgerId = vm.LiabilityLedger,

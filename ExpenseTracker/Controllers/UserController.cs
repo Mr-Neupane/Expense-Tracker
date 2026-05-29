@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 using ExpenseTracker.Constants;
 using ExpenseTracker.Data;
 using ExpenseTracker.Models;
+=======
+using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
+using ExpenseTracker.Models;
+using ExpenseTracker.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+>>>>>>> main
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +19,7 @@ namespace ExpenseTracker.Controllers;
 
 public class UserController : Controller
 {
+<<<<<<< HEAD
     private readonly UserManager<AppUser> _userManager;
     private readonly ApplicationDbContext _context;
     private readonly IToastNotification _toastNotification;
@@ -22,6 +31,16 @@ public class UserController : Controller
     {
         _userManager = userManager;
         _context = context;
+=======
+    private readonly IUserGenericRepository _userGenericRepo;
+    private readonly IUow _uow;
+    private readonly IToastNotification _toastNotification;
+
+    public UserController(IUserGenericRepository userGenericRepo, IUow uow, IToastNotification toastNotification)
+    {
+        _userGenericRepo = userGenericRepo;
+        _uow = uow;
+>>>>>>> main
         _toastNotification = toastNotification;
     }
 
@@ -36,6 +55,7 @@ public class UserController : Controller
     {
         try
         {
+<<<<<<< HEAD
             var existingUser = await _userManager.FindByNameAsync(vm.Username);
             if (existingUser == null)
             {
@@ -60,6 +80,19 @@ public class UserController : Controller
                     _toastNotification.AddErrorToastMessage(
                         string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
+=======
+            var existingUser = await _userGenericRepo.SingleOrDefaultAsync(u => u.Username == vm.Username);
+            if (existingUser == null)
+            {
+                var addUser = new User()
+                {
+                    Username = vm.Username,
+                    Password = vm.Password
+                };
+                await _uow.AddAsync(addUser);
+                await _uow.SaveChangesAsync();
+                _toastNotification.AddSuccessToastMessage("User created successfully");
+>>>>>>> main
             }
             else
             {

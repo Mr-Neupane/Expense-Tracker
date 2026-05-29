@@ -2,7 +2,7 @@
 
 namespace ExpenseTracker.Models;
 
-public class BaseModel
+public class BaseModel : IEntity
 {
     [Key] public int Id { get; set; }
     public char RecStatus { get; set; } = 'A';

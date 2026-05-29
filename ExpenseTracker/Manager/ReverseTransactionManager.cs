@@ -71,6 +71,10 @@ public class ReverseTransactionManager
 
     public async Task ReverseJournalTransaction(int transactionId)
     {
-        await ReverseAccountingTransaction(transactionId);
+        using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            await ReverseAccountingTransaction(transactionId);
+            scope.Complete();
+        }
     }
 }
