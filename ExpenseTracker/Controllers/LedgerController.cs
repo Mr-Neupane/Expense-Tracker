@@ -1,33 +1,26 @@
-<<<<<<< HEAD
-using Dapper;
-using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
-using ExpenseTracker.Interface;
-=======
-﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Enums;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
->>>>>>> main
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.Providers;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
-using ExpenseTracker.Interface;
 
 namespace ExpenseTracker.Controllers;
 
 public class LedgerController : Controller
 {
-    private readonly ILedgerGenericRepository _ledgerGenericRepo;
-    private readonly ICoaGenericRepository _coaGenericRepo;
+    private readonly ILedgerRepo _ledgerGenericRepo;
+    private readonly ICoaLedgerRepo _coaGenericRepo;
     private readonly ILedgerService _ledgerService;
     private readonly IToastNotification _toastNotification;
     private readonly IProvider _provider;
 
-    public LedgerController(ILedgerGenericRepository ledgerGenericRepo, ICoaGenericRepository coaGenericRepo,
+    public LedgerController(ILedgerRepo ledgerGenericRepo, ICoaLedgerRepo coaGenericRepo,
         IToastNotification toastNotification, ILedgerService ledgerService, IProvider provider)
     {
         _ledgerGenericRepo = ledgerGenericRepo;
@@ -78,20 +71,13 @@ public class LedgerController : Controller
     [HttpGet]
     public async Task<IActionResult> EditLedger(int ledgerId)
     {
-<<<<<<< HEAD
-        var res = await (from l in _context.Ledgers
-            join pl in _context.Ledgers on l.SubParentId equals pl.Id
-            join c in _context.CoaLedger on pl.ParentId equals c.Id
-            where l.Id == ledgerId && l.Status == StatusConstants.Active && l.SubParentId != LedgerConstants.BankAccount
-=======
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
         var cQuery = _coaGenericRepo.GetBaseQueryable();
 
         var res = await (from l in lQuery
             join pl in lQuery on l.SubParentId equals pl.Id
             join c in cQuery on pl.ParentId equals c.Id
-            where l.Id == ledgerId && l.Status == 1 && l.SubParentId != -2
->>>>>>> main
+            where l.Id == ledgerId && l.Status == Status.Active && l.SubParentId != LedgerConstants.BankAccount
             select new EditLedgerVM
             {
                 LedgerId = l.Id,
@@ -267,14 +253,9 @@ public class LedgerController : Controller
 
     public IActionResult GetSubParents(int parentId)
     {
-<<<<<<< HEAD
-        var res = _context.Ledgers.Where(x => x.Id != LedgerConstants.BankAccount && x.ParentId == parentId
-        ).ToList();
-=======
         var res = _ledgerGenericRepo.GetBaseQueryable()
-            .Where(x => x.Id != -2 && x.ParentId == parentId)
+            .Where(x => x.Id != LedgerConstants.BankAccount && x.ParentId == parentId)
             .ToList();
->>>>>>> main
         var jsonRes = res.Select(x => new
             { ledgername = x.LedgerName, id = x.Id });
         return Json(jsonRes);

@@ -1,13 +1,7 @@
-<<<<<<< HEAD
 using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
 using ExpenseTracker.Dtos;
-using Microsoft.AspNetCore.Mvc;
-=======
-﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
->>>>>>> main
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
 
@@ -15,16 +9,13 @@ namespace ExpenseTracker.Providers;
 
 public class DropdownProvider
 {
-    private readonly ICoaGenericRepository _coaGenericRepo;
-    private readonly ILedgerGenericRepository _ledgerGenericRepo;
-    private readonly IBankGenericRepository _bankGenericRepo;
-    private readonly ITransactionGenericRepository _txnRepo;
+    private readonly ICoaLedgerRepo _coaGenericRepo;
+    private readonly ILedgerRepo _ledgerGenericRepo;
+    private readonly IBankRepo _bankGenericRepo;
+    private readonly IAccountingTransactionRepo _txnRepo;
     private readonly IBalanceProvider _balanceProvider;
-    private const int CashParentLedgerId = -1;
-    private const int BankParentLedgerId = -2;
-
-    public DropdownProvider(ICoaGenericRepository coaGenericRepo, ILedgerGenericRepository ledgerGenericRepo,
-        IBankGenericRepository bankGenericRepo, ITransactionGenericRepository txnRepo, IBalanceProvider balanceProvider)
+    public DropdownProvider(ICoaLedgerRepo coaGenericRepo, ILedgerRepo ledgerGenericRepo,
+        IBankRepo bankGenericRepo, IAccountingTransactionRepo txnRepo, IBalanceProvider balanceProvider)
     {
         _coaGenericRepo = coaGenericRepo;
         _ledgerGenericRepo = ledgerGenericRepo;
@@ -47,7 +38,7 @@ public class DropdownProvider
         return (from c in cQuery
                 join l in lQuery on c.Id equals l.ParentId
                 join ls in lQuery on l.Id equals ls.SubParentId
-                where c.Name == "Expenses" && ls.Status == Status.Active.ToInt()
+                where c.Name == TransactionTypeConstants.Expense && ls.Status == Status.Active
                 select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
             ).ToList();
     }
@@ -57,49 +48,10 @@ public class DropdownProvider
         var cQuery = _coaGenericRepo.GetBaseQueryable();
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
 
-<<<<<<< HEAD
-    public List<DropdownListDto> GetCashBankLedgers()
-    {
-        var cashAndBankLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where (ls.SubParentId == LedgerConstants.CashAccount || ls.SubParentId == LedgerConstants.BankAccount)
-                select new DropdownListDto
-                {
-                    Name = ls.LedgerName,
-                    Id = ls.Id
-                }
-            ).ToList();
-        return cashAndBankLedger;
-    }
-
-    public List<DropdownListDto> GetIncomeLedgers()
-    {
-        var incomeLedger = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                where c.Name == "Income"
-                select new DropdownListDto()
-                {
-                    Name = ls.LedgerName,
-                    Id = ls.Id
-                }
-            ).ToList();
-        return incomeLedger;
-    }
-
-    public JsonResult GetLedgers()
-    {
-        var ledgers = (from c in _context.CoaLedger
-                join l in _context.Ledgers on c.Id equals l.ParentId
-                join ls in _context.Ledgers on l.Id equals ls.SubParentId
-                select new LedgerInfoForJvDto()
-=======
         var ledgers = (from c in cQuery
                 join l in lQuery on c.Id equals l.ParentId
                 join ls in lQuery on l.Id equals ls.SubParentId
                 select new LedgerInfoForJvDto
->>>>>>> main
                 {
                     LedgerBalance = 0,
                     LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),
@@ -121,7 +73,7 @@ public class DropdownProvider
         return (from c in cQuery
                 join l in lQuery on c.Id equals l.ParentId
                 join ls in lQuery on l.Id equals ls.SubParentId
-                where ls.SubParentId == CashParentLedgerId || ls.SubParentId == BankParentLedgerId
+                where ls.SubParentId == LedgerConstants.CashAccount || ls.SubParentId == LedgerConstants.BankAccount
                 select new DropdownListDto { Name = ls.LedgerName, Id = ls.Id }
             ).ToList();
     }

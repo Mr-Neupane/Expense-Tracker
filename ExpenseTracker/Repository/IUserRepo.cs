@@ -2,6 +2,6 @@ using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Repository;
 
-public interface ICoaGenericRepository : IGenericRepository<Coa>
+public interface IUserRepo : IGenericRepository<User>
 {
 }

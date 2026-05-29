@@ -2,7 +2,7 @@ using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
-using TestApplication.Enums;
+using ExpenseTracker.Enums;
 
 namespace ExpenseTracker.UnitOfWork;
 
@@ -73,7 +73,7 @@ public class Uow : IUow
             throw new KeyNotFoundException($"{typeof(T).Name} with id {id} not found");
         if (entity is BaseModel baseEntity)
         {
-            baseEntity.Status =(int) Status.Reversed;
+            baseEntity.Status = Status.Reversed;
              _context.Update(baseEntity);
         }
     }

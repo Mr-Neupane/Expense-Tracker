@@ -1,26 +1,15 @@
-<<<<<<< HEAD
-using Dapper;
-using ExpenseTracker.Controllers;
-using ExpenseTracker.Data;
-using ExpenseTracker.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ExpenseTracker.Enums;
-using ExpenseTracker.ViewModels;
-=======
 ﻿using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
->>>>>>> main
 
 namespace ExpenseTracker.Providers;
 
 public class IProvider
 {
-    private readonly ILedgerGenericRepository _ledgerGenericRepo;
-    private readonly IBankGenericRepository _bankGenericRepo;
+    private readonly ILedgerRepo _ledgerGenericRepo;
+    private readonly IBankRepo _bankGenericRepo;
 
-    public IProvider(ILedgerGenericRepository ledgerGenericRepo, IBankGenericRepository bankGenericRepo)
+    public IProvider(ILedgerRepo ledgerGenericRepo, IBankRepo bankGenericRepo)
     {
         _ledgerGenericRepo = ledgerGenericRepo;
         _bankGenericRepo = bankGenericRepo;

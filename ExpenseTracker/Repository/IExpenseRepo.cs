@@ -2,6 +2,6 @@ using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Repository;
 
-public interface IIncomeGenericRepository : IGenericRepository<Income>
+public interface IExpenseRepo : IGenericRepository<Expense>
 {
 }

@@ -96,8 +96,8 @@
                         <label for="status" class="fs-6">Status</label>
                         <select id="status" asp-for="Status" name="Status" class="form-control">
                             <option value="">All</option>
-                            <option value="@Status.Active.ToInt()">@Status.Active</option>
-                            <option value="@Status.Reversed.ToInt()">@Status.Reversed</option>
+                            <option value="@((int)Status.Active)">@Status.Active</option>
+                            <option value="@((int)Status.Reversed)">@Status.Reversed</option>
                         </select>
                     </div>
 

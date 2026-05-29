@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-using Dapper;
-using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
-=======
-﻿using ExpenseTracker.Dtos;
-using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
->>>>>>> main
-using ExpenseTracker.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using NToastNotify;
-<<<<<<< HEAD
-using ExpenseTracker.Interface;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.ViewModels.Interface;
-=======
-using TestApplication.Interface;
-using TestApplication.ViewModels.Interface;
->>>>>>> main
+using Microsoft.AspNetCore.Mvc;
+using NToastNotify;
 
 namespace ExpenseTracker.Controllers;
 
@@ -28,10 +14,10 @@ public class BankController : Controller
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
     private readonly ILedgerService _ledgerService;
-    private readonly IBankGenericRepository _bankGenericRepo;
+    private readonly IBankRepo _bankGenericRepo;
 
     public BankController(IToastNotification toastNotification, IBankService bankService,
-        IBankGenericRepository bankGenericRepo, ILedgerService ledgerService)
+        IBankRepo bankGenericRepo, ILedgerService ledgerService)
     {
         _toastNotification = toastNotification;
         _bankService = bankService;

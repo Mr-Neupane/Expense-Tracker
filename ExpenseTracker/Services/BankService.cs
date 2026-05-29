@@ -1,16 +1,12 @@
-<<<<<<< HEAD
-using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
-=======
-﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
->>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
+using ExpenseTracker.ExtMethods;
 using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Services;
@@ -18,12 +14,12 @@ namespace ExpenseTracker.Services;
 public class BankService : IBankService
 {
     private readonly IUow _uow;
-    private readonly IBankGenericRepository _bankGenericRepo;
-    private readonly IBankTransactionGenericRepository _bankTxnRepo;
-    private readonly IUserGenericRepository _userGenericRepo;
+    private readonly IBankRepo _bankGenericRepo;
+    private readonly IBankTransactionRepo _bankTxnRepo;
+    private readonly IUserRepo _userGenericRepo;
 
-    public BankService(IUow uow, IBankGenericRepository bankGenericRepo,
-        IBankTransactionGenericRepository bankTxnRepo, IUserGenericRepository userGenericRepo)
+    public BankService(IUow uow, IBankRepo bankGenericRepo,
+        IBankTransactionRepo bankTxnRepo, IUserRepo userGenericRepo)
     {
         _uow = uow;
         _bankGenericRepo = bankGenericRepo;
@@ -34,7 +30,7 @@ public class BankService : IBankService
 
     public async Task<List<Bank>> BankReportAsync()
     {
-        return await _bankGenericRepo.GetAsync(b => b.Status == Status.Active.ToInt());
+        return await _bankGenericRepo.GetBaseQueryable().Active().ToListAsync();
     }
 
     public async Task EditBankAsync(BankDto dto)
@@ -74,8 +70,8 @@ public class BankService : IBankService
             Remarks = dto.Remarks,
             RecDate = DateTime.Now.ToUniversalTime(),
             RecById = UserConstants.AdminUser,
-            RecStatus = 'A',
-            Status = Status.Active.ToInt(),
+            RecStatus = RecordStatusConstants.Active,
+            Status = Status.Active,
             TransactionId = 0
         };
         await _uow.AddAsync(banktransaction);
@@ -105,9 +101,9 @@ public class BankService : IBankService
             RemainingBalance = dto.RemainingBalance,
             BankAddress = dto.BankAddress,
             AccountOpenDate = dto.AccountOpenDate,
-            RecStatus = 'A',
+            RecStatus = RecordStatusConstants.Active,
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = Status.Active.ToInt(),
+            Status = Status.Active,
             RecById = UserConstants.AdminUser
         };
 
@@ -120,10 +116,12 @@ public class BankService : IBankService
     {
         var bankTxnQuery = _bankTxnRepo.GetBaseQueryable();
         var deposit = await bankTxnQuery
-            .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Deposit" && t.BankId == bid)
+            .Active()
+            .Where(t => t.Type == TransactionTypeConstants.Deposit && t.BankId == bid)
             .SumAsync(t => t.Amount);
         var withdraw = await bankTxnQuery
-            .Where(t => t.Status == Status.Active.ToInt() && t.Type == "Withdraw" && t.BankId == bid)
+            .Active()
+            .Where(t => t.Type == TransactionTypeConstants.Withdraw && t.BankId == bid)
             .SumAsync(t => t.Amount);
         var remBal = deposit - withdraw;
         var bank = await _bankGenericRepo.SingleOrDefaultAsync(b => b.Id == bid);
@@ -151,7 +149,7 @@ public class BankService : IBankService
         }
         else
         {
-            txn.Status = Status.Reversed.ToInt();
+            txn.Status = Status.Reversed;
             await _uow.SaveChangesAsync();
         }
     }
@@ -165,7 +163,7 @@ public class BankService : IBankService
         var res = await (from bt in btQuery
                 join u in uQuery on bt.RecById equals u.Id
                 join b in bQuery on bt.BankId equals b.Id
-                where bt.Status == Status.Active.ToInt()
+                where bt.Status == Status.Active
                 select new BankTransactionReportDto
                 {
                     BankTransactionId = bt.Id,

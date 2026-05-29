@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.InteropServices.JavaScript;
+using ExpenseTracker.Enums;
 
 
 namespace ExpenseTracker.Models
@@ -9,7 +9,7 @@ namespace ExpenseTracker.Models
     public class Transaction : BaseModel
     {
         public DateTime TxnDate { get; set; }
-        public int VoucherType { get; set; }
+        public VoucherType VoucherType { get; set; }
         public string VoucherNo { get; set; }
 
         public decimal Amount { get; set; }

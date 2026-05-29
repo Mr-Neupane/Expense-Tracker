@@ -1,8 +1,8 @@
 using System.Transactions;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Providers;
-using ExpenseTracker.Interface;
 using ExpenseTracker.ViewModels.Interface;
 using Transaction = ExpenseTracker.Models.Transaction;
 
@@ -79,7 +79,7 @@ public class AccTransactionManager
                     BankId = bankId ?? 0,
                     TxnDate = dto.TxnDate,
                     Amount = dto.Amount,
-                    Type = "Withdraw",
+                    Type = TransactionTypeConstants.Withdraw,
                     Remarks = txnDto.Remarks,
                 });
                 await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
@@ -107,13 +107,13 @@ public class AccTransactionManager
                     BankId = bankId ?? 0,
                     TxnDate = dto.TxnDate.ToLocalTime(),
                     Amount = dto.Amount,
-                    Type = "Deposit",
+                    Type = TransactionTypeConstants.Deposit,
                     Remarks = dto.Remarks
                 };
                 await _bankService.RecordBankTransactionAsync(bankTransaction);
                 await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
                     transaction.Id);
-               
+                
             }
             scope.Complete();
         }
@@ -134,7 +134,7 @@ public class AccTransactionManager
                     LedgerId = 0,
                     TxnDate = liDto.TxnDate.ToLocalTime(),
                     Amount = liDto.Amount,
-                    Type = "Deposit",
+                    Type = TransactionTypeConstants.Deposit,
                     Remarks = liDto.Remarks,
                 });
                 await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,

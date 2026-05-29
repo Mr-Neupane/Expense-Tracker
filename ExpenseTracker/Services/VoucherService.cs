@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-using System.Transactions;
-using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
-=======
 ﻿using System.Transactions;
->>>>>>> main
+using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
@@ -20,14 +15,14 @@ namespace ExpenseTracker.Services;
 public class VoucherService : IVoucherService
 {
     private readonly IUow _uow;
-    private readonly ITransactionGenericRepository _txnRepo;
-    private readonly ITransactionDetailGenericRepository _txnDetailGenericRepo;
-    private readonly ILedgerGenericRepository _ledgerGenericRepo;
-    private readonly IUserGenericRepository _userGenericRepo;
+    private readonly IAccountingTransactionRepo _txnRepo;
+    private readonly IAccTxnDetailRepo _txnDetailGenericRepo;
+    private readonly ILedgerRepo _ledgerGenericRepo;
+    private readonly IUserRepo _userGenericRepo;
 
-    public VoucherService(IUow uow, ITransactionGenericRepository txnRepo,
-        ITransactionDetailGenericRepository txnDetailGenericRepo, ILedgerGenericRepository ledgerGenericRepo,
-        IUserGenericRepository userGenericRepo)
+    public VoucherService(IUow uow, IAccountingTransactionRepo txnRepo,
+        IAccTxnDetailRepo txnDetailGenericRepo, ILedgerRepo ledgerGenericRepo,
+        IUserRepo userGenericRepo)
     {
         _uow = uow;
         _txnRepo = txnRepo;
@@ -42,24 +37,24 @@ public class VoucherService : IVoucherService
         var txn = new Transaction
         {
             TxnDate = dto.TxnDate.ToUniversalTime(),
-            VoucherType = dto.IsJv ? (int)VoucherType.Journal : (int)VoucherType.Automatic,
+            VoucherType = dto.IsJv ? VoucherType.Journal : VoucherType.Automatic,
             VoucherNo = voucherNo,
             Amount = dto.Amount,
             Type = dto.Type,
             TypeId = dto.TypeId,
             Remarks = dto.Remarks,
-            RecStatus = 'A',
+            RecStatus = RecordStatusConstants.Active,
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = Status.Active.ToInt(),
+            Status = Status.Active,
             RecById = UserConstants.AdminUser,
             TransactionDetails = dto.Details.Select(d => new TransactionDetail
             {
                 LedgerId = d.LedgerID,
                 DrAmount = d.IsDr ? d.Amount : 0,
                 CrAmount = !d.IsDr ? d.Amount : 0,
-                DrCr = d.IsDr ? 'D' : 'C',
-                RecStatus = 'A',
-                Status = Status.Active.ToInt(),
+                DrCr = d.IsDr ? DrCrConstants.Dr : DrCrConstants.Cr,
+                RecStatus = RecordStatusConstants.Active,
+                Status = Status.Active,
                 RecById = UserConstants.AdminUser
             }).ToList()
         };
@@ -75,8 +70,8 @@ public class VoucherService : IVoucherService
 
         var accTransactionRepo = await (from t in tQuery
                 join u in uQuery on t.RecById equals u.Id
-                where (dto.Status == 0 || dto.Status == t.Status) && t.TxnDate.Date >= dto.DateFrom.Date &&
-                      t.TxnDate.Date <= dto.DateTo.Date && (dto.Type == "All" || dto.Type == t.Type)
+                where (dto.Status == 0 || dto.Status == (int)t.Status) && t.TxnDate.Date >= dto.DateFrom.Date &&
+                      t.TxnDate.Date <= dto.DateTo.Date && (dto.Type == TransactionTypeConstants.All || dto.Type == t.Type)
                 select new AccountingTransactionReportDto
                 {
                     TransactionId = t.Id,
@@ -86,7 +81,7 @@ public class VoucherService : IVoucherService
                     Type = t.Type,
                     Username = u.UserName,
                     Amount = t.Amount,
-                    Status = t.Status
+                    Status = (int)t.Status
                 }
             ).ToListAsync();
         return accTransactionRepo;
@@ -102,10 +97,10 @@ public class VoucherService : IVoucherService
                 var txn = await _txnDetailGenericRepo.GetAsync(t => t.TransactionId == transactionId);
                 var revTxn = await RecordReverseTransactionAsync(transactionId);
                 {
-                    transaction.Status = Status.Reversed.ToInt();
+                    transaction.Status = Status.Reversed;
                     transaction.IsReversed = true;
                     transaction.ReversedId = revTxn.Id;
-                    txn.ForEach(a => a.Status = Status.Reversed.ToInt());
+                    txn.ForEach(a => a.Status = Status.Reversed);
                     await _uow.SaveChangesAsync();
                 }
 
@@ -138,15 +133,15 @@ public class VoucherService : IVoucherService
                     Amount = t.Amount,
                     Type = t.Type,
                     TypeId = t.TypeId,
-                    Remarks = "Reverse transaction",
-                    IsJv = t.VoucherType == (int)VoucherType.Journal,
+                    Remarks = VoucherNumberConstants.ReverseRemarks,
+                    IsJv = t.VoucherType == VoucherType.Journal,
                 }).SingleAsync();
 
             var txnDetail = await _txnDetailGenericRepo.GetAsync(t => t.TransactionId == transactionId);
             var newTxn = new Transaction
             {
                 TxnDate = txn.TxnDate,
-                VoucherType = txn.IsJv ? (int)VoucherType.Automatic : (int)VoucherType.Journal,
+                VoucherType = txn.IsJv ? VoucherType.Automatic : VoucherType.Journal,
                 VoucherNo = voucherNo,
                 Amount = txn.Amount,
                 Type = txn.Type,
@@ -154,20 +149,20 @@ public class VoucherService : IVoucherService
                 Remarks = txn.Remarks,
                 IsReversed = true,
                 ReversedId = null,
-                RecStatus = 'A',
-                Status = Status.Active.ToInt(),
+                RecStatus = RecordStatusConstants.Active,
+                Status = Status.Active,
                 RecDate = DateTime.UtcNow,
-                RecById = -1,
+                RecById = UserConstants.AdminUser,
                 TransactionDetails = txnDetail.Select(x => new TransactionDetail
                 {
                     LedgerId = x.LedgerId,
                     DrAmount = x.CrAmount,
                     CrAmount = x.DrAmount,
-                    DrCr = x.DrCr != 'D' ? 'D' : 'C',
-                    RecStatus = 'A',
-                    Status = Status.Active.ToInt(),
+                    DrCr = x.DrCr != DrCrConstants.Dr ? DrCrConstants.Cr : DrCrConstants.Dr,
+                    RecStatus = RecordStatusConstants.Active,
+                    Status = Status.Active,
                     RecDate = DateTime.UtcNow,
-                    RecById = -1,
+                    RecById = UserConstants.AdminUser,
                 }).ToList()
             };
             await _uow.AddAsync(newTxn);
@@ -178,32 +173,6 @@ public class VoucherService : IVoucherService
 
     public async Task<List<VoucherDetailDto>> VoucherDetailAsync(int transactionId)
     {
-<<<<<<< HEAD
-        var report = await (from t in _dbContext.AccountingTransaction
-            join td in _dbContext.TransactionDetails on t.Id equals td.TransactionId
-            join l in _dbContext.Ledgers on td.LedgerId equals l.Id
-            join p in _dbContext.Ledgers on l.SubParentId equals p.Id
-            join u in _dbContext.Users on t.RecById equals u.Id
-            where td.TransactionId == transactionId
-            select new VoucherDetailDto
-            {
-                LedgerName = string.Concat(p.LedgerName,
-                    " > ",
-                    l.LedgerName),
-                Code = l.Code,
-                VoucherNo = t.VoucherNo,
-                DrAmount = td.DrAmount,
-                CrAmount = td.CrAmount,
-                Type = t.Type,
-                TransactionId = td.TransactionId,
-                Status = t.Status,
-                Typeid = t.TypeId,
-                Remarks = t.Remarks,
-                TxnDate = t.TxnDate,
-                UserName = u.UserName,
-                IsReverseVoucher = t.IsReversed
-            }).ToListAsync();
-=======
         var tQuery = _txnRepo.GetBaseQueryable();
         var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
@@ -226,14 +195,13 @@ public class VoucherService : IVoucherService
                     CrAmount = td.CrAmount,
                     Type = t.Type,
                     TransactionId = td.TransactionId,
-                    Status = t.Status,
+                    Status = (int)t.Status,
                     Typeid = t.TypeId,
                     Remarks = t.Remarks,
                     TxnDate = t.TxnDate,
-                    UserName = u.Username,
+                    UserName = u.UserName,
                     IsReverseVoucher = t.IsReversed
                 }).ToListAsync();
->>>>>>> main
         return report;
     }
 
@@ -263,15 +231,15 @@ public class VoucherService : IVoucherService
             if (isJv.Value)
             {
                 var cn = _txnRepo.GetBaseQueryable()
-                    .Count(x => x.VoucherType == (int)VoucherType.Journal);
-                var voucherNo = $"JV{(cn + 1):D6}";
+                    .Count(x => x.VoucherType == VoucherType.Journal);
+                var voucherNo = $"{VoucherNumberConstants.JvPrefix}{(cn + 1):D6}";
                 return voucherNo;
             }
             else
             {
                 var cn = _txnRepo.GetBaseQueryable()
-                    .Count(x => x.VoucherType == (int)VoucherType.Automatic);
-                var voucherNo = $"AV{(cn + 1):D6}";
+                    .Count(x => x.VoucherType == VoucherType.Automatic);
+                var voucherNo = $"{VoucherNumberConstants.AutoPrefix}{(cn + 1):D6}";
                 return voucherNo;
             }
         }

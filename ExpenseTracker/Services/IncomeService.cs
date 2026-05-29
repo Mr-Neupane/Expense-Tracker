@@ -1,29 +1,23 @@
-<<<<<<< HEAD
-using ExpenseTracker.Constants;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
-=======
-﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
->>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
-using ExpenseTracker.Interface;
 
 namespace ExpenseTracker.Services;
 
 public class IncomeService : IIncomeService
 {
     private readonly IUow _uow;
-    private readonly IIncomeGenericRepository _incomeGenericRepo;
-    private readonly ITransactionGenericRepository _txnRepo;
-    private readonly IUserGenericRepository _userGenericRepo;
+    private readonly IIncomeRepo _incomeGenericRepo;
+    private readonly IAccountingTransactionRepo _txnRepo;
+    private readonly IUserRepo _userGenericRepo;
 
-    public IncomeService(IUow uow, IIncomeGenericRepository incomeGenericRepo,
-        ITransactionGenericRepository txnRepo, IUserGenericRepository userGenericRepo)
+    public IncomeService(IUow uow, IIncomeRepo incomeGenericRepo,
+        IAccountingTransactionRepo txnRepo, IUserRepo userGenericRepo)
     {
         _uow = uow;
         _incomeGenericRepo = incomeGenericRepo;
@@ -40,8 +34,8 @@ public class IncomeService : IIncomeService
             CrAmount = dto.Amount,
             TxnDate = dto.TxnDate,
             RecDate = DateTime.Now.ToUniversalTime(),
-            Status = Status.Active.ToInt(),
-            RecStatus = 'A',
+            Status = Status.Active,
+            RecStatus = RecordStatusConstants.Active,
             RecById = UserConstants.AdminUser
         };
         await _uow.AddAsync(income);
@@ -52,31 +46,15 @@ public class IncomeService : IIncomeService
     public async Task ReverseIncomeAsync(int id)
     {
         var income = await _incomeGenericRepo.FindOrThrowAsync(id);
-        if (income.Status == Status.Active.ToInt())
+        if (income.Status == Status.Active)
         {
-            income.Status = Status.Reversed.ToInt();
+            income.Status = Status.Reversed;
             await _uow.SaveChangesAsync();
         }
     }
 
     public async Task<List<IncomeReportDto>> GetIncomeReportAsync()
     {
-<<<<<<< HEAD
-        var report = await (from i in _context.Incomes
-            join t in _context.AccountingTransaction on i.Id equals t.TypeId
-            join u in _context.Users on i.RecById equals u.Id
-            where t.Type == "Income" && i.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt()
-            select new IncomeReportDto
-            {
-                Id = i.Id,
-                Amount = i.CrAmount,
-                Date = i.TxnDate,
-                VoucherNo = t.VoucherNo,
-                TransactionId = t.Id,
-                Username = u.UserName,
-                Status = i.Status,
-            }).ToListAsync();
-=======
         var iQuery = _incomeGenericRepo.GetBaseQueryable();
         var tQuery = _txnRepo.GetBaseQueryable();
         var uQuery = _userGenericRepo.GetBaseQueryable();
@@ -84,7 +62,7 @@ public class IncomeService : IIncomeService
         var report = await (from i in iQuery
                 join t in tQuery on i.Id equals t.TypeId
                 join u in uQuery on i.RecById equals u.Id
-                where t.Type == "Income" && i.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt()
+                where t.Type == TransactionTypeConstants.Income && i.Status == Status.Active && t.Status == Status.Active
                 select new IncomeReportDto
                 {
                     Id = i.Id,
@@ -92,10 +70,9 @@ public class IncomeService : IIncomeService
                     Date = i.TxnDate,
                     VoucherNo = t.VoucherNo,
                     TransactionId = t.Id,
-                    Username = u.Username,
-                    Status = i.Status,
+                    Username = u.UserName,
+                    Status = (int)i.Status,
                 }).ToListAsync();
->>>>>>> main
         return report;
     }
 }

@@ -7,7 +7,7 @@ namespace ExpenseTracker.Models
     public class User : IEntity
     {
         [Column("id")] public int Id { get; set; }
-        [Column("username")] public string Username { get; set; }
+        [Column("username")] public string UserName { get; set; }
         [Column("password")] public string Password { get; set; }
     }
 }

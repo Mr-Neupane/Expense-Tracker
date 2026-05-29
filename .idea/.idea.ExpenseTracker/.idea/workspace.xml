@@ -76,6 +76,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/09ae69556a61440f8ca725ea1c9d10a115928/41/7dd19370/IdentityUser`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/299767d9c0894b89b9d66f5f408780d56e910/21/71e70285/RazorPagesEndpointRouteBuilderExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/305a4fc5b91047a8bc61b9d05fa74e706728/06/70b5f2e3/Transaction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/36f04783097045bf9390586de749ff7d15d000/fd/84e32194/NpgsqlTransaction.cs" root0="SKIP_HIGHLIGHTING" />
@@ -88,6 +89,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/71046eeba5174a2084bac96524d70542b0910/5e/d661f119/Controller.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7d9c427a6d9b4875a44ddf075e7fbd591de918/ac/1cfdd226/ActionMethodExecutor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7d9c427a6d9b4875a44ddf075e7fbd591de918/c0/2e6106f9/ControllerActionInvoker.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9258c43c103e44569ebf285407806f0c1a910/82/f29f2385/AllowAnonymousAttribute.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/25/b5b7f10a/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/35/42dd7c02/Monitor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/3d/cd2b5710/ValueTask`1.cs" root0="FORCE_HIGHLIGHTING" />
@@ -96,17 +98,17 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/ea/e7128ea5/Nullable`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c367380c4a3444339deaf2c7e225cdada1930/81/e8ac40bf/TransactionManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c38c807781c1461996f08078003ccde31a908/e1/d18e158e/IdentityDbContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/cd41a6b7f1984f0ea7616e78dd0242e26d928/74/7826adc3/UserManager`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/3e/45c49215/SingleQueryingEnumerable`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/8d/7e7dc3e7/DropPrimaryKeyOperation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/e8/0d56e663/RelationalCommand.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e8de9e04bb7d40f785c8f1898548a6de85910/39/78bf755d/SignInManager`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f2be7f1a934f4613946f1d1adea274284e800/80/638641d9/NepaliDate.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d81b2d4f22bee75e5438c707251ae43cb0974c207db91ffc159118c84b4eb9/ServiceProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://F:/Dotnet Practice/TestApplication/ExpenseTracker/Controllers/VoucherController.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://F:/Dotnet Practice/TestApplication/ExpenseTracker/Controllers/VoucherController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/AccTransactionDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/AccountingTransactionReportDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/BankTransactionDto.cs" root0="FORCE_HIGHLIGHTING" />
@@ -118,13 +120,11 @@
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Models/User.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Providers/DropdownProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Services/VoucherService.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://F:/Dotnet Practice/TestApplication/ExpenseTracker/Services/VoucherService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/BaseVm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/IncomeVm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/ParentledgerVm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Views/Ledger/CreateLedger.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock://F:/Dotnet Practice/TestApplication/ExpenseTracker/Views/Shared/_Layout.cshtml" root0="FORCE_HIGHLIGHTING" root1="SKIP_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/wwwroot/lib/bootstrap/js/bootstrap.js.map" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -139,28 +139,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.TestApplication: http.executor": "Debug",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.C/C++",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.TestApplication: http.executor&quot;: &quot;Debug&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.C/C++&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.TestApplication: http">
     <configuration name="TestApplication: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ExpenseTracker/ExpenseTracker.csproj" />
@@ -750,6 +750,19 @@
           <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="4" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs</url>
+          <line>37</line>
+          <properties documentPath="F:\Projects\TestApplication\ExpenseTracker\Controllers\MigrationController.cs" containingFunctionPresentation="Method 'ApplyMigration'">
+            <startOffsets>
+              <option value="1206" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1207" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

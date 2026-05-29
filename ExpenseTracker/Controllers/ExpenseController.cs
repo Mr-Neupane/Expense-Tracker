@@ -6,7 +6,6 @@ using ExpenseTracker.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
-using ExpenseTracker.Interface;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.ViewModels.Interface;
 

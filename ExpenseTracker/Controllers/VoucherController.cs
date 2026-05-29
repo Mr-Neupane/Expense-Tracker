@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-using System.Transactions;
-using ExpenseTracker.Data;
-=======
 ﻿using System.Transactions;
->>>>>>> main
+using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
@@ -20,8 +16,8 @@ namespace ExpenseTracker.Controllers;
 
 public class VoucherController : Controller
 {
-    private readonly ITransactionGenericRepository _txnRepo;
-    private readonly IBankGenericRepository _bankGenericRepo;
+    private readonly IAccountingTransactionRepo _txnRepo;
+    private readonly IBankRepo _bankGenericRepo;
     private readonly IVoucherService _voucherService;
     private readonly ReverseTransactionManager _reverseTransactionManager;
     private readonly IToastNotification _toastNotification;
@@ -29,7 +25,7 @@ public class VoucherController : Controller
     private readonly IBankService _bankService;
 
 
-    public VoucherController(ITransactionGenericRepository txnRepo, IBankGenericRepository bankGenericRepo,
+    public VoucherController(IAccountingTransactionRepo txnRepo, IBankRepo bankGenericRepo,
         IVoucherService voucherService, ReverseTransactionManager reverseTransactionManager,
         IToastNotification toastNotification, DropdownProvider dropdownProvider, IBankService bankService)
     {
@@ -144,7 +140,7 @@ public class VoucherController : Controller
                                 BankId = bank.Id,
                                 TxnDate = vm.VoucherDate.ToUniversalTime(),
                                 Amount = d.DrAmount == 0 ? d.CrAmount : d.DrAmount,
-                                Type = d.DrAmount != 0 ? "Deposit" : "Withdraw",
+                                Type = d.DrAmount != 0 ? TransactionTypeConstants.Deposit : TransactionTypeConstants.Withdraw,
                                 Remarks = vm.Narration,
                             };
                         var bankTxn = await _bankService.RecordBankTransactionAsync(bankTransDto);
