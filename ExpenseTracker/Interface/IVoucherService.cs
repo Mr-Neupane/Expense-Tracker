@@ -1,7 +1,7 @@
-﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Dtos;
 using Transaction = ExpenseTracker.Models.Transaction;
 
-namespace TestApplication.ViewModels.Interface;
+namespace ExpenseTracker.ViewModels.Interface;
 
 public interface IVoucherService
 {

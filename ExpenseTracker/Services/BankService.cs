@@ -1,11 +1,17 @@
+<<<<<<< HEAD
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Enums;
+using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Services;
 
@@ -67,7 +73,7 @@ public class BankService : IBankService
             Type = dto.Type,
             Remarks = dto.Remarks,
             RecDate = DateTime.Now.ToUniversalTime(),
-            RecById = -1,
+            RecById = UserConstants.AdminUser,
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
             TransactionId = 0
@@ -102,7 +108,7 @@ public class BankService : IBankService
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
 
         await _uow.AddAsync(bank);
@@ -170,7 +176,7 @@ public class BankService : IBankService
                     Type = bt.Type,
                     Amount = bt.Amount,
                     TxnDate = bt.TxnDate,
-                    Username = u.Username,
+                    Username = u.UserName,
                 }
             ).ToListAsync();
         return res;

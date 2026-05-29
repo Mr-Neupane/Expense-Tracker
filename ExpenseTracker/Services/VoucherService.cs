@@ -1,12 +1,18 @@
+<<<<<<< HEAD
+using System.Transactions;
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+=======
 ﻿using System.Transactions;
+>>>>>>> main
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.ViewModels.Interface;
+using ExpenseTracker.Enums;
+using ExpenseTracker.ViewModels.Interface;
 using Transaction = ExpenseTracker.Models.Transaction;
 
 namespace ExpenseTracker.Services;
@@ -45,7 +51,7 @@ public class VoucherService : IVoucherService
             RecStatus = 'A',
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
-            RecById = -1,
+            RecById = UserConstants.AdminUser,
             TransactionDetails = dto.Details.Select(d => new TransactionDetail
             {
                 LedgerId = d.LedgerID,
@@ -54,7 +60,7 @@ public class VoucherService : IVoucherService
                 DrCr = d.IsDr ? 'D' : 'C',
                 RecStatus = 'A',
                 Status = Status.Active.ToInt(),
-                RecById = -1
+                RecById = UserConstants.AdminUser
             }).ToList()
         };
         await _uow.AddAsync(txn);
@@ -78,7 +84,7 @@ public class VoucherService : IVoucherService
                     VoucherNo = t.VoucherNo,
                     Remarks = t.Remarks,
                     Type = t.Type,
-                    Username = u.Username,
+                    Username = u.UserName,
                     Amount = t.Amount,
                     Status = t.Status
                 }
@@ -172,6 +178,32 @@ public class VoucherService : IVoucherService
 
     public async Task<List<VoucherDetailDto>> VoucherDetailAsync(int transactionId)
     {
+<<<<<<< HEAD
+        var report = await (from t in _dbContext.AccountingTransaction
+            join td in _dbContext.TransactionDetails on t.Id equals td.TransactionId
+            join l in _dbContext.Ledgers on td.LedgerId equals l.Id
+            join p in _dbContext.Ledgers on l.SubParentId equals p.Id
+            join u in _dbContext.Users on t.RecById equals u.Id
+            where td.TransactionId == transactionId
+            select new VoucherDetailDto
+            {
+                LedgerName = string.Concat(p.LedgerName,
+                    " > ",
+                    l.LedgerName),
+                Code = l.Code,
+                VoucherNo = t.VoucherNo,
+                DrAmount = td.DrAmount,
+                CrAmount = td.CrAmount,
+                Type = t.Type,
+                TransactionId = td.TransactionId,
+                Status = t.Status,
+                Typeid = t.TypeId,
+                Remarks = t.Remarks,
+                TxnDate = t.TxnDate,
+                UserName = u.UserName,
+                IsReverseVoucher = t.IsReversed
+            }).ToListAsync();
+=======
         var tQuery = _txnRepo.GetBaseQueryable();
         var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
@@ -201,6 +233,7 @@ public class VoucherService : IVoucherService
                     UserName = u.Username,
                     IsReverseVoucher = t.IsReversed
                 }).ToListAsync();
+>>>>>>> main
         return report;
     }
 

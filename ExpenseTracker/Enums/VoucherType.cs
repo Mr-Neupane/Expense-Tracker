@@ -1,4 +1,4 @@
-﻿namespace TestApplication.Enums;
+namespace ExpenseTracker.Enums;
 
 public enum VoucherType
 {

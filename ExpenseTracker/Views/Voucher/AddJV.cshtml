@@ -1,4 +1,4 @@
-﻿@model TestApplication.ViewModels.JournalVoucherVm
+@model ExpenseTracker.ViewModels.JournalVoucherVm
 @{
     int initialRows = 1;
 }
@@ -58,7 +58,7 @@
                                            class="form-control form-control-sm text-end cr-amount"/>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">??</button>
                                 </td>
                             </tr>
                         }
@@ -119,12 +119,12 @@
                    class="form-control form-control-sm text-end cr-amount" value="0"/>
         </td>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-outline-danger remove-row">🗑</button>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-row">??</button>
         </td>
     </tr>
 </script>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="~/lib/jquery/jquery.min.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -147,7 +147,7 @@
             loadLedgers($(this));
         });
 
-        // Ledger change → update code
+        // Ledger change ? update code
         $(document).on('change', '.ledger-select', function () {
             let code = $(this).find(':selected').data('code') || '';
             $(this).closest('tr').find('.ledger-code').val(code);

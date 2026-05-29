@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+using Microsoft.AspNetCore.Mvc;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
+>>>>>>> main
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
+using ExpenseTracker.Enums;
 
 namespace ExpenseTracker.Providers;
 
@@ -50,10 +57,49 @@ public class DropdownProvider
         var cQuery = _coaGenericRepo.GetBaseQueryable();
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
 
+<<<<<<< HEAD
+    public List<DropdownListDto> GetCashBankLedgers()
+    {
+        var cashAndBankLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.ParentId
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where (ls.SubParentId == LedgerConstants.CashAccount || ls.SubParentId == LedgerConstants.BankAccount)
+                select new DropdownListDto
+                {
+                    Name = ls.LedgerName,
+                    Id = ls.Id
+                }
+            ).ToList();
+        return cashAndBankLedger;
+    }
+
+    public List<DropdownListDto> GetIncomeLedgers()
+    {
+        var incomeLedger = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.ParentId
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                where c.Name == "Income"
+                select new DropdownListDto()
+                {
+                    Name = ls.LedgerName,
+                    Id = ls.Id
+                }
+            ).ToList();
+        return incomeLedger;
+    }
+
+    public JsonResult GetLedgers()
+    {
+        var ledgers = (from c in _context.CoaLedger
+                join l in _context.Ledgers on c.Id equals l.ParentId
+                join ls in _context.Ledgers on l.Id equals ls.SubParentId
+                select new LedgerInfoForJvDto()
+=======
         var ledgers = (from c in cQuery
                 join l in lQuery on c.Id equals l.ParentId
                 join ls in lQuery on l.Id equals ls.SubParentId
                 select new LedgerInfoForJvDto
+>>>>>>> main
                 {
                     LedgerBalance = 0,
                     LedgerName = string.Concat(l.LedgerName, " > ", ls.LedgerName),

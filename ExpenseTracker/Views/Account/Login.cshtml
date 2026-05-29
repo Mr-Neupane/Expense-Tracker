@@ -1,0 +1,55 @@
+@model ExpenseTracker.ViewModels.LoginVm
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Login - ExpenseTracker</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/admin-lte/css/adminlte.min.css"/>
+    <link rel="stylesheet" href="~/lib/fontsource/source-sans-3/index.css"/>
+    <style>
+        body {
+            background: #f4f6f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="card">
+        <div class="card-header text-center">
+            <h5>Expense Tracker</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Login" asp-controller="Account" method="post">
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label">Username</label>
+                    <input asp-for="Username" class="form-control" autocomplete="off" required="required"/>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" autocomplete="off" required="required"/>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </form>
+        </div>
+    </div>
+</div>
+@await Component.InvokeAsync("NToastNotify")
+</body>
+</html>

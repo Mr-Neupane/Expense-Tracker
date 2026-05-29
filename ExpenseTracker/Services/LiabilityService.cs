@@ -1,11 +1,17 @@
+<<<<<<< HEAD
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.Interface;
+using ExpenseTracker.Enums;
+using ExpenseTracker.Interface;
 
 namespace ExpenseTracker.Services;
 
@@ -36,7 +42,7 @@ public class LiabilityService : ILiabilityService
             RecDate = DateTime.Now.ToUniversalTime(),
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
         await _uow.AddAsync(liability);
         await _uow.SaveChangesAsync();
@@ -45,6 +51,25 @@ public class LiabilityService : ILiabilityService
 
     public async Task<List<LiabilityReportDto>> GetAllLiabilityReportAsync()
     {
+<<<<<<< HEAD
+        var report = await (from t in _context.AccountingTransaction
+            // join td in _context.TransactionDetails on t.Id equals td.TransactionId
+            join e in _context.Liabilities on t.TypeId equals e.Id
+            join u in _context.Users on e.RecById equals u.Id
+            where e.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt() && t.Type == "Liability"
+            select new LiabilityReportDto
+            {
+                Id = e.Id,
+                Ledgerid = 0,
+                TxnDate = e.TxnDate,
+                Transactionid = t.Id,
+                Voucherno = t.VoucherNo,
+                Status = t.Status,
+                Username = u.UserName,
+                Amount = t.Amount,
+                Remarks = t.Remarks
+            }).ToListAsync();
+=======
         var tQuery = _txnRepo.GetBaseQueryable();
         var eQuery = _liabilityGenericRepo.GetBaseQueryable();
         var uQuery = _userGenericRepo.GetBaseQueryable();
@@ -65,6 +90,7 @@ public class LiabilityService : ILiabilityService
                     Amount = t.Amount,
                     Remarks = t.Remarks
                 }).ToListAsync();
+>>>>>>> main
         return report;
     }
 

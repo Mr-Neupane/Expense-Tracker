@@ -1,11 +1,25 @@
+<<<<<<< HEAD
+using Dapper;
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
+<<<<<<< HEAD
+using ExpenseTracker.Interface;
+using ExpenseTracker.ViewModels;
+using ExpenseTracker.ViewModels.Interface;
+=======
 using TestApplication.Interface;
 using TestApplication.ViewModels.Interface;
+>>>>>>> main
 
 namespace ExpenseTracker.Controllers;
 
@@ -41,7 +55,7 @@ public class BankController : Controller
             {
                 Name = vm.BankName,
                 ParentId = null,
-                SubParentId = -2,
+                SubParentId = LedgerConstants.BankAccount,
             });
 
             await _bankService.AddBankAsync(new BankDto

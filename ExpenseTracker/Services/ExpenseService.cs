@@ -1,4 +1,10 @@
+<<<<<<< HEAD
+﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+=======
 ﻿using ExpenseTracker.Dtos;
+>>>>>>> main
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
@@ -33,8 +39,8 @@ public class ExpenseService : IExpenseService
             TxnDate = dto.TxnDate.ToUniversalTime(),
             RecDate = DateTime.Now.ToUniversalTime(),
             RecStatus = 'A',
-            Status = 1,
-            RecById = -1,
+            Status = StatusConstants.Active,
+            RecById = UserConstants.AdminUser,
         };
         await _uow.AddAsync(expense);
         await _uow.SaveChangesAsync();
@@ -44,6 +50,22 @@ public class ExpenseService : IExpenseService
 
     public async Task<List<ExpenseReportDto>> GetExpenseReportsAsync()
     {
+<<<<<<< HEAD
+        var report = await (from t in _context.AccountingTransaction
+            join e in _context.Expenses on t.TypeId equals e.Id
+            join u in _context.Users on e.RecById equals u.Id
+            where t.Status == StatusConstants.Active && t.Type == "Expense" && e.Status == StatusConstants.Active
+            select new ExpenseReportDto
+            {
+                LedgerId = 0,
+                TransactionId = t.Id,
+                Amount = e.DrAmount,
+                TxnDate = t.TxnDate,
+                VoucherNo = t.VoucherNo,
+                Username = u.UserName,
+                Status = e.Status,
+            }).ToListAsync();
+=======
         var tQuery = _txnRepo.GetBaseQueryable();
         var eQuery = _expenseGenericRepo.GetBaseQueryable();
         var uQuery = _userGenericRepo.GetBaseQueryable();
@@ -62,16 +84,29 @@ public class ExpenseService : IExpenseService
                     Username = u.Username,
                     Status = e.Status,
                 }).ToListAsync();
+>>>>>>> main
         return report;
     }
 
     public async Task ReverseRecordedExpenseAsync(int id)
     {
+<<<<<<< HEAD
+        var expense = await _context.Expenses.FindAsync(id);
+        if (expense is { Status: StatusConstants.Active })
+        {
+            expense.Status = StatusConstants.Reversed;
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            throw new Exception("Expense not found");
+=======
         var expense = await _expenseGenericRepo.FindOrThrowAsync(id);
         if (expense.Status == 1)
         {
             expense.Status = 2;
             await _uow.SaveChangesAsync();
+>>>>>>> main
         }
     }
 }

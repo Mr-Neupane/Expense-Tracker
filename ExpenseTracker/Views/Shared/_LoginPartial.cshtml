@@ -1,0 +1,13 @@
+@using System.Security.Claims
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Logout">Sign out</a>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+    </li>
+}

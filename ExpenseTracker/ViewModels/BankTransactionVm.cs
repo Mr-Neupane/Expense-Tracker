@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using TestApplication.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.ViewModels;
 

@@ -1,4 +1,6 @@
-﻿namespace TestApplication.ViewModels;
+using ExpenseTracker.Dtos;
+
+namespace ExpenseTracker.ViewModels;
 
 public class LedgerStatementPageVm
 {

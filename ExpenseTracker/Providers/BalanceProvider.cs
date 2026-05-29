@@ -1,8 +1,17 @@
+<<<<<<< HEAD
+using Dapper;
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+using Microsoft.EntityFrameworkCore;
+using ExpenseTracker.Enums;
+=======
 ﻿using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
 using TestApplication.ViewModels;
+>>>>>>> main
 
 namespace ExpenseTracker.Providers;
 
@@ -47,11 +56,26 @@ public class IBalanceProvider
                 ).ToList();
         if (ledgerTransaction.Count > 0)
         {
+<<<<<<< HEAD
+            var closingBalance = ledgerTransaction.Select(x => new
+            {
+                CoaName = ledgerTransaction.Select(x => x.Name),
+                CoaId = ledgerTransaction.Select(x => x.Id),
+                TotalDr = ledgerTransaction.Sum(x => x.DrAmount),
+                TotalCr = ledgerTransaction.Sum(x => x.CrAmount),
+                RemBalnce = ledgerTransaction.Select(x => x.Id == CoaConstants.Liabilities || x.Id == CoaConstants.Income) != null
+                    ? ledgerTransaction.Sum(x => x.CrAmount) - ledgerTransaction.Sum(x => x.DrAmount)
+                    : ledgerTransaction.Sum(x => x.DrAmount) - ledgerTransaction.Sum(x => x.CrAmount)
+            }).ToList();
+
+            decimal balance = closingBalance.Select(x => x.RemBalnce).Sum();
+=======
             var first = ledgerTransaction.First();
             var totalDr = ledgerTransaction.Sum(x => x.DrAmount);
             var totalCr = ledgerTransaction.Sum(x => x.CrAmount);
             var isLiabilityOrIncome = first.Id == 2 || first.Id == 3;
             var balance = isLiabilityOrIncome ? totalCr - totalDr : totalDr - totalCr;
+>>>>>>> main
             return balance;
         }
         else
@@ -90,7 +114,7 @@ public class IBalanceProvider
         var totalOpening = openingBalance.Select(x => new
         {
             ledgerId = x.LedgerId,
-            TotalOpeningBalance = x.CoaId == 1 || x.CoaId == 4
+            TotalOpeningBalance = x.CoaId == CoaConstants.Assets || x.CoaId == CoaConstants.Expenses
                 ? openingBalance.Sum(x => x.DrAmount) - openingBalance.Sum(x => x.CrAmount)
                 : openingBalance.Sum(x => x.CrAmount) - openingBalance.Sum(x => x.DrAmount),
         }).FirstOrDefault();
@@ -114,7 +138,7 @@ public class IBalanceProvider
         var totalClosing = closingBalance.Select(x => new
         {
             ledgerId = x.LedgerId,
-            TotalClosingBalance = x.CoaId == 1 || x.CoaId == 4
+            TotalClosingBalance = x.CoaId == CoaConstants.Assets || x.CoaId == CoaConstants.Expenses
                 ? closingBalance.Sum(x => x.DrAmount) - closingBalance.Sum(x => x.CrAmount)
                 : closingBalance.Sum(x => x.CrAmount) - closingBalance.Sum(x => x.DrAmount),
         }).FirstOrDefault();

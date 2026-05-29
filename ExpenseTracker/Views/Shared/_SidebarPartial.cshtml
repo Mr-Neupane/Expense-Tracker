@@ -1,0 +1,141 @@
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+  <div class="sidebar-brand">
+    <a href="#" class="brand-link">
+      <img src="~/favicon.ico" alt="" class="brand-image opacity-75 shadow"/>
+      <span class="brand-text fw-light">Expense Tracker</span>
+    </a>
+  </div>
+  <div class="sidebar-wrapper">
+    <nav class="mt-2">
+      <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-tree-fill"></i>
+            <p>UI Elements<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon bi bi-circle"></i><p>General</p></a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon bi bi-circle"></i><p>Icons</p></a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon bi bi-circle"></i><p>Timeline</p></a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-pencil-square"></i>
+            <p>Forms<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a href="#" class="nav-link"><i class="nav-icon bi bi-circle"></i><p>General Elements</p></a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-diagram-3"></i>
+            <p>COA<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Parent Ledger<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-controller="Ledger" asp-action="CreateParentLedger" class="nav-link"><p>Create Parent Ledger</p></a></li>
+                <li class="nav-item"><a asp-controller="Ledger" asp-action="ParentLedgerReport" class="nav-link"><p>Parent Ledger Report</p></a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Ledger<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-action="CreateLedger" asp-controller="Ledger" class="nav-link"><p>Create Ledger</p></a></li>
+                <li class="nav-item"><a asp-action="LedgerReport" asp-controller="Ledger" class="nav-link"><p>Ledger Report</p></a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-bank"></i>
+            <p>Bank<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Setup/Transaction<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-controller="Bank" asp-action="CreateBank" class="nav-link"><p>Create Bank</p></a></li>
+                <li class="nav-item"><a asp-controller="BankTransaction" asp-action="BankDepositandWithdraw" class="nav-link"><p>Record Bank Transaction</p></a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Reports<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-action="BankReport" asp-controller="Bank" class="nav-link"><p>Bank Report</p></a></li>
+                <li class="nav-item"><a asp-action="BankTransactionReport" asp-controller="BankTransaction" class="nav-link"><p>Bank Transaction Report</p></a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-cash-stack"></i>
+            <p>Expenses<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a asp-action="RecordExpense" asp-controller="Expense" class="nav-link"><p>Record Expense</p></a></li>
+            <li class="nav-item"><a asp-controller="Expense" asp-action="ExpenseReport" class="nav-link"><p>Expense Report</p></a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-graph-up-arrow"></i>
+            <p>Income<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a asp-action="RecordIncome" asp-controller="Income" class="nav-link"><p>Record Income</p></a></li>
+            <li class="nav-item"><a asp-controller="Income" asp-action="IncomeReport" class="nav-link"><p>Income Report</p></a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-calculator"></i>
+            <p>Liability<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a asp-action="AddLiability" asp-controller="Liability" class="nav-link"><p>Record Liability</p></a></li>
+            <li class="nav-item"><a asp-controller="Liability" asp-action="LiabilityReport" class="nav-link"><p>Liability Report</p></a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-table"></i>
+            <p>Accounting<i class="nav-arrow bi bi-chevron-right"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Journal Voucher<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-controller="Voucher" asp-action="AddJv" class="nav-link"><p>Add JV</p></a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <p>Reporting<i class="nav-arrow bi bi-chevron-right"></i></p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item"><a asp-action="AccountingTransaction" asp-controller="Voucher" class="nav-link"><p>Accounting Transaction Report</p></a></li>
+                <li class="nav-item"><a asp-action="LedgerStatement" asp-controller="Ledger" class="nav-link"><p>Ledger Statement</p></a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

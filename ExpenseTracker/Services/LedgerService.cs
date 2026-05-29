@@ -1,12 +1,18 @@
+<<<<<<< HEAD
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+using ExpenseTracker.Interface;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.Interface;
-using TestApplication.ViewModels;
+using ExpenseTracker.Enums;
+using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Services;
 
@@ -45,7 +51,7 @@ public class LedgerService : ILedgerService
             LedgerName = dto.Name,
             RecStatus = 'A',
             Status = Status.Active.ToInt(),
-            RecById = -1,
+            RecById = UserConstants.AdminUser,
             Code = ledgerCode,
             SubParentId = dto.SubParentId,
         };
@@ -80,7 +86,7 @@ public class LedgerService : ILedgerService
                     Status = l.Status,
                     LedgerCode = l.Code,
                     LedgerName = l.LedgerName,
-                    UserName = u.Username,
+                    UserName = u.UserName,
                     ParentLedgerName = c.Name
                 }
             ).ToListAsync();
@@ -107,7 +113,7 @@ public class LedgerService : ILedgerService
                     Code = l.Code,
                     CoaName = c.Name,
                     Status = l.Status,
-                    UserName = u.Username,
+                    UserName = u.UserName,
                 }
             ).ToListAsync();
         return res;
@@ -161,6 +167,15 @@ public class LedgerService : ILedgerService
 
     public async Task<bool> DeactivateLedgerAsync(int ledgerId)
     {
+<<<<<<< HEAD
+        var ledger = await _context.Ledgers.FindAsync(ledgerId);
+        var validation =
+            await (from l in _context.Ledgers
+                    join t in _context.TransactionDetails on l.Id equals t.LedgerId
+                    where t.LedgerId == ledgerId && t.Status == Status.Active.ToInt() && l.SubParentId != LedgerConstants.BankAccount
+                    select t)
+                .ToListAsync();
+=======
         var ledger = await _ledgerGenericRepo.FindOrThrowAsync(ledgerId);
         var lQuery = _ledgerGenericRepo.GetBaseQueryable();
         var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
@@ -170,6 +185,7 @@ public class LedgerService : ILedgerService
                 where t.LedgerId == ledgerId && t.Status == Status.Active.ToInt() && l.SubParentId != -2
                 select t)
             .ToListAsync();
+>>>>>>> main
         if (validation.Count == 0)
         {
             
@@ -180,7 +196,7 @@ public class LedgerService : ILedgerService
         {
             var drAmount = validation.Sum(x => x.DrAmount);
             var crAmount = validation.Sum(x => x.CrAmount);
-            if (drAmount - crAmount == 0)
+            if (drAmount == crAmount)
             {
                 ledger.Status = Status.Active.ToInt();
                 await _uow.SaveChangesAsync();

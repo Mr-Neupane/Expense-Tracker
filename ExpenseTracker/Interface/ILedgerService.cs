@@ -1,9 +1,8 @@
-﻿using ExpenseTracker.Controllers;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Models;
-using TestApplication.ViewModels;
+using ExpenseTracker.ViewModels;
 
-namespace TestApplication.Interface;
+namespace ExpenseTracker.Interface;
 
 public interface ILedgerService
 {

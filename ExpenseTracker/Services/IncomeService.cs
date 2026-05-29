@@ -1,11 +1,17 @@
+<<<<<<< HEAD
+using ExpenseTracker.Constants;
+using ExpenseTracker.Data;
+using ExpenseTracker.Dtos;
+=======
 ﻿using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
+>>>>>>> main
 using ExpenseTracker.Models;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using TestApplication.Enums;
-using TestApplication.Interface;
+using ExpenseTracker.Enums;
+using ExpenseTracker.Interface;
 
 namespace ExpenseTracker.Services;
 
@@ -36,7 +42,7 @@ public class IncomeService : IIncomeService
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active.ToInt(),
             RecStatus = 'A',
-            RecById = -1
+            RecById = UserConstants.AdminUser
         };
         await _uow.AddAsync(income);
         await _uow.SaveChangesAsync();
@@ -55,6 +61,22 @@ public class IncomeService : IIncomeService
 
     public async Task<List<IncomeReportDto>> GetIncomeReportAsync()
     {
+<<<<<<< HEAD
+        var report = await (from i in _context.Incomes
+            join t in _context.AccountingTransaction on i.Id equals t.TypeId
+            join u in _context.Users on i.RecById equals u.Id
+            where t.Type == "Income" && i.Status == Status.Active.ToInt() && t.Status == Status.Active.ToInt()
+            select new IncomeReportDto
+            {
+                Id = i.Id,
+                Amount = i.CrAmount,
+                Date = i.TxnDate,
+                VoucherNo = t.VoucherNo,
+                TransactionId = t.Id,
+                Username = u.UserName,
+                Status = i.Status,
+            }).ToListAsync();
+=======
         var iQuery = _incomeGenericRepo.GetBaseQueryable();
         var tQuery = _txnRepo.GetBaseQueryable();
         var uQuery = _userGenericRepo.GetBaseQueryable();
@@ -73,6 +95,7 @@ public class IncomeService : IIncomeService
                     Username = u.Username,
                     Status = i.Status,
                 }).ToListAsync();
+>>>>>>> main
         return report;
     }
 }
