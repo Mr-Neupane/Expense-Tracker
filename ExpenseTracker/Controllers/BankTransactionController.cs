@@ -17,7 +17,7 @@ public class BankTransactionController : Controller
     private readonly AccTransactionManager _accTransactionManager;
     private readonly IProvider _provider;
     private readonly DropdownProvider _dropdownProvider;
-    public required IBalanceProvider _balanceProvider;
+    public IBalanceProvider _balanceProvider;
 
 
     public BankTransactionController(IToastNotification toastNotification,
@@ -56,6 +56,11 @@ public class BankTransactionController : Controller
                 var banks = await _bankService.BankReportAsync();
 
                 var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
+                if (res == null)
+                {
+                    _toastNotification.AddErrorToastMessage("Bank not found");
+                    return RedirectToAction("BankTransactionReport");
+                }
 
                 if (res.RemainingBalance < vm.Amount && vm.Type == "Withdraw")
                 {
@@ -114,10 +119,10 @@ public class BankTransactionController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult?> BankTransactionReport()
+    public async Task<IActionResult> BankTransactionReport()
     {
         var report = await _bankService.BankTransactionReportAsync();
-        if (report != null || report.Any())
+        if (report != null && report.Any())
         {
             return View(report.ToList());
         }
@@ -135,6 +140,11 @@ public class BankTransactionController : Controller
             var banks = await _bankService.BankReportAsync();
 
             var res = banks.FirstOrDefault(b => b.Id == bankId);
+            if (res == null)
+            {
+                _toastNotification.AddErrorToastMessage("Bank not found");
+                return RedirectToAction("BankTransactionReport");
+            }
 
             if (res.RemainingBalance - amount < 0)
             {

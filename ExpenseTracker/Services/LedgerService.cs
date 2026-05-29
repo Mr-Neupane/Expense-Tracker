@@ -1,8 +1,8 @@
-﻿using ExpenseTracker.Controllers;
-using ExpenseTracker.Data;
-using ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Dtos;
+using ExpenseTracker.Repository;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers;
+using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
 using TestApplication.Interface;
@@ -12,13 +12,26 @@ namespace ExpenseTracker.Services;
 
 public class LedgerService : ILedgerService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IUow _uow;
+    private readonly ILedgerGenericRepository _ledgerGenericRepo;
+    private readonly ICoaGenericRepository _coaGenericRepo;
+    private readonly ITransactionDetailGenericRepository _txnDetailGenericRepo;
+    private readonly ITransactionGenericRepository _txnRepo;
+    private readonly IUserGenericRepository _userGenericRepo;
     private readonly IProvider _provider;
     private readonly IBalanceProvider _balanceProvider;
 
-    public LedgerService(ApplicationDbContext context, IProvider provider, IBalanceProvider balanceProvider)
+    public LedgerService(IUow uow, ILedgerGenericRepository ledgerGenericRepo,
+        ICoaGenericRepository coaGenericRepo, ITransactionDetailGenericRepository txnDetailGenericRepo,
+        ITransactionGenericRepository txnRepo, IUserGenericRepository userGenericRepo,
+        IProvider provider, IBalanceProvider balanceProvider)
     {
-        _context = context;
+        _uow = uow;
+        _ledgerGenericRepo = ledgerGenericRepo;
+        _coaGenericRepo = coaGenericRepo;
+        _txnDetailGenericRepo = txnDetailGenericRepo;
+        _txnRepo = txnRepo;
+        _userGenericRepo = userGenericRepo;
         _provider = provider;
         _balanceProvider = balanceProvider;
     }
@@ -36,27 +49,31 @@ public class LedgerService : ILedgerService
             Code = ledgerCode,
             SubParentId = dto.SubParentId,
         };
-        await _context.Ledgers.AddAsync(ledger);
-        await _context.SaveChangesAsync();
+        await _uow.AddAsync(ledger);
+        await _uow.SaveChangesAsync();
         return ledger;
     }
 
     public async Task EditLedgerAsync(EditLedgerDto dto)
     {
-        var ledger = await _context.Ledgers.FindAsync(dto.LedgerId);
-        if (dto.LedgerName != ledger?.LedgerName)
+        var ledger = await _ledgerGenericRepo.FindOrThrowAsync(dto.LedgerId);
+        if (dto.LedgerName != ledger.LedgerName)
         {
             ledger.LedgerName = dto.LedgerName;
         }
 
-        await _context.SaveChangesAsync();
+        await _uow.SaveChangesAsync();
     }
 
     public async Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync()
     {
-        var res = await (from l in _context.Ledgers
-                join c in _context.CoaLedger on l.ParentId equals c.Id
-                join u in _context.Users on l.RecById equals u.Id
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var uQuery = _userGenericRepo.GetBaseQueryable();
+
+        var res = await (from l in lQuery
+                join c in cQuery on l.ParentId equals c.Id
+                join u in uQuery on l.RecById equals u.Id
                 select new ParentLedgerReportDto
                 {
                     LedgerId = l.Id,
@@ -72,10 +89,14 @@ public class LedgerService : ILedgerService
 
     public async Task<List<LedgerReportDto>> GetLedgerReportAsync()
     {
-        var res = await (from l in _context.Ledgers
-                join pl in _context.Ledgers on l.SubParentId equals pl.Id
-                join c in _context.CoaLedger on pl.ParentId equals c.Id
-                join u in _context.Users on l.RecById equals u.Id
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var uQuery = _userGenericRepo.GetBaseQueryable();
+
+        var res = await (from l in lQuery
+                join pl in lQuery on l.SubParentId equals pl.Id
+                join c in cQuery on pl.ParentId equals c.Id
+                join u in uQuery on l.RecById equals u.Id
                 where l.Status == Status.Active.ToInt()
                 select new LedgerReportDto
                 {
@@ -96,11 +117,15 @@ public class LedgerService : ILedgerService
     {
         var report =
             await _balanceProvider.GetLedgerOpeningandCosingBalance(vm.LedgerId, vm.DateFrom, vm.DateTo);
-        var data = await (from t in _context.AccountingTransaction
-            join td in _context.TransactionDetails.Where(d => d.LedgerId == vm.LedgerId) on t.Id equals td
-                .TransactionId
-            join td2 in _context.TransactionDetails on td.TransactionId equals td2.TransactionId
-            join l in _context.Ledgers on td2.LedgerId equals l.Id
+
+        var tQuery = _txnRepo.GetBaseQueryable();
+        var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+
+        var data = await (from t in tQuery
+            join td in tdQuery.Where(d => d.LedgerId == vm.LedgerId) on t.Id equals td.TransactionId
+            join td2 in tdQuery on td.TransactionId equals td2.TransactionId
+            join l in lQuery on td2.LedgerId equals l.Id
             where td2.LedgerId != vm.LedgerId && t.Status == Status.Active.ToInt() &&
                   td.Status == Status.Active.ToInt() &&
                   t.TxnDate >= vm.DateFrom.ToUniversalTime() &&
@@ -136,17 +161,19 @@ public class LedgerService : ILedgerService
 
     public async Task<bool> DeactivateLedgerAsync(int ledgerId)
     {
-        var ledger = await _context.Ledgers.FindAsync(ledgerId);
-        var validation =
-            await (from l in _context.Ledgers
-                    join t in _context.TransactionDetails on l.Id equals t.LedgerId
-                    where t.LedgerId == ledgerId && t.Status == Status.Active.ToInt() && l.SubParentId != -2
-                    select t)
-                .ToListAsync();
+        var ledger = await _ledgerGenericRepo.FindOrThrowAsync(ledgerId);
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
+
+        var validation = await (from l in lQuery
+                join t in tdQuery on l.Id equals t.LedgerId
+                where t.LedgerId == ledgerId && t.Status == Status.Active.ToInt() && l.SubParentId != -2
+                select t)
+            .ToListAsync();
         if (validation.Count == 0)
         {
-            ledger.Status = Status.Reversed.ToInt();
-            await _context.SaveChangesAsync();
+            
+            await _uow.SoftDeleteAsync<Ledger>(ledger.Id);
             return true;
         }
         else
@@ -156,7 +183,7 @@ public class LedgerService : ILedgerService
             if (drAmount - crAmount == 0)
             {
                 ledger.Status = Status.Active.ToInt();
-                await _context.SaveChangesAsync();
+                await _uow.SaveChangesAsync();
                 return true;
             }
         }
@@ -164,17 +191,22 @@ public class LedgerService : ILedgerService
         return false;
     }
 
+    public async Task<List<int>> DeactivateLedgerAsync(List<int> ledgerIds)
+    {
+        var failed = new List<int>();
+        foreach (var id in ledgerIds)
+        {
+            var ok = await DeactivateLedgerAsync(id);
+            if (!ok)
+                failed.Add(id);
+        }
+        return failed;
+    }
+
     public async Task ActivateLedgerAsync(int ledgerId)
     {
-        var ledger = await _context.Ledgers.FindAsync(ledgerId);
-        if (ledger != null)
-        {
-            ledger.Status = Status.Active.ToInt();
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            throw new Exception("Ledger not found");
-        }
+        var ledger = await _ledgerGenericRepo.FindOrThrowAsync(ledgerId);
+        ledger.Status = Status.Active.ToInt();
+        await _uow.SaveChangesAsync();
     }
 }

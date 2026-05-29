@@ -1,27 +1,40 @@
-﻿using Dapper;
-using ExpenseTracker.Data;
+﻿using ExpenseTracker.Repository;
+using ExpenseTracker.Models;
 using Microsoft.EntityFrameworkCore;
 using TestApplication.Enums;
+using TestApplication.ViewModels;
 
 namespace ExpenseTracker.Providers;
 
 public class IBalanceProvider
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ILedgerGenericRepository _ledgerGenericRepo;
+    private readonly ICoaGenericRepository _coaGenericRepo;
+    private readonly ITransactionDetailGenericRepository _txnDetailGenericRepo;
+    private readonly ITransactionGenericRepository _txnRepo;
 
-    public IBalanceProvider(ApplicationDbContext context)
+    public IBalanceProvider(ILedgerGenericRepository ledgerGenericRepo, ICoaGenericRepository coaGenericRepo,
+        ITransactionDetailGenericRepository txnDetailGenericRepo, ITransactionGenericRepository txnRepo)
     {
-        _context = context;
+        _ledgerGenericRepo = ledgerGenericRepo;
+        _coaGenericRepo = coaGenericRepo;
+        _txnDetailGenericRepo = txnDetailGenericRepo;
+        _txnRepo = txnRepo;
     }
 
     public decimal GetLedgerBalance(int ledgerId)
     {
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
+        var tQuery = _txnRepo.GetBaseQueryable();
+
         var ledgerTransaction =
-             (from l in _context.Ledgers
-                    join pl in _context.Ledgers on l.SubParentId equals pl.Id
-                    join c in _context.CoaLedger on pl.ParentId equals c.Id
-                    join td in _context.TransactionDetails on l.Id equals td.LedgerId
-                    join t in _context.AccountingTransaction on td.TransactionId equals t.Id
+             (from l in lQuery
+                    join pl in lQuery on l.SubParentId equals pl.Id
+                    join c in cQuery on pl.ParentId equals c.Id
+                    join td in tdQuery on l.Id equals td.LedgerId
+                    join t in tQuery on td.TransactionId equals t.Id
                     where t.Status == Status.Active.ToInt() && td.Status == Status.Active.ToInt()
                                                             && td.LedgerId == ledgerId
                     select new
@@ -34,18 +47,11 @@ public class IBalanceProvider
                 ).ToList();
         if (ledgerTransaction.Count > 0)
         {
-            var closingBalance = ledgerTransaction.Select(x => new
-            {
-                CoaName = ledgerTransaction.Select(x => x.Name),
-                CoaId = ledgerTransaction.Select(x => x.Id),
-                TotalDr = ledgerTransaction.Sum(x => x.DrAmount),
-                TotalCr = ledgerTransaction.Sum(x => x.CrAmount),
-                RemBalnce = ledgerTransaction.Select(x => x.Id == 2 || x.Id == 3) != null
-                    ? ledgerTransaction.Sum(x => x.CrAmount) - ledgerTransaction.Sum(x => x.DrAmount)
-                    : ledgerTransaction.Sum(x => x.DrAmount) - ledgerTransaction.Sum(x => x.CrAmount)
-            }).ToList();
-
-            decimal balance = closingBalance.Select(x => x.RemBalnce).Sum();
+            var first = ledgerTransaction.First();
+            var totalDr = ledgerTransaction.Sum(x => x.DrAmount);
+            var totalCr = ledgerTransaction.Sum(x => x.CrAmount);
+            var isLiabilityOrIncome = first.Id == 2 || first.Id == 3;
+            var balance = isLiabilityOrIncome ? totalCr - totalDr : totalDr - totalCr;
             return balance;
         }
         else
@@ -58,12 +64,18 @@ public class IBalanceProvider
         DateTime dateTo)
     {
         var fromDate = dateFrom;
-        var toDate = dateTo == null ? DateTime.Now : dateTo;
-        var openingBalance = await (from td in _context.TransactionDetails
-                join t in _context.AccountingTransaction on td.TransactionId equals t.Id
-                join l in _context.Ledgers on td.LedgerId equals l.Id
-                join pl in _context.Ledgers on l.SubParentId equals pl.Id
-                join c in _context.CoaLedger on pl.ParentId equals c.Id
+        var toDate = dateTo == default ? DateTime.Now : dateTo;
+
+        var tdQuery = _txnDetailGenericRepo.GetBaseQueryable();
+        var tQuery = _txnRepo.GetBaseQueryable();
+        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
+        var cQuery = _coaGenericRepo.GetBaseQueryable();
+
+        var openingBalance = await (from td in tdQuery
+                join t in tQuery on td.TransactionId equals t.Id
+                join l in lQuery on td.LedgerId equals l.Id
+                join pl in lQuery on l.SubParentId equals pl.Id
+                join c in cQuery on pl.ParentId equals c.Id
                 where t.Status == Status.Active.ToInt() && td.Status == Status.Active.ToInt()
                                                         && t.TxnDate < fromDate.ToUniversalTime() &&
                                                         td.LedgerId == ledgerId
@@ -83,11 +95,11 @@ public class IBalanceProvider
                 : openingBalance.Sum(x => x.CrAmount) - openingBalance.Sum(x => x.DrAmount),
         }).FirstOrDefault();
 
-        var closingBalance = await (from td in _context.TransactionDetails
-                join t in _context.AccountingTransaction on td.TransactionId equals t.Id
-                join l in _context.Ledgers on td.LedgerId equals l.Id
-                join pl in _context.Ledgers on l.SubParentId equals pl.Id
-                join c in _context.CoaLedger on pl.ParentId equals c.Id
+        var closingBalance = await (from td in tdQuery
+                join t in tQuery on td.TransactionId equals t.Id
+                join l in lQuery on td.LedgerId equals l.Id
+                join pl in lQuery on l.SubParentId equals pl.Id
+                join c in cQuery on pl.ParentId equals c.Id
                 where t.Status == Status.Active.ToInt() && td.Status == Status.Active.ToInt() &&
                       td.LedgerId == ledgerId &&
                       t.TxnDate.Date <= toDate.ToUniversalTime()
@@ -117,7 +129,7 @@ public class IBalanceProvider
             DateTo = toDate,
             OpeningBalance = openingAmount,
             ClosingBalance = closingAmount,
-            LedgerStatements = null,
+            LedgerStatements = new List<LedgerStatement>(),
         };
         return rep;
     }

@@ -12,5 +12,4 @@ public class Expense : BaseModel
     public decimal DrAmount { get; set; }
     public decimal CrAmount { get; set; }
     public DateTime TxnDate { get; set; }
-    public DateTime RecDate { get; set; } = DateTime.UtcNow;
 }

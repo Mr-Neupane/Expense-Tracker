@@ -157,6 +157,26 @@
             let ledgerBalance = $(this).find(':selected').data('balance') || 0;
             $(this).closest('tr').find('.ledger-balance').val(ledgerBalance);
         });
+        function calculateTotals() {
+            let dr = 0, cr = 0;
+            $('.dr-amount').each(function () {
+                dr += parseFloat($(this).val()) || 0;
+            });
+            $('.cr-amount').each(function () {
+                cr += parseFloat($(this).val()) || 0;
+            });
+
+
+            $('#totalDr').text(dr.toFixed(2));
+            $('#totalCr').text(cr.toFixed(2));
+
+            if (dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
+                $('button[type="submit"]').prop('disabled', false);
+            } else {
+                $('button[type="submit"]').prop('disabled', true);
+            }
+        }
+
         $(document).on('change', '.dr-amount', function () {
             var cr = $(this).closest('tr').find('.cr-amount');
             var dr = this.value;
@@ -202,31 +222,6 @@
         });
 
     });
-    $(document).ready(function () {
-
-        function calculateTotals() {
-            let dr = 0, cr = 0;
-            $('.dr-amount').each(function () {
-                dr += parseFloat($(this).val()) || 0;
-            });
-            $('.cr-amount').each(function () {
-                cr += parseFloat($(this).val()) || 0;
-            });
-
-
-            $('#totalDr').text(dr.toFixed(2));
-            $('#totalCr').text(cr.toFixed(2));
-
-            // Enable save button only if Dr = Cr and both > 0
-            if (dr.toFixed(2) === cr.toFixed(2) && dr > 0) {
-                $('button[type="submit"]').prop('disabled', false);
-            } else {
-                $('button[type="submit"]').prop('disabled', true);
-            }
-        }
-
-        $(document).on('input', '.dr-amount, .cr-amount', calculateTotals);
-        calculateTotals();
-    });
+    // calculateTotals merged into first ready block
 
 </script>

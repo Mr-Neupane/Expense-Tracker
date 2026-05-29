@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using System.Text.RegularExpressions;
+using Npgsql;
 
 namespace ExpenseTracker;
 
@@ -13,6 +14,9 @@ public static class DatabaseInitializer
 
         var csb = new NpgsqlConnectionStringBuilder(baseConnectionString);
         var databaseName = csb.Database;
+
+        if (!Regex.IsMatch(databaseName, @"^[a-zA-Z_][a-zA-Z0-9_]*$"))
+            throw new InvalidOperationException("Invalid database name");
 
         csb.Database = "postgres";
         var adminConnectionString = csb.ConnectionString;
