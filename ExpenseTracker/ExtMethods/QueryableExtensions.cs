@@ -5,8 +5,8 @@ namespace ExpenseTracker.ExtMethods;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<T> Active<T>(this IQueryable<T> query)
-        where T : BaseModel
+    public static IQueryable<T> FilterActiveStatus<T>(this IQueryable<T> query)
+        where T : BaseEntity
     {
         return query.Where(e => e.Status == Status.Active);
     }

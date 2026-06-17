@@ -19,7 +19,6 @@ public class ExpenseController : Controller
     private readonly AccTransactionManager _accTransactionManager;
     private readonly DropdownProvider _dropdownProvider;
 
-
     public ExpenseController(IExpenseService expenseService, IToastNotification toastNotification,
         IBalanceProvider balanceProvider, AccTransactionManager accTransactionManager,
         DropdownProvider dropdownProvider)
@@ -101,7 +100,6 @@ public class ExpenseController : Controller
         }
         catch (Exception e)
         {
-            
             _toastNotification.AddErrorToastMessage("Expense could not be recorded." + e.Message);
             return View(nvm);
         }
@@ -113,3 +111,6 @@ public class ExpenseController : Controller
         return View(report);
     }
 }
+
+
+

@@ -35,7 +35,11 @@ public class AccountController : Controller
     {
         try
         {
-            await _authManager.Login(vm.Username, vm.Password);
+            var loginDto = new LoginDto()
+            {
+                Password = vm.Password, UserEmail = vm.UserEmail.Trim().ToLower()
+            };
+            await _authManager.Login(loginDto);
 
             _toastNotification.AddSuccessToastMessage("Login successful.");
             return RedirectToAction("Index", "Home");
@@ -43,7 +47,7 @@ public class AccountController : Controller
         catch (Exception e)
         {
             _toastNotification.AddErrorToastMessage(e.Message);
-            return View(vm);
+            return View();
         }
     }
 

@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ExpenseTracker.Models
 {
     [Table("users", Schema = "public")]
-    public class User : IEntity
+    public class User : BaseEntity
     {
-        [Column("id")] public int Id { get; set; }
-        [Column("username")] public string UserName { get; set; }
-        [Column("password")] public string Password { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
     }
 }

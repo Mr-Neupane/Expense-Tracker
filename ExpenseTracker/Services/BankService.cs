@@ -7,6 +7,7 @@ using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
 using ExpenseTracker.ExtMethods;
+using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Services;
@@ -17,20 +18,22 @@ public class BankService : IBankService
     private readonly IBankRepo _bankGenericRepo;
     private readonly IBankTransactionRepo _bankTxnRepo;
     private readonly IUserRepo _userGenericRepo;
+    private readonly ICurrentUserProvider  _currentUserProvider;
 
     public BankService(IUow uow, IBankRepo bankGenericRepo,
-        IBankTransactionRepo bankTxnRepo, IUserRepo userGenericRepo)
+        IBankTransactionRepo bankTxnRepo, IUserRepo userGenericRepo, ICurrentUserProvider currentUserProvider)
     {
         _uow = uow;
         _bankGenericRepo = bankGenericRepo;
         _bankTxnRepo = bankTxnRepo;
         _userGenericRepo = userGenericRepo;
+        _currentUserProvider = currentUserProvider;
     }
 
 
     public async Task<List<Bank>> BankReportAsync()
     {
-        return await _bankGenericRepo.GetBaseQueryable().Active().ToListAsync();
+        return await _bankGenericRepo.GetBaseQueryable().FilterActiveStatus().ToListAsync();
     }
 
     public async Task EditBankAsync(BankDto dto)
@@ -61,6 +64,7 @@ public class BankService : IBankService
 
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
     {
+        var cu = await _currentUserProvider.GetCurrentUser();
         var banktransaction = new BankTransaction
         {
             BankId = dto.BankId,
@@ -69,7 +73,7 @@ public class BankService : IBankService
             Type = dto.Type,
             Remarks = dto.Remarks,
             RecDate = DateTime.Now.ToUniversalTime(),
-            RecById = UserConstants.AdminUser,
+            RecById = cu.Id,
             RecStatus = RecordStatusConstants.Active,
             Status = Status.Active,
             TransactionId = 0
@@ -116,11 +120,11 @@ public class BankService : IBankService
     {
         var bankTxnQuery = _bankTxnRepo.GetBaseQueryable();
         var deposit = await bankTxnQuery
-            .Active()
+            .FilterActiveStatus()
             .Where(t => t.Type == TransactionTypeConstants.Deposit && t.BankId == bid)
             .SumAsync(t => t.Amount);
         var withdraw = await bankTxnQuery
-            .Active()
+            .FilterActiveStatus()
             .Where(t => t.Type == TransactionTypeConstants.Withdraw && t.BankId == bid)
             .SumAsync(t => t.Amount);
         var remBal = deposit - withdraw;

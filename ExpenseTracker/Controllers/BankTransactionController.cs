@@ -20,7 +20,6 @@ public class BankTransactionController : Controller
     private readonly DropdownProvider _dropdownProvider;
     public IBalanceProvider _balanceProvider;
 
-
     public BankTransactionController(IToastNotification toastNotification,
         ReverseTransactionManager reverseTransactionManager, IBankService bankService,
         AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider,
@@ -167,3 +166,4 @@ public class BankTransactionController : Controller
         }
     }
 }
+

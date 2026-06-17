@@ -2,9 +2,9 @@ var NepaliDateHelper = {
   initDatePicker: function (inputElement, hiddenEngInput) {
     if (!inputElement) return;
 
-    var defaultBsDate = NepaliFunctions.AD2BS(new Date(), "YYYY-MM-DD", "YYYY/MM/DD");
+      let defaultBsDate = NepaliFunctions.AD2BS(new Date(), "YYYY-MM-DD", "YYYY/MM/DD");
 
-    inputElement.NepaliDatePicker({
+      inputElement.NepaliDatePicker({
       language: "english",
       dateFormat: "YYYY/MM/DD",
       animation: "slide",
@@ -13,9 +13,9 @@ var NepaliDateHelper = {
     });
 
     inputElement.addEventListener("blur", function () {
-      var bsDate = inputElement.value;
+      let bsDate = inputElement.value;
       if (bsDate) {
-        var adDate = NepaliFunctions.BS2AD(bsDate, "YYYY/MM/DD", "YYYY-MM-DD");
+        let adDate = NepaliFunctions.BS2AD(bsDate, "YYYY/MM/DD", "YYYY-MM-DD");
         if (hiddenEngInput) {
           hiddenEngInput.value = adDate == null ? new Date().toISOString().slice(0, 10) : adDate;
         }

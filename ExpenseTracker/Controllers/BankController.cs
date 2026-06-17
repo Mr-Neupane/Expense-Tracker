@@ -1,4 +1,4 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Repository;
@@ -90,9 +90,17 @@ public class BankController : Controller
     [HttpPost]
     public async Task<IActionResult> EditBank(BankDto dto)
     {
-        await _bankService.EditBankAsync(dto);
-        _toastNotification.AddSuccessToastMessage("Bank edited successfully");
-        return RedirectToAction("BankReport");
+        try
+        {
+            await _bankService.EditBankAsync(dto);
+            _toastNotification.AddSuccessToastMessage("Bank edited successfully");
+            return RedirectToAction("BankReport");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error editing bank." + e.Message);
+            return View(dto);
+        }
     }
 
     [HttpGet]
@@ -102,3 +110,7 @@ public class BankController : Controller
         return View(res);
     }
 }
+
+
+
+

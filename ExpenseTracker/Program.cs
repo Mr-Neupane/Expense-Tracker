@@ -1,5 +1,6 @@
 using ExpenseTracker;
 using ExpenseTracker.Data;
+using ExpenseTracker.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +19,10 @@ using (var scope = app.Services.CreateScope())
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseCookiePolicy(new CookiePolicyOptions
 {

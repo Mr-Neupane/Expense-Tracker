@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpenseTracker.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,149 +18,31 @@ namespace ExpenseTracker.Migrations
             migrationBuilder.EnsureSchema(
                 name: "accounting");
 
-            migrationBuilder.CreateTable(
-                name: "AspNetRoles",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    concurrency_stamp = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.id);
-                });
+            migrationBuilder.EnsureSchema(
+                name: "public");
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
+                name: "users",
+                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false),
-                    display_name = table.Column<string>(type: "text", nullable: true),
-                    user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: true),
-                    security_stamp = table.Column<string>(type: "text", nullable: true),
-                    concurrency_stamp = table.Column<string>(type: "text", nullable: true),
-                    phone_number = table.Column<string>(type: "text", nullable: true),
-                    phone_number_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    access_failed_count = table.Column<int>(type: "integer", nullable: false)
+                    user_name = table.Column<string>(type: "text", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: false),
+                    rec_status = table.Column<char>(type: "character(1)", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    rec_by_id = table.Column<int>(type: "integer", nullable: false),
+                    rec_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    role_id = table.Column<int>(type: "integer", nullable: false),
-                    claim_type = table.Column<string>(type: "text", nullable: true),
-                    claim_value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.id);
+                    table.PrimaryKey("PK_users", x => x.id);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_role_id",
-                        column: x => x.role_id,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    claim_type = table.Column<string>(type: "text", nullable: true),
-                    claim_value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    login_provider = table.Column<string>(type: "text", nullable: false),
-                    provider_key = table.Column<string>(type: "text", nullable: false),
-                    provider_display_name = table.Column<string>(type: "text", nullable: true),
-                    user_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.login_provider, x.provider_key });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    role_id = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.user_id, x.role_id });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_role_id",
-                        column: x => x.role_id,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    login_provider = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.user_id, x.login_provider, x.name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
+                        name: "FK_users_users_rec_by_id",
+                        column: x => x.rec_by_id,
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -188,9 +70,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_bank", x => x.id);
                     table.ForeignKey(
-                        name: "FK_bank_AspNetUsers_rec_by_id",
+                        name: "FK_bank_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -217,9 +100,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_bank_transactions", x => x.id);
                     table.ForeignKey(
-                        name: "FK_bank_transactions_AspNetUsers_rec_by_id",
+                        name: "FK_bank_transactions_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -241,9 +125,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_coa", x => x.id);
                     table.ForeignKey(
-                        name: "FK_coa_AspNetUsers_rec_by_id",
+                        name: "FK_coa_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -268,9 +153,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_income", x => x.id);
                     table.ForeignKey(
-                        name: "FK_income_AspNetUsers_rec_by_id",
+                        name: "FK_income_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -295,9 +181,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_ledger", x => x.id);
                     table.ForeignKey(
-                        name: "FK_ledger_AspNetUsers_rec_by_id",
+                        name: "FK_ledger_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -322,9 +209,36 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_liability", x => x.id);
                     table.ForeignKey(
-                        name: "FK_liability_AspNetUsers_rec_by_id",
+                        name: "FK_liability_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "roles",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    rec_status = table.Column<char>(type: "character(1)", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    rec_by_id = table.Column<int>(type: "integer", nullable: false),
+                    rec_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_roles", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_roles_users_rec_by_id",
+                        column: x => x.rec_by_id,
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -354,9 +268,10 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_transactions", x => x.id);
                     table.ForeignKey(
-                        name: "FK_transactions_AspNetUsers_rec_by_id",
+                        name: "FK_transactions_users_rec_by_id",
                         column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -372,25 +287,66 @@ namespace ExpenseTracker.Migrations
                     dr_amount = table.Column<decimal>(type: "numeric", nullable: false),
                     cr_amount = table.Column<decimal>(type: "numeric", nullable: false),
                     txn_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    rec_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     rec_status = table.Column<char>(type: "character(1)", nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
-                    rec_by_id = table.Column<int>(type: "integer", nullable: false)
+                    rec_by_id = table.Column<int>(type: "integer", nullable: false),
+                    rec_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_expenses", x => x.id);
                     table.ForeignKey(
-                        name: "FK_expenses_AspNetUsers_rec_by_id",
-                        column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_expenses_ledger_ledger_id",
                         column: x => x.ledger_id,
                         principalSchema: "accounting",
                         principalTable: "ledger",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_expenses_users_rec_by_id",
+                        column: x => x.rec_by_id,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_roles",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<int>(type: "integer", nullable: false),
+                    role_id = table.Column<int>(type: "integer", nullable: false),
+                    rec_status = table.Column<char>(type: "character(1)", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    rec_by_id = table.Column<int>(type: "integer", nullable: false),
+                    rec_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_roles", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_user_roles_roles_role_id",
+                        column: x => x.role_id,
+                        principalSchema: "public",
+                        principalTable: "roles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_roles_users_rec_by_id",
+                        column: x => x.rec_by_id,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_roles_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -416,56 +372,20 @@ namespace ExpenseTracker.Migrations
                 {
                     table.PrimaryKey("PK_transaction_details", x => x.id);
                     table.ForeignKey(
-                        name: "FK_transaction_details_AspNetUsers_rec_by_id",
-                        column: x => x.rec_by_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_transaction_details_transactions_transaction_id",
                         column: x => x.transaction_id,
                         principalSchema: "accounting",
                         principalTable: "transactions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_transaction_details_users_rec_by_id",
+                        column: x => x.rec_by_id,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaims_role_id",
-                table: "AspNetRoleClaims",
-                column: "role_id");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles",
-                column: "normalized_name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserClaims_user_id",
-                table: "AspNetUserClaims",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogins_user_id",
-                table: "AspNetUserLogins",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_role_id",
-                table: "AspNetUserRoles",
-                column: "role_id");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "normalized_email");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "normalized_user_name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_bank_rec_by_id",
@@ -516,6 +436,12 @@ namespace ExpenseTracker.Migrations
                 column: "rec_by_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_roles_rec_by_id",
+                schema: "public",
+                table: "roles",
+                column: "rec_by_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_transaction_details_rec_by_id",
                 schema: "accounting",
                 table: "transaction_details",
@@ -532,26 +458,35 @@ namespace ExpenseTracker.Migrations
                 schema: "accounting",
                 table: "transactions",
                 column: "rec_by_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_roles_rec_by_id",
+                schema: "public",
+                table: "user_roles",
+                column: "rec_by_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_roles_role_id",
+                schema: "public",
+                table: "user_roles",
+                column: "role_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_roles_user_id",
+                schema: "public",
+                table: "user_roles",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_rec_by_id",
+                schema: "public",
+                table: "users",
+                column: "rec_by_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
-
             migrationBuilder.DropTable(
                 name: "bank",
                 schema: "bank");
@@ -581,7 +516,8 @@ namespace ExpenseTracker.Migrations
                 schema: "accounting");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "user_roles",
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "ledger",
@@ -592,7 +528,12 @@ namespace ExpenseTracker.Migrations
                 schema: "accounting");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "roles",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "users",
+                schema: "public");
         }
     }
 }

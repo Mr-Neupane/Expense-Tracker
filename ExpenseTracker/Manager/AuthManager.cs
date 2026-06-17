@@ -1,38 +1,51 @@
+using System.Security.Claims;
 using ExpenseTracker.Manager.Interfaces;
 using ExpenseTracker.Models;
+using ExpenseTracker.Repository;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
 namespace ExpenseTracker.Manager;
 
 public class AuthManager : IAuthManager
 {
-    private readonly SignInManager<AppUser> _signInManager;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IUserRepo _userRepo;
+    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthManager(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+    public AuthManager(IUserRepo userRepo, IPasswordHasher<User> passwordHasher, IHttpContextAccessor httpContextAccessor)
     {
-        _signInManager = signInManager;
-        _userManager = userManager;
+        _userRepo = userRepo;
+        _passwordHasher = passwordHasher;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task Login(string username, string password)
+    public async Task Login(LoginDto dto)
     {
-        var user = await _userManager.FindByNameAsync(username);
+        var user = await _userRepo.SingleOrDefaultAsync(u => u.Email.ToLower() == dto.UserEmail);
         if (user == null)
-        {
             throw new Exception("Invalid username");
-        }
 
-        var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
-
-        if (!result.Succeeded)
-        {
+        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
+        if (result == PasswordVerificationResult.Failed)
             throw new Exception("Username and password do not match");
-        }
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Email, user.Email)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await _httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
     }
 
     public async Task Logout()
     {
-        await _signInManager.SignOutAsync();
+        await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

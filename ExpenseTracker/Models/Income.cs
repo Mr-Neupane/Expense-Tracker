@@ -5,7 +5,7 @@ using ExpenseTracker.ViewModels;
 namespace ExpenseTracker.Models;
 
 [Table("income", Schema = "accounting")]
-public class Income : BaseModel
+public class Income : BaseEntity
 {
     public int LedgerId { get; set; }
     public decimal DrAmount { get; set; }

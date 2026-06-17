@@ -4,7 +4,7 @@ namespace ExpenseTracker.Models
 
 {
     [Table("coa", Schema = "accounting")]
-    public class Coa : BaseModel
+    public class Coa : BaseEntity
     {
         public string Name { get; set; }
     }

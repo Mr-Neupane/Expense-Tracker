@@ -17,7 +17,7 @@ public class IncomeController : Controller
     private readonly DropdownProvider _dropdownProvider;
 
     public IncomeController(IToastNotification toastNotification,
-        IIncomeService incomeService, AccTransactionManager transactionManager, DropdownProvider dropdownProvider)
+        IIncomeService incomeService, AccTransactionManager transactionManager,         DropdownProvider dropdownProvider)
     {
         _toastNotification = toastNotification;
         _incomeService = incomeService;
@@ -106,3 +106,6 @@ public class IncomeController : Controller
         return View(res);
     }
 }
+
+
+

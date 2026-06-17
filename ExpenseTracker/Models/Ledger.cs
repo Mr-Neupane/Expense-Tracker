@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ExpenseTracker.Models
 {
     [Table("ledger", Schema = "accounting")]
-    public class Ledger : BaseModel
+    public class Ledger : BaseEntity
     {
         public int? ParentId { get; set; }
         [Required] public string LedgerName { get; set; }

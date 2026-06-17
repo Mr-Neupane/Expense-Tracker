@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using ExpenseTracker.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -23,12 +21,15 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>
     public DbSet<TransactionDetail> TransactionDetails { get; set; }
     public DbSet<Ledger> Ledgers { get; set; }
     public DbSet<Coa> CoaLedger { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<AppUser>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedNever();
         });

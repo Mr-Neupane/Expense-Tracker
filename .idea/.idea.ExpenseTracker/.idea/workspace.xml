@@ -12,7 +12,57 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d6c84a6-ad83-4350-a7d2-a9cdb55da74b" name="Changes" comment="" />
+    <list default="true" id="9d6c84a6-ad83-4350-a7d2-a9cdb55da74b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Constants/AppConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Constants/AppConstants.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Constants/UserConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Constants/UserConstants.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankTransactionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankTransactionController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/HomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/HomeController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/LiabilityController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/LiabilityController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/UserController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/DiConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/DiConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ExtMethods/QueryableExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ExtMethods/QueryableExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/AuthManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/AuthManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/Interfaces/IAuthManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/Interfaces/IAuthManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/20260518132118_InitialMigration.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/20260518132118_InitialMigration.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Migrations/ApplicationDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/AppUser.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Bank.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Bank.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/BankTransaction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/BankTransaction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/BaseModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/BaseEntity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Coa.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Coa.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/ErrorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/ErrorViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Expense.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Expense.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Income.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Income.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Ledger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Ledger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Liability.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Liability.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Transaction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Transaction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/TransactionDetail.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/TransactionDetail.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/CurrentUserProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/CurrentUserProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/GenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/IGenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/IGenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/UnitOfWork/Uow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/UnitOfWork/Uow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/LoginVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/LoginVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Account/Login.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Account/Login.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Migration/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Migration/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Shared/Error.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,11 +127,14 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/09ae69556a61440f8ca725ea1c9d10a115928/41/7dd19370/IdentityUser`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/17f57bc3dde048d5b1573848a4a498d23b928/1a/e6b31880/RazorPageBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/24414bc0f79342879dd074d8adb3a49d18938/7a/2cfe1fea/ClaimsPrincipal.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/299767d9c0894b89b9d66f5f408780d56e910/21/71e70285/RazorPagesEndpointRouteBuilderExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/305a4fc5b91047a8bc61b9d05fa74e706728/06/70b5f2e3/Transaction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/36f04783097045bf9390586de749ff7d15d000/fd/84e32194/NpgsqlTransaction.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5104d7b0292e45b095e4112d70086b0a35938/6f/c6613d55/ServiceProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5e15ba24065646ab8edfdd48fa903c1426a830/43/272dbea1/DbSet`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5eba5b92ed3c41acac244065c87aa134b0920/70/0b98c55a/SelectList.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6019b64479a2421688b469e2c25dc87c3b908/4a/13da2e8a/RazorPageBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6019b64479a2421688b469e2c25dc87c3b908/5d/87ab867d/RazorPage`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6331702a8bfb4404a9363e712bf95bb23b800/bc/a657d5e5/SqlMapper.cs" root0="FORCE_HIGHLIGHTING" />
@@ -99,6 +152,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c367380c4a3444339deaf2c7e225cdada1930/81/e8ac40bf/TransactionManager.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c38c807781c1461996f08078003ccde31a908/e1/d18e158e/IdentityDbContext.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/cd41a6b7f1984f0ea7616e78dd0242e26d928/74/7826adc3/UserManager`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/cd41a6b7f1984f0ea7616e78dd0242e26d928/76/bce3e0a5/IPasswordHasher`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/3e/45c49215/SingleQueryingEnumerable`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/8d/7e7dc3e7/DropPrimaryKeyOperation.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/e8/0d56e663/RelationalCommand.cs" root0="FORCE_HIGHLIGHTING" />
@@ -147,6 +201,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -293,6 +348,9 @@
       <workItem from="1771551770092" duration="616000" />
       <workItem from="1771892606621" duration="7000" />
       <workItem from="1779029543390" duration="2625000" />
+      <workItem from="1780119229281" duration="176000" />
+      <workItem from="1780120690098" duration="2871000" />
+      <workItem from="1780124432901" duration="406000" />
     </task>
     <task id="LOCAL-00019" summary="chore: reverse handling">
       <option name="closed" value="true" />
@@ -751,17 +809,17 @@
           <option name="timeStamp" value="4" />
         </breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs</url>
-          <line>37</line>
-          <properties documentPath="F:\Projects\TestApplication\ExpenseTracker\Controllers\MigrationController.cs" containingFunctionPresentation="Method 'ApplyMigration'">
+          <url>file://$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs</url>
+          <line>201</line>
+          <properties documentPath="F:\Projects\TestApplication\ExpenseTracker\Controllers\LedgerController.cs" containingFunctionPresentation="Method 'LedgerStatement'">
             <startOffsets>
-              <option value="1206" />
+              <option value="5964" />
             </startOffsets>
             <endOffsets>
-              <option value="1207" />
+              <option value="5965" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="5" />
+          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

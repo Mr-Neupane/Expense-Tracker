@@ -1,0 +1,85 @@
+@model ExpenseTracker.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Error - ExpenseTracker</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/admin-lte/css/adminlte.min.css"/>
+    <link rel="stylesheet" href="~/lib/fontsource/source-sans-3/index.css"/>
+    <style>
+        body {
+            background: #f4f6f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        .error-card {
+            max-width: 520px;
+            width: 100%;
+        }
+        .error-icon {
+            font-size: 4rem;
+            color: #dc3545;
+        }
+        .error-code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="error-card">
+    <div class="card border-danger">
+        <div class="card-body text-center py-5">
+            <div class="error-icon mb-3">&#9888;</div>
+            <h1 class="text-danger mb-3">Something went wrong</h1>
+            <p class="text-muted mb-4">
+                An unexpected error occurred while processing your request.
+                Our team has been notified.
+            </p>
+
+            @if (Model.ShowErrorCode)
+            {
+                <div class="mb-3">
+                    <span class="error-code">@Model.ErrorCode</span>
+                </div>
+                <p class="text-muted small mb-4">
+                    Please reference this code when reporting the issue.
+                </p>
+            }
+
+            @if (Model.ShowRequestId)
+            {
+                <p class="text-muted small mb-4">
+                    <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                </p>
+            }
+
+            <p class="text-muted small mb-4">
+                <strong>Timestamp:</strong> @(new NepDate.NepaliDate(Model.Timestamp))
+            </p>
+
+            <div class="d-flex justify-content-center gap-2">
+                <a href="/" class="btn btn-primary">Go to Home</a>
+                <a href="mailto:support@expensetracker.com?subject=Error%20@Model.ErrorCode&body=Error%20Code:%20@Model.ErrorCode%0ATimestamp:%20@Model.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")%0A" class="btn btn-outline-secondary">Report Issue</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

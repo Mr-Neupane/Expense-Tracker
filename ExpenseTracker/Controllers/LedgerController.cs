@@ -1,4 +1,4 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Enums;
 using ExpenseTracker.Interface;
@@ -110,14 +110,22 @@ public class LedgerController : Controller
         }
         else
         {
-            var edit = new EditLedgerDto
+            try
             {
-                LedgerId = vm.LedgerId,
-                LedgerName = vm.LedgerName,
-            };
-            await _ledgerService.EditLedgerAsync(edit);
-            _toastNotification.AddSuccessToastMessage("Ledger edited successfully");
-            return RedirectToAction("LedgerReport");
+                var edit = new EditLedgerDto
+                {
+                    LedgerId = vm.LedgerId,
+                    LedgerName = vm.LedgerName,
+                };
+                await _ledgerService.EditLedgerAsync(edit);
+                _toastNotification.AddSuccessToastMessage("Ledger edited successfully");
+                return RedirectToAction("LedgerReport");
+            }
+            catch (Exception e)
+            {
+                _toastNotification.AddErrorToastMessage("Error editing ledger." + e.Message);
+                return View(vm);
+            }
         }
     }
 
@@ -231,24 +239,39 @@ public class LedgerController : Controller
     [HttpGet]
     public async Task<RedirectToActionResult> DeactivateLedger(int ledgerId)
     {
-        bool res = await _ledgerService.DeactivateLedgerAsync(ledgerId);
-        if (res)
+        try
         {
-            _toastNotification.AddSuccessToastMessage("Ledger deactivated successfully");
+            bool res = await _ledgerService.DeactivateLedgerAsync(ledgerId);
+            if (res)
+            {
+                _toastNotification.AddSuccessToastMessage("Ledger deactivated successfully");
+            }
+            else
+            {
+                _toastNotification.AddErrorToastMessage("Error deactivating ledger. Ledger may have balance.");
+            }
+            return RedirectToAction("LedgerReport");
         }
-        else
+        catch (Exception e)
         {
-            _toastNotification.AddErrorToastMessage("Error deactivating ledger. Ledger may have balance.");
+            _toastNotification.AddErrorToastMessage("Error deactivating ledger." + e.Message);
+            return RedirectToAction("LedgerReport");
         }
-
-        return RedirectToAction("LedgerReport");
     }
 
     public async Task<RedirectToActionResult> ActivateLedger(int ledgerId)
     {
-        await _ledgerService.ActivateLedgerAsync(ledgerId);
-        _toastNotification.AddSuccessToastMessage("Ledger activated successfully");
-        return RedirectToAction("LedgerReport");
+        try
+        {
+            await _ledgerService.ActivateLedgerAsync(ledgerId);
+            _toastNotification.AddSuccessToastMessage("Ledger activated successfully");
+            return RedirectToAction("LedgerReport");
+        }
+        catch (Exception e)
+        {
+            _toastNotification.AddErrorToastMessage("Error activating ledger." + e.Message);
+            return RedirectToAction("LedgerReport");
+        }
     }
 
     public IActionResult GetSubParents(int parentId)
@@ -261,3 +284,7 @@ public class LedgerController : Controller
         return Json(jsonRes);
     }
 }
+
+
+
+

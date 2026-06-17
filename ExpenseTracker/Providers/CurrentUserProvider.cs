@@ -1,30 +1,30 @@
 using System.Security.Claims;
 using ExpenseTracker.Models;
 using ExpenseTracker.Providers.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using ExpenseTracker.Repository;
 
 namespace ExpenseTracker.Providers;
 
 public class CurrentUserProvider : ICurrentUserProvider
 {
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IUserRepo _userRepo;
 
-    public CurrentUserProvider(IHttpContextAccessor contextAccessor, UserManager<AppUser> userManager)
+    public CurrentUserProvider(IHttpContextAccessor contextAccessor, IUserRepo userRepo)
     {
         _contextAccessor = contextAccessor;
-        _userManager = userManager;
+        _userRepo = userRepo;
     }
 
     public bool IsLoggedIn()
         => GetCurrentUserId() != null;
 
-    public async Task<AppUser?> GetCurrentUser()
+    public async Task<User> GetCurrentUser()
     {
         var currentUserId = GetCurrentUserId();
         if (!currentUserId.HasValue) return null;
 
-        return await _userManager.FindByIdAsync(currentUserId.Value.ToString());
+        return await _userRepo.SingleAsync(u => u.Id == currentUserId.Value);
     }
 
     public int? GetCurrentUserId()
