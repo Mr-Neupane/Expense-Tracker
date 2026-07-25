@@ -50,7 +50,7 @@ public class BankController : Controller
                 AccountNumber = vm.AccountNumber,
                 BankContact = vm.BankContact,
                 BankAddress = vm.BankAddress,
-                AccountOpenDate = vm.AccountOpenDate.ToUniversalTime(),
+                AccountOpenDate = vm.AccountOpenDate,
                 LedgerId = lid.Id,
                 RemainingBalance = 0
             });

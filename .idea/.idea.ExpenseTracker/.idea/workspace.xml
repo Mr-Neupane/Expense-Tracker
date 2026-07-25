@@ -11,8 +11,38 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d6c84a6-ad83-4350-a7d2-a9cdb55da74b" name="Changes" comment="" />
+    <list default="true" id="9d6c84a6-ad83-4350-a7d2-a9cdb55da74b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/TransactionManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/TransactionManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/BalanceProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/BalanceProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Services/IncomeService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Services/IncomeService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BankTransactionVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BankTransactionVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/IncomeVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/IncomeVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/CreateBank.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/CreateBank.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/EditBank.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/EditBank.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/BankTransaction/BankDepositAndWithdraw.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/BankTransaction/BankDepositAndWithdraw.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Expense/RecordExpense.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Expense/RecordExpense.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Income/RecordIncome.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Income/RecordIncome.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Ledger/LedgerStatement.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Ledger/LedgerStatement.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Liability/Addliability.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Liability/Addliability.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AccountingTransaction.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AccountingTransaction.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AddJV.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AddJV.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/datepicker-init.js" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/datepicker-init.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +50,9 @@
   </component>
   <component name="DpaMonitoringSettings">
     <option name="firstShow" value="false" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="2" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -59,52 +92,23 @@
     &quot;assignee&quot;: &quot;Mr-Neupane&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Mr-Neupane/Expense-Tracker.git&quot;,
-    &quot;accountId&quot;: &quot;4590cd72-6d7b-4294-b6ac-e7ab3cc0bbc3&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Mr-Neupane/Expense-Tracker",
+    "accountId": "2e8e6192-5d4c-434d-87bd-34656750d118"
   },
-  &quot;recentNewPullRequestHead&quot;: {
-    &quot;server&quot;: {
-      &quot;useHttp&quot;: false,
-      &quot;host&quot;: &quot;github.com&quot;,
-      &quot;port&quot;: null,
-      &quot;suffix&quot;: null
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
     },
-    &quot;owner&quot;: &quot;Mr-Neupane&quot;,
-    &quot;repository&quot;: &quot;Expense-Tracker&quot;
+    "owner": "Mr-Neupane",
+    "repository": "Expense-Tracker"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/09ae69556a61440f8ca725ea1c9d10a115928/41/7dd19370/IdentityUser`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/299767d9c0894b89b9d66f5f408780d56e910/21/71e70285/RazorPagesEndpointRouteBuilderExtensions.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/305a4fc5b91047a8bc61b9d05fa74e706728/06/70b5f2e3/Transaction.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/36f04783097045bf9390586de749ff7d15d000/fd/84e32194/NpgsqlTransaction.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5104d7b0292e45b095e4112d70086b0a35938/6f/c6613d55/ServiceProvider.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5e15ba24065646ab8edfdd48fa903c1426a830/43/272dbea1/DbSet`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6019b64479a2421688b469e2c25dc87c3b908/4a/13da2e8a/RazorPageBase.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6019b64479a2421688b469e2c25dc87c3b908/5d/87ab867d/RazorPage`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6331702a8bfb4404a9363e712bf95bb23b800/bc/a657d5e5/SqlMapper.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6346fb69dc8145398fdeb2d53f1289d62a938/45/e4747317/Queryable.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/71046eeba5174a2084bac96524d70542b0910/5e/d661f119/Controller.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7d9c427a6d9b4875a44ddf075e7fbd591de918/ac/1cfdd226/ActionMethodExecutor.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/7d9c427a6d9b4875a44ddf075e7fbd591de918/c0/2e6106f9/ControllerActionInvoker.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9258c43c103e44569ebf285407806f0c1a910/82/f29f2385/AllowAnonymousAttribute.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/25/b5b7f10a/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/35/42dd7c02/Monitor.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/3d/cd2b5710/ValueTask`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/51/06eed9da/ThrowHelper.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/83/96f81eda/Int32.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c2caf4fca09a46cb8685e6b92aef4205c90928/ea/e7128ea5/Nullable`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c367380c4a3444339deaf2c7e225cdada1930/81/e8ac40bf/TransactionManager.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c38c807781c1461996f08078003ccde31a908/e1/d18e158e/IdentityDbContext.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/cd41a6b7f1984f0ea7616e78dd0242e26d928/74/7826adc3/UserManager`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/3e/45c49215/SingleQueryingEnumerable`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/8d/7e7dc3e7/DropPrimaryKeyOperation.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/d0e9120653454bf48ec9ffa7eb07cbd41e6628/e8/0d56e663/RelationalCommand.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e8de9e04bb7d40f785c8f1898548a6de85910/39/78bf755d/SignInManager`1.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f2be7f1a934f4613946f1d1adea274284e800/80/638641d9/NepaliDate.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d81b2d4f22bee75e5438c707251ae43cb0974c207db91ffc159118c84b4eb9/ServiceProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -127,7 +131,70 @@
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Views/Ledger/CreateLedger.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/wwwroot/lib/bootstrap/js/bootstrap.js.map" root0="FORCE_HIGHLIGHTING" />
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0463860125056936" />
+      <entry key="MS500" value="2.4094775199466802" />
+      <entry key="S2" value="5.01285240460575" />
+      <entry key="S5" value="6.090554125306905" />
+      <entry key="S10" value="6.523362605851714" />
+      <entry key="S30" value="6.835953372157366" />
+      <entry key="S60" value="6.917311132317585" />
+      <entry key="M2" value="6.958487666538457" />
+      <entry key="M5" value="6.98335457556229" />
+      <entry key="M10" value="6.99167052293833" />
+      <entry key="M15" value="6.994445510781319" />
+      <entry key="M30" value="6.997222002831837" />
+      <entry key="H1" value="6.998610813219306" />
+      <entry key="H2" value="6.999305359553384" />
+      <entry key="H4" value="6.999652668011736" />
+      <entry key="D1" value="6.99994210970119" />
+      <entry key="W1" value="6.999991729917293" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.011053888201476" />
+      <entry key="MS500" value="2.3943007763001107" />
+      <entry key="S2" value="5.00454533601787" />
+      <entry key="S5" value="6.086414484074881" />
+      <entry key="S10" value="6.521124479037676" />
+      <entry key="S30" value="6.835166352098062" />
+      <entry key="S60" value="6.916912259476676" />
+      <entry key="M2" value="6.958286870690944" />
+      <entry key="M5" value="6.983273928534698" />
+      <entry key="M10" value="6.991630144439691" />
+      <entry key="M15" value="6.994418579548262" />
+      <entry key="M30" value="6.99720853109454" />
+      <entry key="H1" value="6.998604075819757" />
+      <entry key="H2" value="6.999301990470796" />
+      <entry key="H4" value="6.999650983374729" />
+      <entry key="D1" value="6.999941828915063" />
+      <entry key="W1" value="6.999991689804664" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -139,34 +206,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.TestApplication: http.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.C/C++&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.TestApplication: http.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "cidr.known.project.marker": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.C/C++",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.TestApplication: http">
     <configuration name="TestApplication: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ExpenseTracker/ExpenseTracker.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net8.0" />
       <option name="LAUNCH_PROFILE_NAME" value="IIS Express" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
       <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
@@ -174,6 +250,7 @@
       <option name="SEND_DEBUG_REQUEST" value="1" />
       <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
       <option name="AUTO_ATTACH_CHILDREN" value="0" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2">
         <option name="Build" />
       </method>
@@ -182,7 +259,6 @@
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ExpenseTracker/ExpenseTracker.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net8.0" />
       <option name="LAUNCH_PROFILE_NAME" value="http" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
       <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
@@ -190,6 +266,7 @@
       <option name="SEND_DEBUG_REQUEST" value="1" />
       <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
       <option name="AUTO_ATTACH_CHILDREN" value="0" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2">
         <option name="Build" />
       </method>
@@ -198,7 +275,6 @@
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ExpenseTracker/ExpenseTracker.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net8.0" />
       <option name="LAUNCH_PROFILE_NAME" value="https" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
       <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
@@ -206,6 +282,7 @@
       <option name="SEND_DEBUG_REQUEST" value="1" />
       <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
       <option name="AUTO_ATTACH_CHILDREN" value="0" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2">
         <option name="Build" />
       </method>
@@ -293,6 +370,7 @@
       <workItem from="1771551770092" duration="616000" />
       <workItem from="1771892606621" duration="7000" />
       <workItem from="1779029543390" duration="2625000" />
+      <workItem from="1784952056759" duration="5072000" />
     </task>
     <task id="LOCAL-00019" summary="chore: reverse handling">
       <option name="closed" value="true" />
@@ -750,19 +828,6 @@
           <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="4" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs</url>
-          <line>37</line>
-          <properties documentPath="F:\Projects\TestApplication\ExpenseTracker\Controllers\MigrationController.cs" containingFunctionPresentation="Method 'ApplyMigration'">
-            <startOffsets>
-              <option value="1206" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1207" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

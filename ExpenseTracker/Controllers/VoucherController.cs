@@ -63,16 +63,16 @@ public class VoucherController : Controller
         var type = await _dropdownProvider.GetTransactionTypeAsync();
         var filter = new TransactionReportDto
         {
-            DateFrom = vm.DateFrom.ToUniversalTime(),
-            DateTo = vm.DateTo.ToUniversalTime(),
+            DateFrom = vm.DateFrom,
+            DateTo = vm.DateTo,
             Type = vm.TxnType,
             Status = vm.Status,
         };
         var finalreport = await _voucherService.AccountingTransactionReportAsync(filter);
         var res = new AccountingTxnVm
         {
-            DateFrom = vm.DateFrom.ToUniversalTime(),
-            DateTo = vm.DateTo.ToUniversalTime(),
+            DateFrom = vm.DateFrom,
+            DateTo = vm.DateTo,
             TxnType = vm.TxnType,
             Status = vm.Status,
             AccountingTransactions = finalreport.Select(r => new AccountingTransactionReportDto
@@ -115,7 +115,7 @@ public class VoucherController : Controller
                 var transaction = await _voucherService.RecordTransactionAsync(
                     new AccTransactionDto
                     {
-                        TxnDate = vm.VoucherDate.ToUniversalTime(),
+                        TxnDate = vm.VoucherDate,
                         Amount = vm.Entries.Sum(d => d.DrAmount),
                         Type = vm.Type,
                         TypeId = 0,
@@ -138,7 +138,7 @@ public class VoucherController : Controller
                             new BankTransactionDto
                             {
                                 BankId = bank.Id,
-                                TxnDate = vm.VoucherDate.ToUniversalTime(),
+                                TxnDate = vm.VoucherDate,
                                 Amount = d.DrAmount == 0 ? d.CrAmount : d.DrAmount,
                                 Type = d.DrAmount != 0 ? TransactionTypeConstants.Deposit : TransactionTypeConstants.Withdraw,
                                 Remarks = vm.Narration,

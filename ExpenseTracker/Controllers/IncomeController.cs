@@ -48,12 +48,12 @@ public class IncomeController : Controller
                 FromLedgerid = vm.IncomeFrom,
                 Amount = vm.Amount,
                 Remarks = vm.Remarks,
-                TxnDate = vm.TxnDate.ToUniversalTime()
+                TxnDate = vm.TxnDate
             };
 
             var accTransaction = new AccTransactionDto
             {
-                TxnDate = vm.TxnDate.ToUniversalTime(),
+                TxnDate = vm.TxnDate,
                 Amount = vm.Amount,
                 Type = vm.Type,
                 TypeId = income.Id,

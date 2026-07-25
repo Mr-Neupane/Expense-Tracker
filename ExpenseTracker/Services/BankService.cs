@@ -100,7 +100,7 @@ public class BankService : IBankService
             LedgerId = dto.LedgerId,
             RemainingBalance = dto.RemainingBalance,
             BankAddress = dto.BankAddress,
-            AccountOpenDate = dto.AccountOpenDate,
+            AccountOpenDate = dto.AccountOpenDate.ToUniversalTime(),
             RecStatus = RecordStatusConstants.Active,
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active,

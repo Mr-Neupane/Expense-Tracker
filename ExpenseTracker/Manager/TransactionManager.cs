@@ -105,7 +105,7 @@ public class AccTransactionManager
                 var bankTransaction = new BankTransactionDto
                 {
                     BankId = bankId ?? 0,
-                    TxnDate = dto.TxnDate.ToLocalTime(),
+                    TxnDate = dto.TxnDate,
                     Amount = dto.Amount,
                     Type = TransactionTypeConstants.Deposit,
                     Remarks = dto.Remarks
@@ -132,7 +132,7 @@ public class AccTransactionManager
                 {
                     BankId = liDto.BankId,
                     LedgerId = 0,
-                    TxnDate = liDto.TxnDate.ToLocalTime(),
+                    TxnDate = liDto.TxnDate,
                     Amount = liDto.Amount,
                     Type = TransactionTypeConstants.Deposit,
                     Remarks = liDto.Remarks,

@@ -32,7 +32,7 @@ public class IncomeService : IIncomeService
             LedgerId = dto.Ledgerid,
             DrAmount = 0,
             CrAmount = dto.Amount,
-            TxnDate = dto.TxnDate,
+            TxnDate = dto.TxnDate.ToUniversalTime(),
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active,
             RecStatus = RecordStatusConstants.Active,

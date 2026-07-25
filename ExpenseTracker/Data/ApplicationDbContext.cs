@@ -14,24 +14,11 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>
     {
     }
 
-    public DbSet<Liability> Liabilities { get; set; }
-    public DbSet<Expense> Expenses { get; set; }
-    public DbSet<Income> Incomes { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<BankTransaction> BankTransaction { get; set; }
-    public DbSet<Transaction> AccountingTransaction { get; set; }
-    public DbSet<TransactionDetail> TransactionDetails { get; set; }
-    public DbSet<Ledger> Ledgers { get; set; }
-    public DbSet<Coa> CoaLedger { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<AppUser>(entity =>
-        {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-        });
+        modelBuilder.RegisterEntities();
 
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {
