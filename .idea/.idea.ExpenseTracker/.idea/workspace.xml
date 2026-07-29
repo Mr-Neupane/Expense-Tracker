@@ -13,55 +13,51 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d6c84a6-ad83-4350-a7d2-a9cdb55da74b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ExpenseTracker/Data/EntityRegisterer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/indexLayout.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/projectSettingsUpdater.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ExpenseTracker/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Constants/AppConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Constants/AppConstants.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Constants/UserConstants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Constants/UserConstants.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankTransactionController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/BankTransactionController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/HomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/HomeController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/LiabilityController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/LiabilityController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/UserController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Controllers/VoucherController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Data/ApplicationDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/DiConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/DiConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ExtMethods/QueryableExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ExtMethods/QueryableExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/AuthManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/AuthManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/Interfaces/IAuthManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/Interfaces/IAuthManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/20260518132118_InitialMigration.Designer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/20260518132118_InitialMigration.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Migrations/ApplicationDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/AppUser.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Bank.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Bank.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/BankTransaction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/BankTransaction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/BaseModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/BaseEntity.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Coa.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Coa.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/ErrorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/ErrorViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Expense.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Expense.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Income.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Income.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Ledger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Ledger.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Liability.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Liability.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/Transaction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/Transaction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/TransactionDetail.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/TransactionDetail.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Models/User.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Dtos/AccTransactionDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Dtos/AccTransactionDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Dtos/BankDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Dtos/BankDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Dtos/BankTransactionDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Dtos/BankTransactionDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Dtos/IncomeDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Dtos/IncomeDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Interface/IBankService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Interface/IBankService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Interface/IIncomeService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Interface/IIncomeService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Manager/TransactionManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Manager/TransactionManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/BalanceProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/BalanceProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/CurrentUserProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/CurrentUserProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/GenericRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/IGenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/IGenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/BankTransactionRepo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/BankTransactionRepo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/IBankTransactionRepo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/IBankTransactionRepo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/IIncomeRepo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/IIncomeRepo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Repository/IncomeRepo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Repository/IncomeRepo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Services/BankService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/UnitOfWork/Uow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/UnitOfWork/Uow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/LoginVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/LoginVm.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Account/Login.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Account/Login.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Migration/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Migration/Index.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Shared/Error.cshtml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExpenseTracker/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Services/IncomeService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Services/IncomeService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BankTransactionVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BankTransactionVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BaseVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/BaseVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/ViewModels/IncomeVm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/ViewModels/IncomeVm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/CreateBank.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/CreateBank.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/EditBank.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Bank/EditBank.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/BankTransaction/BankDepositAndWithdraw.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/BankTransaction/BankDepositAndWithdraw.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Expense/RecordExpense.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Expense/RecordExpense.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Income/RecordIncome.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Income/RecordIncome.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Ledger/LedgerStatement.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Ledger/LedgerStatement.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Liability/Addliability.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Liability/Addliability.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AccountingTransaction.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AccountingTransaction.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AddJV.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/Views/Voucher/AddJV.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/datepicker-init.js" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/datepicker-init.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" beforeDir="false" afterPath="$PROJECT_DIR$/ExpenseTracker/wwwroot/js/nepali-date-helper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestApplication.sln.DotSettings.user" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,18 +157,30 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d81b2d4f22bee75e5438c707251ae43cb0974c207db91ffc159118c84b4eb9/ServiceProvider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/ExpenseController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/IncomeController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Controllers/IncomeController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Controllers/IncomeController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/LedgerController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Controllers/MigrationController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/AccTransactionDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/AccountingTransactionReportDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Dtos/BankTransactionDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Enums/VoucherType.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/ExtMethods/QueryableExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/ExtMethods/QueryableExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Interface/IBankService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Interface/IVoucherService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Models/Expense.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Models/Ledger.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Models/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Providers/CurrentUserProvider.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Providers/CurrentUserProvider.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Providers/DropdownProvider.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Providers/Interfaces/ICurrentUserProvider.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Services/BankService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://F:/Projects/TestApplication/ExpenseTracker/Services/BankService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/Services/VoucherService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/BaseVm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/ExpenseTracker/ViewModels/ExpenseVm.cs" root0="FORCE_HIGHLIGHTING" />
@@ -193,29 +201,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.TestApplication: http.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.C/C++&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.TestApplication: http.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "#45 on Merging chore/authentication",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.C/C++",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.TestApplication: http">
     <configuration name="TestApplication: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ExpenseTracker/ExpenseTracker.csproj" />

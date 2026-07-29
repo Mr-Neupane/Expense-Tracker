@@ -1,4 +1,5 @@
-﻿@model ExpenseTracker.Dtos.BankDto;
+﻿@using NepDate.Extensions
+@model ExpenseTracker.Dtos.BankDto;
 
 @{
     ViewData["Title"] = "Edit Bank";
@@ -19,8 +20,7 @@
             </div>
             <div class="mb-2">
                 <label asp-for="AccountOpenDate" class="form-label">Open Date <span class="text-danger">*</span></label>
-                <input asp-for="AccountOpenDate" class="form-control" type="text"
-                       value="@(new NepDate.NepaliDate(@Model.AccountOpenDate))"
+                <input asp-for="AccountOpenDate" value="@Model.AccountOpenDate.ToNepaliDate()" class="form-control" type="text"
                        readonly="readonly"/>
                 <span asp-validation-for="AccountOpenDate" class="text-danger"></span>
             </div>

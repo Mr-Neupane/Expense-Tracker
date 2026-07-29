@@ -66,14 +66,12 @@
 
                     <div class="filter-item">
                         <label for="DateFrom" class="fs-6">Date From <span class="text-danger">*</span></label>
-                        <input id="engdate" type="text" asp-for="DateFrom" hidden/>
-                        <input id="date" value="@Model.DateFrom" name="DateFrom" type="text" class="form-control"/>
+                        <input asp-for="DateFrom" type="text" class="form-control nepali-date-picker"/>
                     </div>
 
                     <div class="filter-item">
                         <label for="dateto" class="fs-6">Date To <span class="text-danger">*</span></label>
-                        <input id="datetoengdate" asp-for="DateTo" type="text" hidden/>
-                        <input id="dateto" name="DateTo" type="text" class="form-control"/>
+                        <input asp-for="DateTo" type="text" class="form-control nepali-date-picker"/>
                     </div>
 
 

@@ -3,6 +3,7 @@ using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.ViewModels.Interface;
 using Transaction = ExpenseTracker.Models.Transaction;
 
@@ -16,9 +17,10 @@ public class AccTransactionManager
     private readonly IExpenseService _expenseService;
     private readonly ILiabilityService _liabilityService;
     private readonly IProvider _provider;
+    private readonly ICurrentUserProvider _currentUserProvider;
 
     public AccTransactionManager(IVoucherService voucherService, IBankService bankService, IIncomeService incomeService,
-        IExpenseService expenseService, ILiabilityService liabilityService, IProvider provider)
+        IExpenseService expenseService, ILiabilityService liabilityService, IProvider provider, ICurrentUserProvider currentUserProvider)
     {
         _voucherService = voucherService;
         _bankService = bankService;
@@ -26,10 +28,12 @@ public class AccTransactionManager
         _expenseService = expenseService;
         _liabilityService = liabilityService;
         _provider = provider;
+        _currentUserProvider = currentUserProvider;
     }
 
     private async Task<Transaction> RecordVoucher(AccTransactionDto accTransaction, int typeId)
     {
+        var cu = await _currentUserProvider.GetCurrentUser();
         var accTxn = await _voucherService.RecordTransactionAsync(new AccTransactionDto
         {
             TxnDate = accTransaction.TxnDate,
@@ -39,12 +43,14 @@ public class AccTransactionManager
             Remarks = accTransaction.Remarks,
             IsJv = accTransaction.IsJv,
             Details = accTransaction.Details,
+            RecBy = cu.Id
         });
         return accTxn;
     }
 
     public async Task RecordBankTransaction(BankTransactionDto dto, AccTransactionDto accTransaction)
     {
+        var cu = await _currentUserProvider.GetCurrentUser();
         using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             var bankTransaction = new BankTransactionDto
@@ -54,6 +60,7 @@ public class AccTransactionManager
                 Amount = dto.Amount,
                 Type = dto.Type,
                 Remarks = dto.Remarks,
+                User=cu
             };
             var bankTxn = await _bankService.RecordBankTransactionAsync(bankTransaction);
             var accTxn = await RecordVoucher(accTransaction, bankTxn.Id);
@@ -105,10 +112,10 @@ public class AccTransactionManager
                 var bankTransaction = new BankTransactionDto
                 {
                     BankId = bankId ?? 0,
-                    TxnDate = dto.TxnDate.ToLocalTime(),
+                    TxnDate = dto.TxnDate,
                     Amount = dto.Amount,
                     Type = TransactionTypeConstants.Deposit,
-                    Remarks = dto.Remarks
+                    Remarks = dto.Remarks, User = idto.User
                 };
                 await _bankService.RecordBankTransactionAsync(bankTransaction);
                 await _bankService.UpdateAccountingTransactionIdInBankTransactionAsync(bankTransaction.Id,
@@ -132,7 +139,7 @@ public class AccTransactionManager
                 {
                     BankId = liDto.BankId,
                     LedgerId = 0,
-                    TxnDate = liDto.TxnDate.ToLocalTime(),
+                    TxnDate = liDto.TxnDate,
                     Amount = liDto.Amount,
                     Type = TransactionTypeConstants.Deposit,
                     Remarks = liDto.Remarks,

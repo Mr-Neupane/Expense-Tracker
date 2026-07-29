@@ -12,23 +12,11 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<Liability> Liabilities { get; set; }
-    public DbSet<Expense> Expenses { get; set; }
-    public DbSet<Income> Incomes { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<BankTransaction> BankTransaction { get; set; }
-    public DbSet<Transaction> AccountingTransaction { get; set; }
-    public DbSet<TransactionDetail> TransactionDetails { get; set; }
-    public DbSet<Ledger> Ledgers { get; set; }
-    public DbSet<Coa> CoaLedger { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<UserRole> UserRoles { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.RegisterEntities();
         modelBuilder.Entity<User>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedNever();

@@ -15,30 +15,23 @@ namespace ExpenseTracker.Services;
 public class BankService : IBankService
 {
     private readonly IUow _uow;
-    private readonly IBankRepo _bankGenericRepo;
+    private readonly IBankRepo _bankRepo;
     private readonly IBankTransactionRepo _bankTxnRepo;
-    private readonly IUserRepo _userGenericRepo;
-    private readonly ICurrentUserProvider  _currentUserProvider;
+    private readonly ICurrentUserProvider _currentUserProvider;
 
-    public BankService(IUow uow, IBankRepo bankGenericRepo,
-        IBankTransactionRepo bankTxnRepo, IUserRepo userGenericRepo, ICurrentUserProvider currentUserProvider)
+    public BankService(IUow uow, IBankRepo bankRepo,
+        IBankTransactionRepo bankTxnRepo, ICurrentUserProvider currentUserProvider)
     {
         _uow = uow;
-        _bankGenericRepo = bankGenericRepo;
+        _bankRepo = bankRepo;
         _bankTxnRepo = bankTxnRepo;
-        _userGenericRepo = userGenericRepo;
         _currentUserProvider = currentUserProvider;
     }
-
-
-    public async Task<List<Bank>> BankReportAsync()
-    {
-        return await _bankGenericRepo.GetBaseQueryable().FilterActiveStatus().ToListAsync();
-    }
+    
 
     public async Task EditBankAsync(BankDto dto)
     {
-        var bank = await _bankGenericRepo.FindOrThrowAsync(dto.Id);
+        var bank = await _bankRepo.FindOrThrowAsync(dto.Id);
         if (bank.BankName != dto.BankName)
         {
             bank.BankName = dto.BankName;
@@ -65,7 +58,7 @@ public class BankService : IBankService
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
     {
         var cu = await _currentUserProvider.GetCurrentUser();
-        var banktransaction = new BankTransaction
+        var bankTxn = new BankTransaction
         {
             BankId = dto.BankId,
             TxnDate = dto.TxnDate.ToUniversalTime(),
@@ -73,14 +66,14 @@ public class BankService : IBankService
             Type = dto.Type,
             Remarks = dto.Remarks,
             RecDate = DateTime.Now.ToUniversalTime(),
-            RecById = cu.Id,
+            RecById =dto.User.Id,
             RecStatus = RecordStatusConstants.Active,
             Status = Status.Active,
             TransactionId = 0
         };
-        await _uow.AddAsync(banktransaction);
+        await _uow.AddAsync(bankTxn);
         await _uow.SaveChangesAsync();
-        return banktransaction;
+        return bankTxn;
     }
 
     public async Task UpdateAccountingTransactionIdInBankTransactionAsync(int id, int transactionId)
@@ -104,11 +97,11 @@ public class BankService : IBankService
             LedgerId = dto.LedgerId,
             RemainingBalance = dto.RemainingBalance,
             BankAddress = dto.BankAddress,
-            AccountOpenDate = dto.AccountOpenDate,
+            AccountOpenDate = dto.AccountOpenDate.ToUniversalTime(),
             RecStatus = RecordStatusConstants.Active,
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active,
-            RecById = UserConstants.AdminUser
+            RecById = dto.User.Id
         };
 
         await _uow.AddAsync(bank);
@@ -128,7 +121,7 @@ public class BankService : IBankService
             .Where(t => t.Type == TransactionTypeConstants.Withdraw && t.BankId == bid)
             .SumAsync(t => t.Amount);
         var remBal = deposit - withdraw;
-        var bank = await _bankGenericRepo.SingleOrDefaultAsync(b => b.Id == bid);
+        var bank = await _bankRepo.SingleOrDefaultAsync(b => b.Id == bid);
         if (bank == null)
         {
             throw new Exception("Cannot update remaining balance");
@@ -158,29 +151,5 @@ public class BankService : IBankService
         }
     }
 
-    public async Task<List<BankTransactionReportDto>> BankTransactionReportAsync()
-    {
-        var btQuery = _bankTxnRepo.GetBaseQueryable();
-        var uQuery = _userGenericRepo.GetBaseQueryable();
-        var bQuery = _bankGenericRepo.GetBaseQueryable();
-
-        var res = await (from bt in btQuery
-                join u in uQuery on bt.RecById equals u.Id
-                join b in bQuery on bt.BankId equals b.Id
-                where bt.Status == Status.Active
-                select new BankTransactionReportDto
-                {
-                    BankTransactionId = bt.Id,
-                    Id = bt.Id,
-                    TransactionId = bt.TransactionId,
-                    BankId = bt.BankId,
-                    BankName = b.BankName,
-                    Type = bt.Type,
-                    Amount = bt.Amount,
-                    TxnDate = bt.TxnDate,
-                    Username = u.UserName,
-                }
-            ).ToListAsync();
-        return res;
-    }
+    
 }

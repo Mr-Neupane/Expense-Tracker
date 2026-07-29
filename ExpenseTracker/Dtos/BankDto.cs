@@ -1,4 +1,6 @@
-﻿namespace ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Models;
+
+namespace ExpenseTracker.Dtos;
 
 public class BankDto
 {
@@ -10,4 +12,5 @@ public class BankDto
     public DateTime AccountOpenDate { get; set; }
     public int LedgerId { get; set; }
     public decimal RemainingBalance { get; set; }
+    public User User { get; set; }
 }

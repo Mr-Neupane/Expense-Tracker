@@ -4,7 +4,7 @@ namespace ExpenseTracker.Providers.Interfaces;
 
 public interface ICurrentUserProvider
 {
-    bool IsLoggedIn();
+    // bool IsLoggedIn();
     Task<User> GetCurrentUser();
-    int? GetCurrentUserId();
+    int GetCurrentUserId();
 }
