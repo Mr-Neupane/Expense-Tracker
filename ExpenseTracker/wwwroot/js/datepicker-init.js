@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 feedback.remove();
             }
 
-            let adDate = NepaliFunctions.BS2AD(normalized, "YYYY/MM/DD", "YYYY-MM-DD");
+            let adDate = NepaliFunctions.BS2AD(normalized, "YYYY-MM-DD", "YYYY-MM-DD");
             let engDate = adDate + " " + getCurrentTime();
 
             let modelName = el.dataset.modelName;
