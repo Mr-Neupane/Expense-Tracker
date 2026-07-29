@@ -7,6 +7,4 @@ public interface IIncomeService
 {
     Task<Income> RecordIncomeAsync(IncomeDto dto);
     Task ReverseIncomeAsync(int id);
-    
-    Task<List<IncomeReportDto> > GetIncomeReportAsync();
 }

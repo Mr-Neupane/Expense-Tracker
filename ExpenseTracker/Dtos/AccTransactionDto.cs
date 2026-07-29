@@ -9,6 +9,7 @@ public class AccTransactionDto
     public string? Remarks { get; set; }
     public bool IsJv { get; set; }
     public List<TransactionDetailDto> Details { get; set; }
+    public int RecBy { get; set; }
 }
 
 public class TransactionDetailDto

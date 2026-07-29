@@ -1,10 +1,11 @@
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Providers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
-using ExpenseTracker.Interface;
+using ExpenseTracker.Repository;
 using ExpenseTracker.ViewModels;
 
 namespace ExpenseTracker.Controllers;
@@ -13,16 +14,17 @@ public class IncomeController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly AccTransactionManager _transactionManager;
-    private readonly IIncomeService _incomeService;
     private readonly DropdownProvider _dropdownProvider;
+    private readonly IIncomeRepo _incomeRepo;
+    private readonly ICurrentUserProvider _currentUserProvider;
 
-    public IncomeController(IToastNotification toastNotification,
-        IIncomeService incomeService, AccTransactionManager transactionManager, DropdownProvider dropdownProvider)
+    public IncomeController(IToastNotification toastNotification, AccTransactionManager transactionManager, DropdownProvider dropdownProvider, IIncomeRepo incomeRepo, ICurrentUserProvider currentUserProvider)
     {
         _toastNotification = toastNotification;
-        _incomeService = incomeService;
         _transactionManager = transactionManager;
         _dropdownProvider = dropdownProvider;
+        _incomeRepo = incomeRepo;
+        _currentUserProvider = currentUserProvider;
     }
 
     public IActionResult RecordIncome()
@@ -42,13 +44,15 @@ public class IncomeController : Controller
     {
         try
         {
+            var cu = await _currentUserProvider.GetCurrentUser();
             var income = new IncomeDto
             {
                 Ledgerid = vm.IncomeLedger,
                 FromLedgerid = vm.IncomeFrom,
                 Amount = vm.Amount,
                 Remarks = vm.Remarks,
-                TxnDate = vm.TxnDate
+                TxnDate = vm.TxnDate,
+                User= cu
             };
 
             var accTransaction = new AccTransactionDto
@@ -97,7 +101,7 @@ public class IncomeController : Controller
 
     public async Task<IActionResult> IncomeReport()
     {
-        var res = await _incomeService.GetIncomeReportAsync();
+        var res = await _incomeRepo.GetIncomeReportAsync();
         if (res.Count == 0)
         {
             _toastNotification.AddAlertToastMessage("No matching data found.");

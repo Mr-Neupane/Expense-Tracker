@@ -13,16 +13,11 @@ public class IncomeService : IIncomeService
 {
     private readonly IUow _uow;
     private readonly IIncomeRepo _incomeGenericRepo;
-    private readonly IAccountingTransactionRepo _txnRepo;
-    private readonly IUserRepo _userGenericRepo;
 
-    public IncomeService(IUow uow, IIncomeRepo incomeGenericRepo,
-        IAccountingTransactionRepo txnRepo, IUserRepo userGenericRepo)
+    public IncomeService(IUow uow, IIncomeRepo incomeGenericRepo)
     {
         _uow = uow;
         _incomeGenericRepo = incomeGenericRepo;
-        _txnRepo = txnRepo;
-        _userGenericRepo = userGenericRepo;
     }
 
     public async Task<Income> RecordIncomeAsync(IncomeDto dto)
@@ -36,7 +31,7 @@ public class IncomeService : IIncomeService
             RecDate = DateTime.Now.ToUniversalTime(),
             Status = Status.Active,
             RecStatus = RecordStatusConstants.Active,
-            RecById = UserConstants.AdminUser
+            RecById = dto.User.Id
         };
         await _uow.AddAsync(income);
         await _uow.SaveChangesAsync();
@@ -53,26 +48,5 @@ public class IncomeService : IIncomeService
         }
     }
 
-    public async Task<List<IncomeReportDto>> GetIncomeReportAsync()
-    {
-        var iQuery = _incomeGenericRepo.GetBaseQueryable();
-        var tQuery = _txnRepo.GetBaseQueryable();
-        var uQuery = _userGenericRepo.GetBaseQueryable();
-
-        var report = await (from i in iQuery
-                join t in tQuery on i.Id equals t.TypeId
-                join u in uQuery on i.RecById equals u.Id
-                where t.Type == TransactionTypeConstants.Income && i.Status == Status.Active && t.Status == Status.Active
-                select new IncomeReportDto
-                {
-                    Id = i.Id,
-                    Amount = i.CrAmount,
-                    Date = i.TxnDate,
-                    VoucherNo = t.VoucherNo,
-                    TransactionId = t.Id,
-                    Username = u.UserName,
-                    Status = (int)i.Status,
-                }).ToListAsync();
-        return report;
-    }
+    
 }
