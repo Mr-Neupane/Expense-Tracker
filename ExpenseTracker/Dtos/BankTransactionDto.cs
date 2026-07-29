@@ -1,4 +1,6 @@
-﻿namespace ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Models;
+
+namespace ExpenseTracker.Dtos;
 
 public class BankTransactionDto
 {
@@ -9,6 +11,7 @@ public class BankTransactionDto
     public decimal Amount { get; set; }
     public string Type { get; set; }
     public string? Remarks { get; set; }
+    public AppUser User { get; set; }
 }
 
 public class BankTransactionReportDto

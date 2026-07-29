@@ -1,12 +1,14 @@
 using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.ExtMethods;
 using ExpenseTracker.Manager;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Repository;
 using ExpenseTracker.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NToastNotify;
-using ExpenseTracker.ViewModels.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Controllers;
 
@@ -14,25 +16,27 @@ public class BankTransactionController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly ReverseTransactionManager _reverseTransactionManager;
-    private readonly IBankService _bankService;
     private readonly AccTransactionManager _accTransactionManager;
     private readonly IProvider _provider;
     private readonly DropdownProvider _dropdownProvider;
-    public IBalanceProvider _balanceProvider;
+    private readonly IBalanceProvider _balanceProvider;
+    private readonly IBankRepo _bankRepo;
+    private readonly IBankTransactionRepo _bankTransactionRepo;
 
 
     public BankTransactionController(IToastNotification toastNotification,
-        ReverseTransactionManager reverseTransactionManager, IBankService bankService,
+        ReverseTransactionManager reverseTransactionManager,
         AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider,
-        DropdownProvider dropdownProvider)
+        DropdownProvider dropdownProvider, IBankRepo bankRepo, IBankTransactionRepo bankTransactionRepo)
     {
         _toastNotification = toastNotification;
         _reverseTransactionManager = reverseTransactionManager;
-        _bankService = bankService;
         _accTransactionManager = accTransactionManager;
         _provider = provider;
         _balanceProvider = balanceProvider;
         _dropdownProvider = dropdownProvider;
+        _bankRepo = bankRepo;
+        _bankTransactionRepo = bankTransactionRepo;
     }
 
     [HttpGet]
@@ -54,16 +58,10 @@ public class BankTransactionController : Controller
             {
                 var bankLedgerId = await _provider.GetBankLedgerId(vm.BankId);
                 var ledgerBalance =  _balanceProvider.GetLedgerBalance(bankLedgerId);
-                var banks = await _bankService.BankReportAsync();
+                var bank = await _bankRepo.FindOrThrowAsync(vm.BankId);
+                
 
-                var res = banks.FirstOrDefault(b => b.Id == vm.BankId);
-                if (res == null)
-                {
-                    _toastNotification.AddErrorToastMessage("Bank not found");
-                    return RedirectToAction("BankTransactionReport");
-                }
-
-                if (res.RemainingBalance < vm.Amount && vm.Type == "Withdraw")
+                if (bank.RemainingBalance < vm.Amount && vm.Type == "Withdraw")
                 {
                     _toastNotification.AddAlertToastMessage(
                         "Insufficient balance in bank for withdraw, Remaining bank balance is " + ledgerBalance +
@@ -122,7 +120,7 @@ public class BankTransactionController : Controller
     [HttpGet]
     public async Task<IActionResult> BankTransactionReport()
     {
-        var report = await _bankService.BankTransactionReportAsync();
+        var report = await _bankTransactionRepo.BankTransactionReportAsync();
         if (report != null && report.Any())
         {
             return View(report.ToList());
@@ -138,16 +136,8 @@ public class BankTransactionController : Controller
     {
         try
         {
-            var banks = await _bankService.BankReportAsync();
-
-            var res = banks.FirstOrDefault(b => b.Id == bankId);
-            if (res == null)
-            {
-                _toastNotification.AddErrorToastMessage("Bank not found");
-                return RedirectToAction("BankTransactionReport");
-            }
-
-            if (res.RemainingBalance - amount < 0)
+            var bank = await _bankRepo.FindOrThrowAsync(bankId);
+            if (bank.RemainingBalance - amount < 0)
             {
                 _toastNotification.AddErrorToastMessage("Not enough balance in bank to reverse transaction.");
             }

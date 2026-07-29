@@ -1,10 +1,13 @@
 ﻿using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
+using ExpenseTracker.ExtMethods;
 using ExpenseTracker.Interface;
+using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.Repository;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.ViewModels.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 
 namespace ExpenseTracker.Controllers;
@@ -14,15 +17,17 @@ public class BankController : Controller
     private readonly IToastNotification _toastNotification;
     private readonly IBankService _bankService;
     private readonly ILedgerService _ledgerService;
-    private readonly IBankRepo _bankGenericRepo;
+    private readonly IBankRepo _bankRepo;
+    private readonly ICurrentUserProvider _currentUserProvider;
 
     public BankController(IToastNotification toastNotification, IBankService bankService,
-        IBankRepo bankGenericRepo, ILedgerService ledgerService)
+        IBankRepo bankRepo, ILedgerService ledgerService, ICurrentUserProvider currentUserProvider)
     {
         _toastNotification = toastNotification;
         _bankService = bankService;
-        _bankGenericRepo = bankGenericRepo;
+        _bankRepo = bankRepo;
         _ledgerService = ledgerService;
+        _currentUserProvider = currentUserProvider;
     }
 
     [HttpGet]
@@ -36,7 +41,7 @@ public class BankController : Controller
     {
         try
         {
-
+            var cu = await _currentUserProvider.GetCurrentUser();
             var lid = await _ledgerService.AddLedgerAsync(new LedgerDto
             {
                 Name = vm.BankName,
@@ -50,9 +55,10 @@ public class BankController : Controller
                 AccountNumber = vm.AccountNumber,
                 BankContact = vm.BankContact,
                 BankAddress = vm.BankAddress,
-                AccountOpenDate = vm.AccountOpenDate.ToUniversalTime(),
+                AccountOpenDate = vm.AccountOpenDate,
                 LedgerId = lid.Id,
-                RemainingBalance = 0
+                RemainingBalance = 0,
+                User = cu
             });
 
             _toastNotification.AddSuccessToastMessage($"{vm.BankName} created");
@@ -70,7 +76,7 @@ public class BankController : Controller
     [HttpGet]
     public async Task<IActionResult> EditBank(int id)
     {
-        var res = await _bankGenericRepo.FindOrThrowAsync(id);
+        var res = await _bankRepo.FindOrThrowAsync(id);
 
         var editBankDetail = new BankDto
         {
@@ -98,7 +104,7 @@ public class BankController : Controller
     [HttpGet]
     public async Task<IActionResult> BankReport()
     {
-        var res = await _bankService.BankReportAsync();
+        var res = await _bankRepo.GetBaseQueryable().FilterActiveStatus().ToListAsync();
         return View(res);
     }
 }

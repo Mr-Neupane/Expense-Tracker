@@ -79,7 +79,7 @@ public class IBalanceProvider
                 join pl in lQuery on l.SubParentId equals pl.Id
                 join c in cQuery on pl.ParentId equals c.Id
                 where t.Status == Status.Active && td.Status == Status.Active
-                                                        && t.TxnDate < fromDate.ToUniversalTime() &&
+                                                        && t.TxnDate.Date < fromDate.ToUniversalTime().Date &&
                                                         td.LedgerId == ledgerId
                 select new
                 {

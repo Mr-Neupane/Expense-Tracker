@@ -16,21 +16,20 @@ public class CurrentUserProvider : ICurrentUserProvider
         _userManager = userManager;
     }
 
-    public bool IsLoggedIn()
-        => GetCurrentUserId() != null;
+    // public bool IsLoggedIn()
+    //     => GetCurrentUserId() != null;
 
-    public async Task<AppUser?> GetCurrentUser()
+    public async Task<AppUser> GetCurrentUser()
     {
         var currentUserId = GetCurrentUserId();
-        if (!currentUserId.HasValue) return null;
 
-        return await _userManager.FindByIdAsync(currentUserId.Value.ToString());
+        return await _userManager.FindByIdAsync(currentUserId.ToString())?? throw new Exception("User not found");
     }
 
-    public int? GetCurrentUserId()
+    public int GetCurrentUserId()
     {
         var userId = _contextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrWhiteSpace(userId)) return null;
+        if (string.IsNullOrWhiteSpace(userId)) throw new Exception("User not found");
         return Convert.ToInt32(userId);
     }
 }

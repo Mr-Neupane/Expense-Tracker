@@ -1,4 +1,6 @@
-﻿namespace ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Models;
+
+namespace ExpenseTracker.Dtos;
 
 public class IncomeDto
 {
@@ -8,6 +10,7 @@ public class IncomeDto
     public decimal Amount { get; set; }
     public string Remarks { get; set; }
     public DateTime TxnDate { get; set; }
+    public AppUser User { get; set; }
 }
 
 public class IncomeReportDto
