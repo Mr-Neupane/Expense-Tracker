@@ -12,5 +12,5 @@ public class BankDto
     public DateTime AccountOpenDate { get; set; }
     public int LedgerId { get; set; }
     public decimal RemainingBalance { get; set; }
-    public AppUser User { get; set; }
+    public User User { get; set; }
 }

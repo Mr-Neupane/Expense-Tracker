@@ -25,8 +25,9 @@ public class AccountController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", "Home");
-
-        return View();
+        var vm = new LoginVm();
+        vm.LoginDate= DateTime.Now;
+        return View(vm);
     }
 
     [AllowAnonymous]
@@ -35,7 +36,17 @@ public class AccountController : Controller
     {
         try
         {
-            await _authManager.Login(vm.Username, vm.Password);
+            if (vm.LoginDate.Date > DateTime.Now.Date)
+            {
+                throw new Exception("Future dated login is not allowed");
+            }
+            var loginDto = new LoginDto()
+            {
+                Password = vm.Password,
+                UserEmail = vm.UserEmail.Trim().ToLower(),
+                LoginDate = vm.LoginDate
+            };
+            await _authManager.Login(loginDto);
 
             _toastNotification.AddSuccessToastMessage("Login successful.");
             return RedirectToAction("Index", "Home");

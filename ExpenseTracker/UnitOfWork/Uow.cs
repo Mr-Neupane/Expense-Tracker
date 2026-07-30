@@ -71,7 +71,7 @@ public class Uow : IUow
         var entity = await _context.Set<T>().FindAsync(id);
         if (entity == null)
             throw new KeyNotFoundException($"{typeof(T).Name} with id {id} not found");
-        if (entity is BaseModel baseEntity)
+        if (entity is BaseEntity baseEntity)
         {
             baseEntity.Status = Status.Reversed;
              _context.Update(baseEntity);

@@ -1,4 +1,6 @@
-﻿namespace ExpenseTracker.Dtos;
+﻿using ExpenseTracker.Enums;
+
+namespace ExpenseTracker.Dtos;
 
 public class LedgerDto
 {
@@ -14,7 +16,7 @@ public class ParentLedgerReportDto
 {
     public string ParentLedgerName { get; set; }
     public int LedgerId { get; set; }
-    public int Status { get; set; }
+    public Status Status { get; set; }
     public string LedgerCode { get; set; }
     public string LedgerName { get; set; }
     public string UserName { get; set; }

@@ -4,7 +4,7 @@ namespace ExpenseTracker.Models
 
 {
     [Table("transaction_details", Schema = "accounting")]
-    public class TransactionDetail : BaseModel
+    public class TransactionDetail : BaseEntity
     {
         public virtual Transaction Transaction { get; set; }
         public int TransactionId { get; set; }

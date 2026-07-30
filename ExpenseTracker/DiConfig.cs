@@ -10,10 +10,12 @@ using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.Services;
 using ExpenseTracker.UnitOfWork;
 using ExpenseTracker.UnitOfWork.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using ExpenseTracker.Middlewares;
 using NToastNotify;
 using ExpenseTracker.ViewModels.Interface;
 
@@ -29,33 +31,26 @@ public static class DiConfig
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
-        builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
             {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = AppConstants.PasswordMinLength;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-                options.SignIn.RequireConfirmedAccount = false;
-            })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/Login";
+                options.ExpireTimeSpan = TimeSpan.FromDays(AppConstants.CookieExpireDays);
+                options.SlidingExpiration = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            });
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.LoginPath = "/Account/Login";
-            options.LogoutPath = "/Account/Logout";
-            options.AccessDeniedPath = "/Account/Login";
-            options.ExpireTimeSpan = TimeSpan.FromDays(AppConstants.CookieExpireDays);
-            options.SlidingExpiration = true;
-            options.Cookie.HttpOnly = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-        });
+        builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddRazorPages();
         builder.UseServices();
+        builder.UseRepo();
+        builder.UseProviders();
         builder.UseNotificationServices();
     }
 
@@ -66,6 +61,7 @@ public static class DiConfig
                 options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build()));
+                options.Filters.Add<LoggingExceptionFilter>();
             })
             .AddNToastNotifyToastr(new ToastrOptions
             {
@@ -80,10 +76,19 @@ public static class DiConfig
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddScoped<IAuthManager, AuthManager>();
-        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
-
         builder.Services.AddScoped<IUow, Uow>();
+        builder.Services.AddScoped<IVoucherService, VoucherService>();
+        builder.Services.AddScoped<IBankService, BankService>();
+        builder.Services.AddScoped<IIncomeService, IncomeService>();
+        builder.Services.AddScoped<IExpenseService, ExpenseService>();
+        builder.Services.AddScoped<ILiabilityService, LiabilityService>();
+        builder.Services.AddScoped<ILedgerService, LedgerService>();
+        builder.Services.AddScoped<IAccTransactionManager,AccTransactionManager>();
+        builder.Services.AddScoped<ReverseTransactionManager>();
+    }
 
+    private static void UseRepo(this WebApplicationBuilder builder)
+    {
         builder.Services.AddScoped<IBankRepo, BankRepo>();
         builder.Services.AddScoped<IBankTransactionRepo, BankTransactionRepo>();
         builder.Services.AddScoped<ICoaLedgerRepo, CoaLedgerRepo>();
@@ -94,16 +99,16 @@ public static class DiConfig
         builder.Services.AddScoped<IAccountingTransactionRepo, AccountingTransactionRepo>();
         builder.Services.AddScoped<IAccTxnDetailRepo, AccTxnDetailRepo>();
         builder.Services.AddScoped<IUserRepo, UserRepo>();
-        builder.Services.AddScoped<IVoucherService, VoucherService>();
-        builder.Services.AddScoped<IBankService, BankService>();
-        builder.Services.AddScoped<IIncomeService, IncomeService>();
-        builder.Services.AddScoped<IExpenseService, ExpenseService>();
-        builder.Services.AddScoped<ILiabilityService, LiabilityService>();
-        builder.Services.AddScoped<ILedgerService, LedgerService>();
-        builder.Services.AddScoped<AccTransactionManager>();
-        builder.Services.AddScoped<DropdownProvider>();
+        builder.Services.AddScoped<IRoleRepo, RoleRepo>();
+        builder.Services.AddScoped<IUserRoleRepo, UserRoleRepo>();
+    }
+
+    private static void UseProviders(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
         builder.Services.AddScoped<IProvider>();
         builder.Services.AddScoped<IBalanceProvider>();
-        builder.Services.AddScoped<ReverseTransactionManager>();
+        builder.Services.AddScoped<DropdownProvider>();
+        builder.Services.AddScoped<IParentLedgerProvider,ParentLedgerProvider>();
     }
 }

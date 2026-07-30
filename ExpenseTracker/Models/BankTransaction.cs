@@ -3,7 +3,7 @@
 namespace ExpenseTracker.Models
 {
     [Table("bank_transactions", Schema = "bank")]
-    public class BankTransaction : BaseModel
+    public class BankTransaction : BaseEntity
     {
         public int BankId { get; set; }
 

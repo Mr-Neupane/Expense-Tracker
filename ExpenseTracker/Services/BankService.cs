@@ -7,6 +7,7 @@ using ExpenseTracker.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Enums;
 using ExpenseTracker.ExtMethods;
+using ExpenseTracker.Providers.Interfaces;
 using ExpenseTracker.ViewModels.Interface;
 
 namespace ExpenseTracker.Services;
@@ -16,13 +17,15 @@ public class BankService : IBankService
     private readonly IUow _uow;
     private readonly IBankRepo _bankRepo;
     private readonly IBankTransactionRepo _bankTxnRepo;
+    private readonly ICurrentUserProvider _currentUserProvider;
 
     public BankService(IUow uow, IBankRepo bankRepo,
-        IBankTransactionRepo bankTxnRepo)
+        IBankTransactionRepo bankTxnRepo, ICurrentUserProvider currentUserProvider)
     {
         _uow = uow;
         _bankRepo = bankRepo;
         _bankTxnRepo = bankTxnRepo;
+        _currentUserProvider = currentUserProvider;
     }
     
 
@@ -54,6 +57,7 @@ public class BankService : IBankService
 
     public async Task<BankTransaction> RecordBankTransactionAsync(BankTransactionDto dto)
     {
+        var cu = await _currentUserProvider.GetCurrentUser();
         var bankTxn = new BankTransaction
         {
             BankId = dto.BankId,

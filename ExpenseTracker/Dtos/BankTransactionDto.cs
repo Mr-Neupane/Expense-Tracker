@@ -11,7 +11,7 @@ public class BankTransactionDto
     public decimal Amount { get; set; }
     public string Type { get; set; }
     public string? Remarks { get; set; }
-    public AppUser User { get; set; }
+    public User User { get; set; }
 }
 
 public class BankTransactionReportDto

@@ -9,7 +9,7 @@ using Transaction = ExpenseTracker.Models.Transaction;
 
 namespace ExpenseTracker.Manager;
 
-public class AccTransactionManager
+public class AccTransactionManager :IAccTransactionManager
 {
     private readonly IVoucherService _voucherService;
     private readonly IBankService _bankService;

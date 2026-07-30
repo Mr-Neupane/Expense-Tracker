@@ -6,7 +6,7 @@ using ExpenseTracker.Enums;
 namespace ExpenseTracker.Models
 {
     [Table("transactions", Schema = "accounting")]
-    public class Transaction : BaseModel
+    public class Transaction : BaseEntity
     {
         public DateTime TxnDate { get; set; }
         public VoucherType VoucherType { get; set; }

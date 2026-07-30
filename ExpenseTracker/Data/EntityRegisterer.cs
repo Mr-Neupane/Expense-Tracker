@@ -7,7 +7,7 @@ public static class EntityRegisterer
 {
     public static void RegisterEntities(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AppUser>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.Property(e => e.Id).ValueGeneratedNever();
         });

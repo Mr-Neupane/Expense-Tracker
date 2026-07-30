@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using ExpenseTracker.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTracker.Data;
 
-public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -19,6 +17,10 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<int>
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.RegisterEntities();
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedNever();
+        });
 
         foreach (var entity in modelBuilder.Model.GetEntityTypes())
         {

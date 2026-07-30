@@ -2,6 +2,7 @@ using ExpenseTracker.Models;
 using ExpenseTracker.Repository;
 using ExpenseTracker.UnitOfWork.Interfaces;
 using ExpenseTracker.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NToastNotify;
 
@@ -12,12 +13,15 @@ public class UserController : Controller
     private readonly IUserRepo _userGenericRepo;
     private readonly IUow _uow;
     private readonly IToastNotification _toastNotification;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserController(IUserRepo userGenericRepo, IUow uow, IToastNotification toastNotification)
+    public UserController(IUserRepo userGenericRepo, IUow uow, IToastNotification toastNotification,
+        IPasswordHasher<User> passwordHasher)
     {
         _userGenericRepo = userGenericRepo;
         _uow = uow;
         _toastNotification = toastNotification;
+        _passwordHasher = passwordHasher;
     }
 
     [HttpGet]
@@ -37,7 +41,7 @@ public class UserController : Controller
                 var addUser = new User()
                 {
                     UserName = vm.Username,
-                    Password = vm.Password
+                    PasswordHash = _passwordHasher.HashPassword(new User(), vm.Password)
                 };
                 await _uow.AddAsync(addUser);
                 await _uow.SaveChangesAsync();
@@ -62,3 +66,7 @@ public class UserController : Controller
         return RedirectToAction("AddUser");
     }
 }
+
+
+
+

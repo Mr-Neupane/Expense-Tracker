@@ -1,4 +1,5 @@
-﻿using ExpenseTracker.Constants;
+using ExpenseTracker.Constants;
+using ExpenseTracker.ExtMethods;
 using ExpenseTracker.Models;
 using ExpenseTracker.Repository;
 using ExpenseTracker.UnitOfWork.Interfaces;
@@ -12,16 +13,19 @@ namespace ExpenseTracker.Controllers;
 
 public class MigrationController : Controller
 {
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IUserRepo _userRepo;
+    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ICoaLedgerRepo _coaGenericRepo;
     private readonly ILedgerRepo _ledgerGenericRepo;
     private readonly IUow _uow;
     private readonly IToastNotification _toastNotification;
 
-    public MigrationController(UserManager<AppUser> userManager, ICoaLedgerRepo coaGenericRepo,
-        ILedgerRepo ledgerGenericRepo, IUow uow, IToastNotification toastNotification)
+    public MigrationController(IUserRepo userRepo, IPasswordHasher<User> passwordHasher,
+        ICoaLedgerRepo coaGenericRepo, ILedgerRepo ledgerGenericRepo, IUow uow,
+        IToastNotification toastNotification)
     {
-        _userManager = userManager;
+        _userRepo = userRepo;
+        _passwordHasher = passwordHasher;
         _coaGenericRepo = coaGenericRepo;
         _ledgerGenericRepo = ledgerGenericRepo;
         _uow = uow;
@@ -39,21 +43,21 @@ public class MigrationController : Controller
     {
         try
         {
-            var existingUser = await _userManager.FindByIdAsync(UserConstants.AdminUser.ToString());
+            var existingUser = await _userRepo.SingleOrDefaultAsync(u => u.Id == UserConstants.AdminUser);
             if (existingUser == null)
             {
-                var adminUser = new AppUser
+                var adminUser = new User
                 {
                     Id = UserConstants.AdminUser,
-                    UserName = "AdminUser",
-                    DisplayName = "Admin User"
+                    UserName = "Admin User",
+                    Email = "admin@gmail.com",
+                    PasswordHash = _passwordHasher.HashPassword(new User(), "Admin@123")
                 };
-                var result = await _userManager.CreateAsync(adminUser, "Admin@123");
-                if (!result.Succeeded)
-                    throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+                await _uow.AddAsync(adminUser);
+                await _uow.SaveChangesAsync();
             }
 
-            var existingCoaLedger = await _coaGenericRepo.GetBaseQueryable()
+            var existingCoaLedger = await _coaGenericRepo.GetBaseQueryable().FilterActiveStatus()
                 .CountAsync(x => x.RecStatus == RecordStatusConstants.Active);
             if (existingCoaLedger == 0)
             {
@@ -162,3 +166,7 @@ public class MigrationController : Controller
         }
     }
 }
+
+
+
+

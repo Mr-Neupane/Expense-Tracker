@@ -5,7 +5,7 @@ namespace ExpenseTracker.Models
 
 {
     [Table("bank", Schema = "bank")]
-    public class Bank : BaseModel
+    public class Bank : BaseEntity
     {
         public string BankName { get; set; }
         public string AccountNumber { get; set; }

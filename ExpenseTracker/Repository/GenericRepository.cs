@@ -41,6 +41,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, IEnti
     {
         return await DbSet.SingleOrDefaultAsync(predicate);
     }
+    
+    public async Task<T> SingleAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await DbSet.SingleAsync(predicate);
+    }
 
     public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null)
     {

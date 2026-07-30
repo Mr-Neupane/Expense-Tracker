@@ -13,12 +13,13 @@ namespace ExpenseTracker.Controllers;
 public class IncomeController : Controller
 {
     private readonly IToastNotification _toastNotification;
-    private readonly AccTransactionManager _transactionManager;
+    private readonly IAccTransactionManager _transactionManager;
     private readonly DropdownProvider _dropdownProvider;
     private readonly IIncomeRepo _incomeRepo;
     private readonly ICurrentUserProvider _currentUserProvider;
 
-    public IncomeController(IToastNotification toastNotification, AccTransactionManager transactionManager, DropdownProvider dropdownProvider, IIncomeRepo incomeRepo, ICurrentUserProvider currentUserProvider)
+    public IncomeController(IToastNotification toastNotification, IAccTransactionManager transactionManager,
+        DropdownProvider dropdownProvider, IIncomeRepo incomeRepo, ICurrentUserProvider currentUserProvider)
     {
         _toastNotification = toastNotification;
         _transactionManager = transactionManager;
@@ -52,7 +53,7 @@ public class IncomeController : Controller
                 Amount = vm.Amount,
                 Remarks = vm.Remarks,
                 TxnDate = vm.TxnDate,
-                User= cu
+                User = cu
             };
 
             var accTransaction = new AccTransactionDto

@@ -10,12 +10,12 @@ namespace ExpenseTracker.Controllers;
 
 public class LiabilityController : Controller
 {
-    private readonly AccTransactionManager _accTransactionManager;
+    private readonly IAccTransactionManager _accTransactionManager;
     private readonly ILiabilityService _liabilityService;
     private readonly IToastNotification _toastNotification;
     private readonly IProvider _provider;
 
-    public LiabilityController(AccTransactionManager accTransactionManager, IToastNotification toastNotification,
+    public LiabilityController(IAccTransactionManager accTransactionManager, IToastNotification toastNotification,
         ILiabilityService liabilityService, IProvider provider)
     {
         _accTransactionManager = accTransactionManager;
@@ -89,3 +89,6 @@ public class LiabilityController : Controller
         return View(report);
     }
 }
+
+
+

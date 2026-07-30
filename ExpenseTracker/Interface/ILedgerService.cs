@@ -8,7 +8,6 @@ public interface ILedgerService
 {
     public Task<Ledger> AddLedgerAsync(LedgerDto dto);
     public Task EditLedgerAsync(EditLedgerDto dto);
-    public Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync();
     public Task<List<LedgerReportDto>> GetLedgerReportAsync();
     public Task<bool> DeactivateLedgerAsync(int ledgerId);
     public Task<List<int>> DeactivateLedgerAsync(List<int> ledgerIds);

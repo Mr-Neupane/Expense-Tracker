@@ -1,4 +1,4 @@
-﻿using System.Transactions;
+using System.Transactions;
 using ExpenseTracker.Constants;
 using ExpenseTracker.Dtos;
 using ExpenseTracker.Interface;
@@ -24,10 +24,9 @@ public class VoucherController : Controller
     private readonly DropdownProvider _dropdownProvider;
     private readonly IBankService _bankService;
 
-
     public VoucherController(IAccountingTransactionRepo txnRepo, IBankRepo bankGenericRepo,
         IVoucherService voucherService, ReverseTransactionManager reverseTransactionManager,
-        IToastNotification toastNotification, DropdownProvider dropdownProvider, IBankService bankService)
+        IToastNotification toastNotification, DropdownProvider dropdownProvider,         IBankService bankService)
     {
         _txnRepo = txnRepo;
         _bankGenericRepo = bankGenericRepo;
@@ -157,7 +156,6 @@ public class VoucherController : Controller
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             _toastNotification.AddErrorToastMessage("Issue creating voucher." + e.Message);
             return View();
         }
@@ -196,3 +194,7 @@ public class VoucherController : Controller
         }
     }
 }
+
+
+
+
