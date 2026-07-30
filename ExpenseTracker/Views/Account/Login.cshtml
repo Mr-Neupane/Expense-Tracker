@@ -1,3 +1,4 @@
+@using NepDate.Extensions
 @model ExpenseTracker.ViewModels.LoginVm
 
 @{
@@ -15,6 +16,7 @@
     <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/admin-lte/css/adminlte.min.css"/>
     <link rel="stylesheet" href="~/lib/fontsource/source-sans-3/index.css"/>
+    <link href="~/lib/nepali-datepicker/css/nepali.datepicker.min.css" rel="stylesheet" type="text/css"/>
     <style>
         body {
             background: #f4f6f9;
@@ -45,11 +47,21 @@
                     <label asp-for="Password" class="form-label">Password</label>
                     <input asp-for="Password" type="password" class="form-control" autocomplete="off" required="required"/>
                 </div>
+                <div class="mb-2">
+                    <label asp-for="LoginDate" class="form-label">Login Date</label>
+                    <input asp-for="LoginDate" type="text" class="form-control nepali-date-picker" value="@Model.LoginDate.ToNepaliDate()" autocomplete="off" required="required"/>
+                </div>
                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
             </form>
         </div>
     </div>
 </div>
 @await Component.InvokeAsync("NToastNotify")
+
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script src="~/lib/nepali-datepicker/js/nepali.datepicker.min.js"></script>
+<script src="~/js/nepali-date-helper.js"></script>
+<script src="~/js/datepicker-init.js"></script>
+<script src="~/js/date-mask.js"></script>
 </body>
 </html>

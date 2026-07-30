@@ -7,4 +7,5 @@ public interface ICurrentUserProvider
     // bool IsLoggedIn();
     Task<User> GetCurrentUser();
     int GetCurrentUserId();
+    DateTime GetLoginDate();
 }

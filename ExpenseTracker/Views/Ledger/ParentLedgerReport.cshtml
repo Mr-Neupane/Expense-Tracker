@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ExpenseTracker.Dtos.ParentLedgerReportDto>
+﻿@using ExpenseTracker.Enums
+@model List<ExpenseTracker.Dtos.ParentLedgerReportDto>
 
 @{
     ViewData["Title"] = "Parent Ledger Report";
@@ -38,8 +39,8 @@
 
                         <td>@item.LedgerName</td>
 
-                        <td class="@(item.Status == 1 ? "text-success" : "text-danger")">
-                            @(item.Status == 1 ? "Active" : "Inactive")
+                        <td class="@(item.Status == Status.Active ? "text-success" : "text-danger")">
+                            @(item.Status == Status.Reversed ? "Active" : "Inactive")
                         </td>
 
                         <td>@item.UserName</td>

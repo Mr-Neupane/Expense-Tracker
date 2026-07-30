@@ -66,10 +66,6 @@ public class LedgerService : ILedgerService
         await _uow.SaveChangesAsync();
     }
 
-    public Task<List<ParentLedgerReportDto>> GetParentLedgerReportAsync()
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<List<LedgerReportDto>> GetLedgerReportAsync()
     {

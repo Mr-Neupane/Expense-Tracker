@@ -16,11 +16,11 @@ public class ExpenseController : Controller
     private readonly IExpenseService _expenseService;
     private readonly IToastNotification _toastNotification;
     private readonly IBalanceProvider _balanceProvider;
-    private readonly AccTransactionManager _accTransactionManager;
+    private readonly IAccTransactionManager _accTransactionManager;
     private readonly DropdownProvider _dropdownProvider;
 
     public ExpenseController(IExpenseService expenseService, IToastNotification toastNotification,
-        IBalanceProvider balanceProvider, AccTransactionManager accTransactionManager,
+        IBalanceProvider balanceProvider, IAccTransactionManager accTransactionManager,
         DropdownProvider dropdownProvider)
     {
         _expenseService = expenseService;

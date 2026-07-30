@@ -7,6 +7,7 @@ using ExpenseTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.ViewModels;
 using ExpenseTracker.Providers;
+using ExpenseTracker.Providers.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using NToastNotify;
 
@@ -14,20 +15,22 @@ namespace ExpenseTracker.Controllers;
 
 public class LedgerController : Controller
 {
-    private readonly ILedgerRepo _ledgerGenericRepo;
-    private readonly ICoaLedgerRepo _coaGenericRepo;
+    private readonly ILedgerRepo _ledgerRepo;
+    private readonly ICoaLedgerRepo _coaLedgerRepo;
     private readonly ILedgerService _ledgerService;
     private readonly IToastNotification _toastNotification;
     private readonly IProvider _provider;
+    private readonly IParentLedgerProvider _parentLedgerProvider;
 
-    public LedgerController(ILedgerRepo ledgerGenericRepo, ICoaLedgerRepo coaGenericRepo,
-        IToastNotification toastNotification, ILedgerService ledgerService, IProvider provider)
+    public LedgerController(ILedgerRepo ledgerRepo, ICoaLedgerRepo coaLedgerRepo,
+        IToastNotification toastNotification, ILedgerService ledgerService, IProvider provider, IParentLedgerProvider parentLedgerProvider)
     {
-        _ledgerGenericRepo = ledgerGenericRepo;
-        _coaGenericRepo = coaGenericRepo;
+        _ledgerRepo = ledgerRepo;
+        _coaLedgerRepo = coaLedgerRepo;
         _toastNotification = toastNotification;
         _ledgerService = ledgerService;
         _provider = provider;
+        _parentLedgerProvider = parentLedgerProvider;
     }
 
 
@@ -42,7 +45,7 @@ public class LedgerController : Controller
     {
         try
         {
-            var exists = await _ledgerGenericRepo.AnyAsync(x => x.LedgerName == vm.LedgerName);
+            var exists = await _ledgerRepo.AnyAsync(x => x.LedgerName == vm.LedgerName);
             if (!exists)
             {
                 await _ledgerService.AddLedgerAsync(new LedgerDto
@@ -71,8 +74,8 @@ public class LedgerController : Controller
     [HttpGet]
     public async Task<IActionResult> EditLedger(int ledgerId)
     {
-        var lQuery = _ledgerGenericRepo.GetBaseQueryable();
-        var cQuery = _coaGenericRepo.GetBaseQueryable();
+        var lQuery = _ledgerRepo.GetBaseQueryable();
+        var cQuery = _coaLedgerRepo.GetBaseQueryable();
 
         var res = await (from l in lQuery
             join pl in lQuery on l.SubParentId equals pl.Id
@@ -102,7 +105,7 @@ public class LedgerController : Controller
     [HttpPost]
     public async Task<IActionResult> EditLedger(EditLedgerVM vm)
     {
-        var existing = await _ledgerGenericRepo.AnyAsync(x => x.Id != vm.LedgerId && x.LedgerName.Trim() == vm.LedgerName.Trim());
+        var existing = await _ledgerRepo.AnyAsync(x => x.Id != vm.LedgerId && x.LedgerName.Trim() == vm.LedgerName.Trim());
         if (existing)
         {
             _toastNotification.AddErrorToastMessage($"{vm.LedgerName} ledger already exists");
@@ -179,7 +182,7 @@ public class LedgerController : Controller
     [HttpGet]
     public async Task<IActionResult> ParentLedgerReport()
     {
-        var res = await _ledgerService.GetParentLedgerReportAsync();
+        var res = await _parentLedgerProvider.GetParentLedgerReport();
         return View(res);
     }
 
@@ -276,7 +279,7 @@ public class LedgerController : Controller
 
     public IActionResult GetSubParents(int parentId)
     {
-        var res = _ledgerGenericRepo.GetBaseQueryable()
+        var res = _ledgerRepo.GetBaseQueryable()
             .Where(x => x.Id != LedgerConstants.BankAccount && x.ParentId == parentId)
             .ToList();
         var jsonRes = res.Select(x => new

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ExpenseTracker.Constants;
 using ExpenseTracker.Manager.Interfaces;
 using ExpenseTracker.Models;
 using ExpenseTracker.Repository;
@@ -35,17 +36,27 @@ public class AuthManager : IAuthManager
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Email, user.Email)
+            new(ClaimTypes.Email, user.Email),
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
         await _httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddDays(AppConstants.CookieExpireDays)
+        };
+        _httpContextAccessor.HttpContext.Response.Cookies.Append("LoginDate", dto.LoginDate.ToString("o"), cookieOptions);
     }
 
     public async Task Logout()
     {
-        await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        _httpContextAccessor.HttpContext!.Response.Cookies.Delete("LoginDate");
+        await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

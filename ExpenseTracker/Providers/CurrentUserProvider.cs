@@ -32,4 +32,11 @@ public class CurrentUserProvider : ICurrentUserProvider
         if (string.IsNullOrWhiteSpace(userId)) throw new Exception("User not found");
         return Convert.ToInt32(userId);
     }
+
+    public DateTime GetLoginDate()
+    {
+        var cookieValue = _contextAccessor.HttpContext?.Request.Cookies["LoginDate"];
+        if (string.IsNullOrWhiteSpace(cookieValue)) throw new Exception("Cookie not found");
+        return DateTime.Parse(cookieValue, null, System.Globalization.DateTimeStyles.RoundtripKind);
+    }
 }

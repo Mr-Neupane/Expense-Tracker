@@ -16,7 +16,7 @@ public class BankTransactionController : Controller
 {
     private readonly IToastNotification _toastNotification;
     private readonly ReverseTransactionManager _reverseTransactionManager;
-    private readonly AccTransactionManager _accTransactionManager;
+    private readonly IAccTransactionManager _accTransactionManager;
     private readonly IProvider _provider;
     private readonly DropdownProvider _dropdownProvider;
     private readonly IBalanceProvider _balanceProvider;
@@ -25,7 +25,7 @@ public class BankTransactionController : Controller
 
     public BankTransactionController(IToastNotification toastNotification,
         ReverseTransactionManager reverseTransactionManager,
-        AccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider,
+        IAccTransactionManager accTransactionManager, IProvider provider, IBalanceProvider balanceProvider,
         DropdownProvider dropdownProvider, IBankRepo bankRepo, IBankTransactionRepo bankTransactionRepo)
     {
         _toastNotification = toastNotification;

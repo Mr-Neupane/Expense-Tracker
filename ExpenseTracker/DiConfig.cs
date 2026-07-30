@@ -49,6 +49,8 @@ public static class DiConfig
 
         builder.Services.AddRazorPages();
         builder.UseServices();
+        builder.UseRepo();
+        builder.UseProviders();
         builder.UseNotificationServices();
     }
 
@@ -74,10 +76,19 @@ public static class DiConfig
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddScoped<IAuthManager, AuthManager>();
-        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
-
         builder.Services.AddScoped<IUow, Uow>();
+        builder.Services.AddScoped<IVoucherService, VoucherService>();
+        builder.Services.AddScoped<IBankService, BankService>();
+        builder.Services.AddScoped<IIncomeService, IncomeService>();
+        builder.Services.AddScoped<IExpenseService, ExpenseService>();
+        builder.Services.AddScoped<ILiabilityService, LiabilityService>();
+        builder.Services.AddScoped<ILedgerService, LedgerService>();
+        builder.Services.AddScoped<IAccTransactionManager,AccTransactionManager>();
+        builder.Services.AddScoped<ReverseTransactionManager>();
+    }
 
+    private static void UseRepo(this WebApplicationBuilder builder)
+    {
         builder.Services.AddScoped<IBankRepo, BankRepo>();
         builder.Services.AddScoped<IBankTransactionRepo, BankTransactionRepo>();
         builder.Services.AddScoped<ICoaLedgerRepo, CoaLedgerRepo>();
@@ -90,16 +101,14 @@ public static class DiConfig
         builder.Services.AddScoped<IUserRepo, UserRepo>();
         builder.Services.AddScoped<IRoleRepo, RoleRepo>();
         builder.Services.AddScoped<IUserRoleRepo, UserRoleRepo>();
-        builder.Services.AddScoped<IVoucherService, VoucherService>();
-        builder.Services.AddScoped<IBankService, BankService>();
-        builder.Services.AddScoped<IIncomeService, IncomeService>();
-        builder.Services.AddScoped<IExpenseService, ExpenseService>();
-        builder.Services.AddScoped<ILiabilityService, LiabilityService>();
-        builder.Services.AddScoped<ILedgerService, LedgerService>();
-        builder.Services.AddScoped<AccTransactionManager>();
-        builder.Services.AddScoped<DropdownProvider>();
+    }
+
+    private static void UseProviders(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
         builder.Services.AddScoped<IProvider>();
         builder.Services.AddScoped<IBalanceProvider>();
-        builder.Services.AddScoped<ReverseTransactionManager>();
+        builder.Services.AddScoped<DropdownProvider>();
+        builder.Services.AddScoped<IParentLedgerProvider,ParentLedgerProvider>();
     }
 }
